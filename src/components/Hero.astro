@@ -1,0 +1,46 @@
+---
+const {
+  tag = "Software Engineer",
+  title = "Olá, sou o Idárcio Oliveira",
+  subtitle = "Construo experiências digitais rápidas, acessíveis e elegantes.",
+  primaryCta = { href: "/projects", label: "Ver projetos" },
+  secondaryCta = { href: "/about", label: "Sobre mim" },
+} = Astro.props;
+---
+
+<section class="page-section">
+  <div class="container-shell">
+    <div class="grid gap-8 lg:grid-cols-[1.2fr_0.8fr] lg:items-end">
+      <div class="space-y-5">
+        <span class="badge">{tag}</span>
+        <h1 class="text-4xl font-black sm:text-5xl">{title}</h1>
+        <p class="max-w-2xl text-lg text-(--text-soft) sm:text-xl">
+          {subtitle}
+        </p>
+
+        <div class="flex flex-wrap gap-3 pt-2">
+          <a
+            href={primaryCta.href}
+            class="inline-flex rounded-lg bg-(--text) px-5 py-2.5 text-sm font-semibold text-(--bg) transition-opacity hover:opacity-85"
+          >
+            {primaryCta.label}
+          </a>
+          <a
+            href={secondaryCta.href}
+            class="inline-flex rounded-lg border px-5 py-2.5 text-sm font-semibold text-(--text) hover:bg-(--surface-soft)"
+          >
+            {secondaryCta.label}
+          </a>
+        </div>
+      </div>
+
+      <div class="card grid-pattern relative min-h-52 overflow-hidden">
+        <div class="absolute inset-0 opacity-25 gradient-block"></div>
+        <p class="relative mt-auto text-sm text-(--text-soft)">
+          Foco em arquitetura frontend, experiência de produto e performance
+          web.
+        </p>
+      </div>
+    </div>
+  </div>
+</section>

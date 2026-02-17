@@ -1,0 +1,59 @@
+---
+import MainLayout from "../../layouts/main.astro";
+import Section from "../../components/Section.astro";
+
+const notes = [
+  {
+    title: "Como penso arquitetura frontend em produtos em crescimento",
+    excerpt:
+      "Uma abordagem prática para equilibrar velocidade, qualidade e autonomia de times.",
+    date: "Fev 2026",
+  },
+  {
+    title: "Checklist de acessibilidade que uso no dia a dia",
+    excerpt:
+      "Itens essenciais para manter UX inclusiva desde o primeiro commit.",
+    date: "Jan 2026",
+  },
+  {
+    title: "Design tokens sem dor: estratégia para escalar UI",
+    excerpt:
+      "Como organizar semântica visual para evoluir seu design system com consistência.",
+    date: "Dez 2025",
+  },
+];
+---
+
+<MainLayout
+  title="Writing — Idárcio Oliveira"
+  description="Anotações, aprendizados e ideias sobre engenharia de software, frontend e produto."
+>
+  <Section
+    eyebrow="Writing"
+    title="Notas rápidas e aprendizados"
+    description="Espaço para compartilhar reflexões técnicas, processos e decisões que fizeram diferença em projetos reais."
+  >
+    <div class="grid gap-4">
+      {
+        notes.map((note) => (
+          <article class="card relative overflow-hidden">
+            <div class="absolute inset-x-0 top-0 h-20 gradient-block opacity-35" />
+            <div class="relative">
+              <p class="text-xs font-semibold uppercase tracking-wider text-(--text-soft)">
+                {note.date}
+              </p>
+              <h3 class="mt-2 text-xl font-bold">{note.title}</h3>
+              <p class="mt-2 text-sm text-(--text-soft)">{note.excerpt}</p>
+              <a
+                href="/markdown-page"
+                class="link-accent mt-4 inline-flex text-sm"
+              >
+                Ler rascunho →
+              </a>
+            </div>
+          </article>
+        ))
+      }
+    </div>
+  </Section>
+</MainLayout>

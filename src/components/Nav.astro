@@ -1,0 +1,44 @@
+---
+const { currentPath = "/" } = Astro.props;
+
+const links = [
+  { href: "/", label: "Home" },
+  { href: "/about", label: "About" },
+  { href: "/projects", label: "Projects" },
+  { href: "/moments", label: "Moments" },
+  { href: "/writing", label: "Writing" },
+];
+
+const isActive = (href: string) => {
+  if (href === "/") return currentPath === "/";
+  return currentPath === href || currentPath.startsWith(`${href}/`);
+};
+---
+
+<header class="sticky top-0 z-30 border-b bg-(--bg)/90 backdrop-blur">
+  <div class="container-shell flex h-16 items-center justify-between gap-4">
+    <a href="/" class="text-sm font-black tracking-[0.2em] uppercase">IOF</a>
+
+    <nav aria-label="Main navigation">
+      <ul class="flex flex-wrap items-center gap-1 sm:gap-2">
+        {
+          links.map((link) => (
+            <li>
+              <a
+                href={link.href}
+                class:list={[
+                  "inline-flex rounded-md px-3 py-1.5 text-sm font-medium transition-colors",
+                  isActive(link.href)
+                    ? "bg-(--surface-soft) text-(--text)"
+                    : "text-(--text-soft) hover:text-(--text)",
+                ]}
+              >
+                {link.label}
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </nav>
+  </div>
+</header>

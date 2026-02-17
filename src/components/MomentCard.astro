@@ -1,0 +1,12 @@
+---
+const { year, title, description } = Astro.props;
+---
+
+<article class="card relative overflow-hidden">
+  <div class="absolute inset-x-0 top-0 h-1 gradient-block"></div>
+  <p class="text-xs font-bold tracking-[0.12em] text-(--text-soft) uppercase">
+    {year}
+  </p>
+  <h3 class="mt-2 text-xl font-bold">{title}</h3>
+  <p class="mt-2 text-sm text-(--text-soft)">{description}</p>
+</article>

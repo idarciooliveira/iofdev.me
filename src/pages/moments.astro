@@ -1,0 +1,47 @@
+---
+import MainLayout from "../layouts/main.astro";
+import Section from "../components/Section.astro";
+import MomentCard from "../components/MomentCard.astro";
+
+const moments = [
+  {
+    year: "2026",
+    title: "Rebuild completo do portfólio",
+    description:
+      "Nova identidade visual com foco editorial, melhor legibilidade e estrutura escalável de conteúdo.",
+  },
+  {
+    year: "2025",
+    title: "Escala de design system",
+    description:
+      "Padronização de componentes em múltiplos produtos e redução de inconsistências de UI.",
+  },
+  {
+    year: "2024",
+    title: "Aceleração de performance",
+    description:
+      "Otimizações de frontend que reduziram tempo de carregamento e melhoraram Core Web Vitals.",
+  },
+  {
+    year: "2022",
+    title: "Mentoria de devs juniores",
+    description:
+      "Apoio na evolução técnica da equipe por meio de pairing, revisão de código e trilhas de estudo.",
+  },
+];
+---
+
+<MainLayout
+  title="Momentos — Idárcio Oliveira"
+  description="Linha do tempo de momentos e marcos da carreira de Idárcio Oliveira."
+>
+  <Section
+    eyebrow="Moments"
+    title="Marcos da jornada"
+    description="Episódios que moldaram minha forma de construir software e colaborar com times de produto."
+  >
+    <div class="grid gap-5 md:grid-cols-2">
+      {moments.map((moment) => <MomentCard {...moment} />)}
+    </div>
+  </Section>
+</MainLayout>

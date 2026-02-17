@@ -1,0 +1,25 @@
+---
+const links = [
+  { href: "https://github.com/", label: "GitHub" },
+  { href: "https://www.linkedin.com/", label: "LinkedIn" },
+  { href: "mailto:hi@example.com", label: "Email" },
+  { href: "https://youtube.com/", label: "YouTube" },
+];
+---
+
+<ul class="flex flex-wrap gap-3">
+  {
+    links.map((item) => (
+      <li>
+        <a
+          href={item.href}
+          target={item.href.startsWith("http") ? "_blank" : undefined}
+          rel={item.href.startsWith("http") ? "noreferrer noopener" : undefined}
+          class="inline-flex items-center rounded-full border bg-(--surface) px-4 py-2 text-sm font-medium text-(--text-soft) transition hover:text-(--text)"
+        >
+          {item.label}
+        </a>
+      </li>
+    ))
+  }
+</ul>

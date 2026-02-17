@@ -1,0 +1,65 @@
+---
+import MainLayout from "../layouts/main.astro";
+import Section from "../components/Section.astro";
+import ProjectCard from "../components/ProjectCard.astro";
+
+const projects = [
+  {
+    title: "Flow Commerce Platform",
+    description:
+      "Arquitetura headless para e-commerce com foco em conversão, SEO técnico e tempo de carregamento.",
+    href: "#",
+    stack: ["Astro", "Node.js", "PostgreSQL"],
+  },
+  {
+    title: "Ops Dashboard",
+    description:
+      "Painel para monitoramento operacional com alertas em tempo real e trilha de auditoria.",
+    href: "#",
+    stack: ["React", "TypeScript", "GraphQL"],
+  },
+  {
+    title: "Design System Starter",
+    description:
+      "Sistema de componentes acessíveis e escaláveis para acelerar múltiplos produtos.",
+    href: "#",
+    stack: ["Tailwind", "Storybook", "Vitest"],
+  },
+  {
+    title: "Career Moments",
+    description:
+      "Microsite para registrar marcos profissionais com narrativa visual e timeline dinâmica.",
+    href: "#",
+    stack: ["Astro", "MDX", "Netlify"],
+  },
+  {
+    title: "Video Learning Hub",
+    description:
+      "Portal de conteúdo educacional com categorização por trilhas e filtros inteligentes.",
+    href: "#",
+    stack: ["Next.js", "Supabase", "Tailwind"],
+  },
+  {
+    title: "Team Productivity Kit",
+    description:
+      "Ferramentas internas para melhorar alinhamento de times e reduzir retrabalho em entregas.",
+    href: "#",
+    stack: ["Node.js", "Prisma", "Redis"],
+  },
+];
+---
+
+<MainLayout
+  title="Projetos — Idárcio Oliveira"
+  description="Projetos e produtos desenvolvidos por Idárcio Oliveira."
+>
+  <Section
+    eyebrow="Projetos"
+    title="Produtos, plataformas e experiências"
+    description="Uma seleção de projetos onde atuei em arquitetura, frontend e estratégia técnica para gerar impacto real."
+  >
+    <div class="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
+      {projects.map((project) => <ProjectCard {...project} />)}
+    </div>
+  </Section>
+</MainLayout>

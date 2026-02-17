@@ -1,13 +1,39 @@
-# Astro with Tailwind
+# iofdev.me — Portfolio v2
 
-```sh
-pnpm create astro@latest -- --template with-tailwindcss
+Nova versão do portfólio pessoal construída com **Astro 5** e **Tailwind CSS 4**, com uma linguagem visual editorial inspirada no steipete.me.
+
+## O que já está implementado
+
+- Nova estrutura de navegação: `Home`, `About`, `Projects`, `Moments`, `Writing`
+- Layout global com header fixo, página centralizada e footer
+- Sistema de estilos com tokens CSS (cores, superfícies, contraste, gradientes)
+- Componentes reutilizáveis para seções, hero, cards de projetos e timeline
+- Página `Writing` com placeholders em gradiente (sem imagens reais, como pedido)
+
+## Estrutura principal
+
+- `src/layouts/main.astro` — shell global (SEO básico + nav + footer)
+- `src/components/` — componentes reutilizáveis (`Nav`, `Hero`, `Section`, etc.)
+- `src/pages/` — páginas principais do portfólio
+- `src/styles/global.css` — design tokens e utilitários de composição
+
+## Rodar localmente
+
+```bash
+pnpm install
+pnpm dev
 ```
 
-[![Open in StackBlitz](https://developer.stackblitz.com/img/open_in_stackblitz.svg)](https://stackblitz.com/github/withastro/astro/tree/latest/examples/with-tailwindcss)
-[![Open with CodeSandbox](https://assets.codesandbox.io/github/button-edit-lime.svg)](https://codesandbox.io/p/sandbox/github/withastro/astro/tree/latest/examples/with-tailwindcss)
-[![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://codespaces.new/withastro/astro?devcontainer_path=.devcontainer/with-tailwindcss/devcontainer.json)
+## Build de produção
 
-Astro comes with [Tailwind](https://tailwindcss.com) support out of the box. This example showcases how to style your Astro project with Tailwind.
+```bash
+pnpm build
+pnpm preview
+```
 
-For complete setup instructions, please see our [Tailwind Styling Guide](https://docs.astro.build/en/guides/styling/#tailwind).
+## Próximos passos sugeridos
+
+- Substituir textos e links placeholder por conteúdo real
+- Migrar `Writing` para Content Collections/MDX
+- Adicionar Open Graph image e metadata por página
+- Criar versão EN/PT com i18n

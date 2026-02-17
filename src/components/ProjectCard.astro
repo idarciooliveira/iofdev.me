@@ -1,0 +1,19 @@
+---
+const { title, description, href = "#", stack = [] as string[] } = Astro.props;
+---
+
+<article class="card h-full">
+  <div class="mb-4 h-28 rounded-xl gradient-block"></div>
+  <h3 class="text-xl font-bold">{title}</h3>
+  <p class="mt-2 text-sm text-(--text-soft)">{description}</p>
+  {
+    stack.length > 0 && (
+      <ul class="mt-4 flex flex-wrap gap-2">
+        {stack.map((item: string) => (
+          <li class="badge">{item}</li>
+        ))}
+      </ul>
+    )
+  }
+  <a href={href} class="link-accent mt-5 inline-flex text-sm">Ver detalhes →</a>
+</article>

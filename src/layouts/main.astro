@@ -1,17 +1,39 @@
 ---
-import '../styles/global.css';
-const { content } = Astro.props;
+import "../styles/global.css";
+import Nav from "../components/Nav.astro";
+
+const {
+  title,
+  description = "Portfólio de Idárcio Oliveira — Engenheiro de Software.",
+  content,
+} = Astro.props;
+
+const pageTitle = title ?? content?.title ?? "Idárcio Oliveira — Portfólio";
+const pathname = Astro.url.pathname;
 ---
 
 <html lang="en">
-	<head>
-		<meta charset="utf-8" />
-		<meta name="viewport" content="width=device-width" />
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-		<link rel="icon" href="/favicon.ico" />
-		<title>{content.title}</title>
-	</head>
-	<body>
-		<slot />
-	</body>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="icon" href="/favicon.ico" />
+    <meta name="generator" content={Astro.generator} />
+    <meta name="description" content={description} />
+    <title>{pageTitle}</title>
+  </head>
+  <body>
+    <Nav currentPath={pathname} />
+    <main>
+      <slot />
+    </main>
+    <footer class="border-t py-10">
+      <div
+        class="container-shell flex flex-col gap-2 text-sm text-(--text-soft) sm:flex-row sm:items-center sm:justify-between"
+      >
+        <p>© {new Date().getFullYear()} Idárcio Oliveira.</p>
+        <p>Feito com Astro + Tailwind — sem firulas, com carinho.</p>
+      </div>
+    </footer>
+  </body>
 </html>

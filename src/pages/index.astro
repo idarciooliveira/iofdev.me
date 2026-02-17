@@ -1,26 +1,89 @@
 ---
-import '../styles/global.css';
-// Component Imports
-import Button from '../components/Button.astro';
+import MainLayout from "../layouts/main.astro";
+import Hero from "../components/Hero.astro";
+import Section from "../components/Section.astro";
+import SocialLinks from "../components/SocialLinks.astro";
+import ProjectCard from "../components/ProjectCard.astro";
+import MomentCard from "../components/MomentCard.astro";
 
-// Full Astro Component Syntax:
-// https://docs.astro.build/basics/astro-components/
+const featuredProjects = [
+  {
+    title: "Flow Commerce Platform",
+    description:
+      "Plataforma de e-commerce headless com foco em performance, checkout simplificado e observabilidade de ponta a ponta.",
+    href: "/projects",
+    stack: ["Astro", "TypeScript", "Node.js"],
+  },
+  {
+    title: "Ops Dashboard",
+    description:
+      "Dashboard operacional para monitoramento de métricas críticas e redução do tempo de resposta a incidentes.",
+    href: "/projects",
+    stack: ["React", "GraphQL", "Tailwind"],
+  },
+  {
+    title: "Design System Starter",
+    description:
+      "Biblioteca de componentes acessíveis com tokens, documentação viva e governança para múltiplos times.",
+    href: "/projects",
+    stack: ["Figma", "Storybook", "A11y"],
+  },
+];
+
+const highlights = [
+  {
+    year: "2026",
+    title: "Nova fase do portfólio",
+    description:
+      "Reposicionamento completo da identidade digital com foco em clareza, ritmo visual e storytelling.",
+  },
+  {
+    year: "2025",
+    title: "Liderança técnica em produto",
+    description:
+      "Coordenei iniciativas de frontend para acelerar entrega e melhorar DX de ponta a ponta.",
+  },
+];
 ---
 
-<html lang="en">
-	<head>
-		<meta charset="utf-8" />
-		<meta name="viewport" content="width=device-width" />
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-		<link rel="icon" href="/favicon.ico" />
-		<meta name="generator" content={Astro.generator} />
-		<title>Astro + TailwindCSS</title>
-	</head>
+<MainLayout
+  title="Idárcio Oliveira — Software Engineer"
+  description="Portfólio de Idárcio Oliveira com projetos, experiências e momentos profissionais."
+>
+  <Hero
+    tag="Engenheiro de Software"
+    title="Olá, sou o Idárcio Oliveira"
+    subtitle="Crio produtos digitais com performance, acessibilidade e um olhar cuidadoso para os detalhes que fazem diferença."
+    primaryCta={{ href: "/projects", label: "Explorar projetos" }}
+    secondaryCta={{ href: "/about", label: "Conhecer trajetória" }}
+  />
 
-	<body>
-		<div class="grid place-items-center h-screen content-center">
-			<Button>Tailwind Button in Astro!</Button>
-			<a href="/markdown-page" class="p-4 underline">Markdown is also supported...</a>
-		</div>
-	</body>
-</html>
+  <Section
+    eyebrow="Conexões"
+    title="Vamos construir algo incrível?"
+    description="Estou disponível para conversar sobre produtos digitais, arquitetura frontend e colaboração entre design e engenharia."
+  >
+    <SocialLinks />
+  </Section>
+
+  <Section eyebrow="Selecionados" title="Projetos em destaque">
+    <div class="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
+      {featuredProjects.map((project) => <ProjectCard {...project} />)}
+    </div>
+    <div class="mt-8">
+      <a href="/projects" class="link-accent text-sm">Ver todos os projetos →</a
+      >
+    </div>
+  </Section>
+
+  <Section eyebrow="Momentos" title="Últimos capítulos da jornada">
+    <div class="grid gap-5 md:grid-cols-2">
+      {highlights.map((moment) => <MomentCard {...moment} />)}
+    </div>
+    <div class="mt-8">
+      <a href="/moments" class="link-accent text-sm"
+        >Ver linha do tempo completa →</a
+      >
+    </div>
+  </Section>
+</MainLayout>
