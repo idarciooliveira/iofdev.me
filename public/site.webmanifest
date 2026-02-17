@@ -1,0 +1,28 @@
+{
+  "id": "/",
+  "name": "Idárcio Oliveira — Portfólio",
+  "short_name": "Idárcio",
+  "description": "Portfólio de Idárcio Oliveira com projetos, experiências e momentos profissionais.",
+  "start_url": "/",
+  "scope": "/",
+  "lang": "pt-AO",
+  "display": "standalone",
+  "orientation": "portrait",
+  "theme_color": "#0f1115",
+  "background_color": "#0f1115",
+  "categories": ["portfolio", "developer", "technology"],
+  "icons": [
+    {
+      "src": "/web-app-manifest-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/web-app-manifest-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
