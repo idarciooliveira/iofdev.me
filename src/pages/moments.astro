@@ -5,28 +5,83 @@ import MomentCard from "../components/MomentCard.astro";
 
 const moments = [
   {
-    year: "2026",
-    title: "Rebuild completo do portfólio",
-    description:
-      "Nova identidade visual com foco editorial, melhor legibilidade e estrutura escalável de conteúdo.",
+    year: "2019",
+    title: "Gala Huíla Talento 2019 Final",
+    description: "Um marco especial no início da minha jornada em tecnologia.",
+    image:
+      "https://idarciooliveira-me.vercel.app/assets/events/huila-talento.jpg",
+    imageAlt: "Gala Huíla Talento 2019 Final",
   },
   {
-    year: "2025",
-    title: "Escala de design system",
-    description:
-      "Padronização de componentes em múltiplos produtos e redução de inconsistências de UI.",
+    year: "2019",
+    title: "GinPro Hackaton Universitário, was my first hackaton",
+    description: "Minha primeira experiência em hackathon universitário.",
+    image: "https://idarciooliveira-me.vercel.app/assets/events/hackaton.jpg",
+    imageAlt: "GinPro Hackaton Universitário, was my first hackaton",
   },
   {
-    year: "2024",
-    title: "Aceleração de performance",
+    year: "2019",
+    title: "My first bootcamp about programming",
+    description: "Primeiro bootcamp de programação e aceleração prática.",
+    image: "https://idarciooliveira-me.vercel.app/assets/events/bootcamp.jpg",
+    imageAlt: "My first bootcamp about programming",
+  },
+  {
+    year: "2020",
+    title: "Final of LISPA JUMPSTART powered by Acelera Angola & BNA",
     description:
-      "Otimizações de frontend que reduziram tempo de carregamento e melhoraram Core Web Vitals.",
+      "Participação na final do programa de aceleração LISPA JUMPSTART.",
+    image: "https://idarciooliveira-me.vercel.app/assets/events/lispa.jpg",
+    imageAlt: "Final of LISPA JUMPSTART powered by Acelera Angola & BNA",
+  },
+  {
+    year: "2021",
+    title:
+      "My first workshop as a speaker where I talked a bit about programming as a vehicle for developing local solutions.",
+    description:
+      "Meu primeiro workshop como speaker sobre impacto local com tecnologia.",
+    image: "https://idarciooliveira-me.vercel.app/assets/events/workshop.jpg",
+    imageAlt:
+      "My first workshop as a speaker where I talked a bit about programming as a vehicle for developing local solutions.",
   },
   {
     year: "2022",
-    title: "Mentoria de devs juniores",
+    title:
+      "The day of the launch of the first mobile application I built as Mobile Developer on a Team",
+    description: "Lançamento do primeiro aplicativo mobile em equipa.",
+    image:
+      "https://idarciooliveira-me.vercel.app/assets/events/mutundoexpress.jpg",
+    imageAlt:
+      "The day of the launch of the first mobile application I built as Mobile Developer on a Team",
+  },
+  {
+    year: "2023",
+    title:
+      "The day of the launch of the first two products I participated in as the leader of the development team",
     description:
-      "Apoio na evolução técnica da equipe por meio de pairing, revisão de código e trilhas de estudo.",
+      "Lançamento dos dois primeiros produtos com liderança técnica.",
+    image: "https://idarciooliveira-me.vercel.app/assets/events/tecnobase.png",
+    imageAlt:
+      "The day of the launch of the first two products I participated in as the leader of the development team",
+  },
+  {
+    year: "2023",
+    title:
+      "Christmas charity event with the children of Criança Feliz Angola, lots of fun and play",
+    description: "Ação solidária de Natal com a Criança Feliz Angola.",
+    image:
+      "https://idarciooliveira-me.vercel.app/assets/events/natal-solidario.jpg",
+    imageAlt:
+      "Christmas charity event with the children of Criança Feliz Angola, lots of fun and play",
+  },
+  {
+    year: "2024",
+    title: "Winner of Huila Talent as Best Tech Project Powered By Tigra",
+    description:
+      "Reconhecimento como melhor projeto tech no Huíla Talento Powered by Tigra.",
+    image:
+      "https://idarciooliveira-me.vercel.app/assets/events/huila-talento-tigra.jpg",
+    imageAlt: "Winner of Huila Talent as Best Tech Project Powered By Tigra",
   },
 ];
 ---
@@ -38,7 +93,7 @@ const moments = [
   <Section
     eyebrow="Moments"
     title="Marcos da jornada"
-    description="Episódios que moldaram minha forma de construir software e colaborar com times de produto."
+    description="Alguns momentos importantes no início da minha carreira como developer."
   >
     <div class="grid gap-5 md:grid-cols-2">
       {moments.map((moment) => <MomentCard {...moment} />)}

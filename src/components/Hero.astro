@@ -8,28 +8,28 @@ const {
 } = Astro.props;
 ---
 
-<section class="flex items-center py-6 sm:py-8 lg:py-10">
-  <div class="container-shell">
+<section class="flex min-h-[calc(100svh-8.5rem)] items-center justify-center">
+  <div class="container-shell w-full">
     <div
-      class="grid gap-10 lg:grid-cols-[1.2fr_0.8fr] lg:items-center lg:gap-14"
+      class="grid gap-12 lg:grid-cols-[1.2fr_0.8fr] lg:items-center lg:gap-16"
     >
-      <div class="space-y-5">
+      <div class="space-y-6">
         <span class="badge">{tag}</span>
-        <h1 class="text-4xl font-black sm:text-5xl">{title}</h1>
-        <p class="max-w-2xl text-lg text-(--text-soft) sm:text-xl">
+        <h1 class="text-5xl font-black sm:text-6xl">{title}</h1>
+        <p class="max-w-2xl text-xl text-(--text-soft) sm:text-2xl">
           {subtitle}
         </p>
 
-        <div class="flex flex-wrap gap-3 pt-2">
+        <div class="flex flex-wrap gap-4 pt-2">
           <a
             href={primaryCta.href}
-            class="inline-flex bg-[#231942] rounded-lg text-white px-5 py-2.5 text-sm font-semibold transition-opacity hover:opacity-85"
+            class="inline-flex rounded-lg bg-[#231942] px-6 py-3 text-base font-semibold text-white transition-opacity hover:opacity-85"
           >
             {primaryCta.label}
           </a>
           <a
             href={secondaryCta.href}
-            class="inline-flex rounded-lg border px-5 py-2.5 text-sm font-semibold text-(--text) hover:bg-(--surface-soft)"
+            class="inline-flex rounded-lg border px-6 py-3 text-base font-semibold text-(--text) hover:bg-(--surface-soft)"
           >
             {secondaryCta.label}
           </a>
@@ -38,7 +38,7 @@ const {
 
       <div class="flex items-center justify-center">
         <div
-          class="gradient-block h-56 w-56 rounded-full p-0.75 shadow-xl sm:h-64 sm:w-64 lg:h-68 lg:w-68"
+          class="gradient-block h-60 w-60 rounded-full p-0.75 shadow-xl sm:h-68 sm:w-68 lg:h-72 lg:w-72"
         >
           <div
             class="h-full w-full rounded-full border border-(--surface-soft) bg-(--surface) p-1"
