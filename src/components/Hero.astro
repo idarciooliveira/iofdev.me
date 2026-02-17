@@ -8,37 +8,47 @@ const {
 } = Astro.props;
 ---
 
-<section class="flex min-h-[calc(100svh-8.5rem)] items-center justify-center">
-  <div class="container-shell w-full">
+<section
+  class="flex min-h-[calc(100svh-8.5rem)] items-center justify-center py-10 sm:py-12 lg:py-0"
+>
+  <div class="container-shell w-full px-5 sm:px-6 lg:px-8">
     <div
-      class="grid gap-14 lg:grid-cols-[1.2fr_0.8fr] lg:items-center lg:gap-20"
+      class="grid gap-10 lg:grid-cols-[1.2fr_0.8fr] lg:items-center lg:gap-20"
     >
-      <div class="space-y-7">
-        <span class="badge">{tag}</span>
-        <h1 class="text-6xl font-black sm:text-7xl">{title}</h1>
-        <p class="max-w-3xl text-2xl text-(--text-soft) sm:text-3xl">
+      <div
+        class="order-2 space-y-6 text-center lg:order-1 lg:space-y-7 lg:text-left"
+      >
+        <span class="badge mx-auto lg:mx-0">{tag}</span>
+        <h1 class="text-5xl font-black leading-[0.98] sm:text-6xl lg:text-7xl">
+          {title}
+        </h1>
+        <p
+          class="mx-auto max-w-3xl text-xl text-(--text-soft) sm:text-2xl lg:mx-0 lg:text-3xl"
+        >
           {subtitle}
         </p>
 
-        <div class="flex flex-wrap gap-4 pt-3">
+        <div
+          class="flex flex-col items-center gap-3 pt-2 sm:flex-row sm:justify-center sm:gap-4 lg:justify-start lg:pt-3"
+        >
           <a
             href={primaryCta.href}
-            class="inline-flex rounded-lg bg-[#231942] px-7 py-3.5 text-lg font-semibold text-white transition-opacity hover:opacity-85"
+            class="inline-flex w-full justify-center rounded-lg bg-[#231942] px-7 py-3.5 text-lg font-semibold text-white transition-opacity hover:opacity-85 sm:w-auto"
           >
             {primaryCta.label}
           </a>
           <a
             href={secondaryCta.href}
-            class="inline-flex rounded-lg border px-7 py-3.5 text-lg font-semibold text-(--text) hover:bg-(--surface-soft)"
+            class="inline-flex w-full justify-center rounded-lg border px-7 py-3.5 text-lg font-semibold text-(--text) hover:bg-(--surface-soft) sm:w-auto"
           >
             {secondaryCta.label}
           </a>
         </div>
       </div>
 
-      <div class="flex items-center justify-center">
+      <div class="order-1 flex items-center justify-center lg:order-2">
         <div
-          class="gradient-block h-64 w-64 rounded-full p-0.75 shadow-xl sm:h-72 sm:w-72 lg:h-80 lg:w-80"
+          class="gradient-block h-52 w-52 rounded-full p-0.75 shadow-xl sm:h-64 sm:w-64 lg:h-80 lg:w-80"
         >
           <div
             class="h-full w-full rounded-full border border-(--surface-soft) bg-(--surface) p-1"

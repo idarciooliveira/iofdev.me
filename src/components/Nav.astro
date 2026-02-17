@@ -16,7 +16,7 @@ const isActive = (href: string) => {
 
 <header class="sticky top-0 z-30 border-b bg-(--bg)/90 backdrop-blur">
   <div
-    class="container-shell grid h-18 grid-cols-[1fr_auto_1fr] items-center gap-3"
+    class="container-shell flex min-h-18 items-center justify-between gap-3 py-2"
   >
     <a
       href="/"
@@ -24,15 +24,15 @@ const isActive = (href: string) => {
       >IOFDEV</a
     >
 
-    <nav aria-label="Main navigation" class="justify-self-center">
-      <ul class="flex flex-wrap items-center justify-center gap-2 sm:gap-3">
+    <nav aria-label="Main navigation" class="hidden md:block">
+      <ul class="flex items-center justify-center gap-2 lg:gap-3">
         {
           links.map((link) => (
             <li>
               <a
                 href={link.href}
                 class:list={[
-                  "inline-flex rounded-md px-4 py-2 text-base font-medium transition-colors",
+                  "inline-flex whitespace-nowrap rounded-md px-3 py-2 text-sm font-medium transition-colors lg:px-4 lg:text-base",
                   isActive(link.href)
                     ? "underline underline-offset-8 text-(--text)"
                     : "text-(--text-soft) hover:text-(--text)",
@@ -46,7 +46,40 @@ const isActive = (href: string) => {
       </ul>
     </nav>
 
-    <div class="justify-self-end">
+    <div class="flex items-center gap-2">
+      <button
+        id="nav-menu-toggle"
+        type="button"
+        class="inline-flex h-11 w-11 items-center justify-center rounded-md border text-(--text-soft) transition hover:bg-(--surface-soft) hover:text-(--text) md:hidden"
+        aria-label="Abrir menu de navegação"
+        aria-expanded="false"
+        aria-controls="mobile-menu"
+      >
+        <span class="nav-icon-menu" aria-hidden="true">
+          <svg viewBox="0 0 24 24" class="h-6 w-6">
+            <path
+              fill="none"
+              stroke="currentColor"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="1.8"
+              d="M4 7h16M4 12h16M4 17h16"></path>
+          </svg>
+        </span>
+
+        <span class="nav-icon-close hidden" aria-hidden="true">
+          <svg viewBox="0 0 24 24" class="h-6 w-6">
+            <path
+              fill="none"
+              stroke="currentColor"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="1.8"
+              d="m6 6 12 12M18 6 6 18"></path>
+          </svg>
+        </span>
+      </button>
+
       <button
         id="theme-toggle"
         type="button"
@@ -82,34 +115,108 @@ const isActive = (href: string) => {
       </button>
     </div>
   </div>
+
+  <div id="mobile-menu" class="hidden border-t md:hidden">
+    <nav aria-label="Navegação mobile" class="container-shell py-3">
+      <ul class="flex flex-col gap-1">
+        {
+          links.map((link) => (
+            <li>
+              <a
+                href={link.href}
+                class:list={[
+                  "inline-flex w-full rounded-md px-3 py-2.5 text-base font-medium transition-colors",
+                  isActive(link.href)
+                    ? "bg-(--surface-soft) text-(--text)"
+                    : "text-(--text-soft) hover:bg-(--surface-soft) hover:text-(--text)",
+                ]}
+              >
+                {link.label}
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </nav>
+  </div>
 </header>
 
 <script>
   const storageKey = "theme";
   const root = document.documentElement;
-  const button = document.getElementById("theme-toggle");
+  const themeButton = document.getElementById("theme-toggle");
+  const menuButton = document.getElementById("nav-menu-toggle");
+  const mobileMenu = document.getElementById("mobile-menu");
+  const menuIcon = menuButton?.querySelector(".nav-icon-menu");
+  const closeIcon = menuButton?.querySelector(".nav-icon-close");
 
   const syncToggleUi = (theme: "light" | "dark") => {
-    if (!button) return;
+    if (!themeButton) return;
     const isDark = theme === "dark";
-    button.setAttribute("aria-pressed", String(isDark));
-    button.setAttribute(
+    themeButton.setAttribute("aria-pressed", String(isDark));
+    themeButton.setAttribute(
       "aria-label",
       isDark ? "Alternar para modo claro" : "Alternar para modo escuro",
     );
   };
 
+  const setMobileMenuState = (isOpen: boolean) => {
+    if (!menuButton || !mobileMenu) return;
+
+    menuButton.setAttribute("aria-expanded", String(isOpen));
+    menuButton.setAttribute(
+      "aria-label",
+      isOpen ? "Fechar menu de navegação" : "Abrir menu de navegação",
+    );
+    mobileMenu.classList.toggle("hidden", !isOpen);
+    menuIcon?.classList.toggle("hidden", isOpen);
+    closeIcon?.classList.toggle("hidden", !isOpen);
+  };
+
   const currentTheme =
     root.getAttribute("data-theme") === "dark" ? "dark" : "light";
   syncToggleUi(currentTheme);
+  setMobileMenuState(false);
 
-  if (button) {
-    button.addEventListener("click", () => {
+  if (themeButton) {
+    themeButton.addEventListener("click", () => {
       const nextTheme =
         root.getAttribute("data-theme") === "dark" ? "light" : "dark";
       root.setAttribute("data-theme", nextTheme);
       localStorage.setItem(storageKey, nextTheme);
       syncToggleUi(nextTheme);
+    });
+  }
+
+  if (menuButton && mobileMenu) {
+    menuButton.addEventListener("click", () => {
+      const isOpen = menuButton.getAttribute("aria-expanded") === "true";
+      setMobileMenuState(!isOpen);
+    });
+
+    mobileMenu.querySelectorAll("a").forEach((link) => {
+      link.addEventListener("click", () => {
+        setMobileMenuState(false);
+      });
+    });
+
+    document.addEventListener("keydown", (event) => {
+      if (event.key === "Escape") {
+        setMobileMenuState(false);
+      }
+    });
+
+    document.addEventListener("click", (event) => {
+      const target = event.target as Node;
+      if (!menuButton.contains(target) && !mobileMenu.contains(target)) {
+        setMobileMenuState(false);
+      }
+    });
+
+    window.addEventListener("resize", () => {
+      if (window.innerWidth >= 768) {
+        setMobileMenuState(false);
+      }
     });
   }
 </script>
