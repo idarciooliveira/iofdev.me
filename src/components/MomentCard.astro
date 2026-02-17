@@ -2,16 +2,16 @@
 const { year, title, description, image, imageAlt } = Astro.props;
 ---
 
-<article class="card relative overflow-hidden">
+<article class="card relative overflow-hidden p-4">
   <div class="absolute inset-x-0 top-0 h-1 gradient-block"></div>
 
   {
     image && (
-      <div class="mb-4 overflow-hidden rounded-xl border border-(--surface-soft)">
+      <div class="mb-3 overflow-hidden rounded-lg border border-(--surface-soft)">
         <img
           src={image}
           alt={imageAlt ?? title}
-          class="h-60 w-full object-cover"
+          class="h-44 w-full object-cover"
           loading="lazy"
           decoding="async"
         />
@@ -22,6 +22,6 @@ const { year, title, description, image, imageAlt } = Astro.props;
   <p class="text-xs font-bold tracking-[0.12em] text-(--text-soft) uppercase">
     {year}
   </p>
-  <h3 class="mt-2 text-xl font-bold">{title}</h3>
-  <p class="mt-2 text-sm text-(--text-soft)">{description}</p>
+  <h3 class="mt-1.5 text-lg font-bold">{title}</h3>
+  <p class="mt-1.5 text-sm text-(--text-soft)">{description}</p>
 </article>

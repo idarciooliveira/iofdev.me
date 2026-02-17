@@ -11,25 +11,25 @@ const {
 <section class="flex min-h-[calc(100svh-8.5rem)] items-center justify-center">
   <div class="container-shell w-full">
     <div
-      class="grid gap-12 lg:grid-cols-[1.2fr_0.8fr] lg:items-center lg:gap-16"
+      class="grid gap-14 lg:grid-cols-[1.2fr_0.8fr] lg:items-center lg:gap-20"
     >
-      <div class="space-y-6">
+      <div class="space-y-7">
         <span class="badge">{tag}</span>
-        <h1 class="text-5xl font-black sm:text-6xl">{title}</h1>
-        <p class="max-w-2xl text-xl text-(--text-soft) sm:text-2xl">
+        <h1 class="text-6xl font-black sm:text-7xl">{title}</h1>
+        <p class="max-w-3xl text-2xl text-(--text-soft) sm:text-3xl">
           {subtitle}
         </p>
 
-        <div class="flex flex-wrap gap-4 pt-2">
+        <div class="flex flex-wrap gap-4 pt-3">
           <a
             href={primaryCta.href}
-            class="inline-flex rounded-lg bg-[#231942] px-6 py-3 text-base font-semibold text-white transition-opacity hover:opacity-85"
+            class="inline-flex rounded-lg bg-[#231942] px-7 py-3.5 text-lg font-semibold text-white transition-opacity hover:opacity-85"
           >
             {primaryCta.label}
           </a>
           <a
             href={secondaryCta.href}
-            class="inline-flex rounded-lg border px-6 py-3 text-base font-semibold text-(--text) hover:bg-(--surface-soft)"
+            class="inline-flex rounded-lg border px-7 py-3.5 text-lg font-semibold text-(--text) hover:bg-(--surface-soft)"
           >
             {secondaryCta.label}
           </a>
@@ -38,7 +38,7 @@ const {
 
       <div class="flex items-center justify-center">
         <div
-          class="gradient-block h-60 w-60 rounded-full p-0.75 shadow-xl sm:h-68 sm:w-68 lg:h-72 lg:w-72"
+          class="gradient-block h-64 w-64 rounded-full p-0.75 shadow-xl sm:h-72 sm:w-72 lg:h-80 lg:w-80"
         >
           <div
             class="h-full w-full rounded-full border border-(--surface-soft) bg-(--surface) p-1"
