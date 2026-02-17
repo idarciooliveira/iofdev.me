@@ -17,7 +17,7 @@ layout: ../layouts/main.astro
    <p>
     Por enquanto, já serve como base para publicar ideias rápidas sobre frontend, produto e arquitetura.
    </p>
-   <p><a href="/writing" class="link-accent">← Voltar para Writing</a></p>
+   <p><a href="/blog" class="link-accent">← Voltar para Writing</a></p>
   </article>
  </div>
 </section>
