@@ -8,9 +8,11 @@ const {
 } = Astro.props;
 ---
 
-<section class="page-section">
+<section class="page-section flex min-h-[calc(100svh-9rem)] items-center">
   <div class="container-shell">
-    <div class="grid gap-8 lg:grid-cols-[1.2fr_0.8fr] lg:items-end">
+    <div
+      class="grid gap-10 lg:grid-cols-[1.2fr_0.8fr] lg:items-center lg:gap-14"
+    >
       <div class="space-y-5">
         <span class="badge">{tag}</span>
         <h1 class="text-4xl font-black sm:text-5xl">{title}</h1>
@@ -34,7 +36,7 @@ const {
         </div>
       </div>
 
-      <div class="card grid-pattern relative min-h-52 overflow-hidden">
+      <div class="card grid-pattern relative min-h-64 overflow-hidden">
         <div class="absolute inset-0 opacity-25 gradient-block"></div>
         <p class="relative mt-auto text-sm text-(--text-soft)">
           Foco em arquitetura frontend, experiência de produto e performance

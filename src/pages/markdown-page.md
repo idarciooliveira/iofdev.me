@@ -5,7 +5,7 @@ layout: ../layouts/main.astro
 
 <section class="page-section">
  <div class="container-shell">
-  <article class="card prose prose-slate max-w-none dark:prose-invert">
+    <article class="card prose max-w-none prose-headings:text-(--text) prose-p:text-(--text-soft) prose-strong:text-(--text) prose-a:text-(--accent)">
    <p class="badge">draft note</p>
    <h1>Tailwind + Markdown funcionando lindamente ✨</h1>
    <p>

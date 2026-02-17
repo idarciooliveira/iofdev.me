@@ -16,11 +16,17 @@ const isActive = (href: string) => {
 ---
 
 <header class="sticky top-0 z-30 border-b bg-(--bg)/90 backdrop-blur">
-  <div class="container-shell flex h-16 items-center justify-between gap-4">
-    <a href="/" class="text-sm font-black tracking-[0.2em] uppercase">IOF</a>
+  <div
+    class="container-shell grid h-16 grid-cols-[1fr_auto_1fr] items-center gap-2"
+  >
+    <a
+      href="/"
+      class="justify-self-start text-sm font-black tracking-[0.2em] uppercase"
+      >IOF</a
+    >
 
-    <nav aria-label="Main navigation">
-      <ul class="flex flex-wrap items-center gap-1 sm:gap-2">
+    <nav aria-label="Main navigation" class="justify-self-center">
+      <ul class="flex flex-wrap items-center justify-center gap-1 sm:gap-2">
         {
           links.map((link) => (
             <li>
@@ -40,5 +46,71 @@ const isActive = (href: string) => {
         }
       </ul>
     </nav>
+
+    <div class="justify-self-end">
+      <button
+        id="theme-toggle"
+        type="button"
+        class="inline-flex h-10 w-10 items-center justify-center rounded-md border text-(--text-soft) transition hover:bg-(--surface-soft) hover:text-(--text)"
+        aria-label="Alternar para modo escuro"
+        aria-pressed="false"
+      >
+        <span class="theme-icon-light" aria-hidden="true">
+          <svg viewBox="0 0 24 24" class="h-5 w-5">
+            <path
+              fill="none"
+              stroke="currentColor"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="1.8"
+              d="M12 3v2.4m0 13.2V21m9-9h-2.4M5.4 12H3m15.36 6.36-1.7-1.7M7.34 7.34l-1.7-1.7m12.72 0-1.7 1.7m-9.32 9.32-1.7 1.7M12 16.25A4.25 4.25 0 1 0 12 7.75a4.25 4.25 0 0 0 0 8.5Z"
+            ></path>
+          </svg>
+        </span>
+
+        <span class="theme-icon-dark" aria-hidden="true">
+          <svg viewBox="0 0 24 24" class="h-5 w-5">
+            <path
+              fill="none"
+              stroke="currentColor"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="1.8"
+              d="M20.2 14.4A8.5 8.5 0 1 1 9.6 3.8a7.2 7.2 0 0 0 10.6 10.6Z"
+            ></path>
+          </svg>
+        </span>
+      </button>
+    </div>
   </div>
 </header>
+
+<script>
+  const storageKey = "theme";
+  const root = document.documentElement;
+  const button = document.getElementById("theme-toggle");
+
+  const syncToggleUi = (theme: "light" | "dark") => {
+    if (!button) return;
+    const isDark = theme === "dark";
+    button.setAttribute("aria-pressed", String(isDark));
+    button.setAttribute(
+      "aria-label",
+      isDark ? "Alternar para modo claro" : "Alternar para modo escuro",
+    );
+  };
+
+  const currentTheme =
+    root.getAttribute("data-theme") === "dark" ? "dark" : "light";
+  syncToggleUi(currentTheme);
+
+  if (button) {
+    button.addEventListener("click", () => {
+      const nextTheme =
+        root.getAttribute("data-theme") === "dark" ? "light" : "dark";
+      root.setAttribute("data-theme", nextTheme);
+      localStorage.setItem(storageKey, nextTheme);
+      syncToggleUi(nextTheme);
+    });
+  }
+</script>

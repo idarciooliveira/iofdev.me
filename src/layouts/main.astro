@@ -1,6 +1,7 @@
 ---
 import "../styles/global.css";
 import Nav from "../components/Nav.astro";
+import SocialIconDock from "../components/SocialIconDock.astro";
 
 const {
   title,
@@ -16,15 +17,31 @@ const pathname = Astro.url.pathname;
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width" />
+    <script is:inline>
+      (() => {
+        const storageKey = "theme";
+        const savedTheme = localStorage.getItem(storageKey);
+        const systemPrefersDark = window.matchMedia(
+          "(prefers-color-scheme: dark)",
+        ).matches;
+        const theme =
+          savedTheme === "light" || savedTheme === "dark"
+            ? savedTheme
+            : systemPrefersDark
+              ? "dark"
+              : "light";
+        document.documentElement.setAttribute("data-theme", theme);
+      })();
+    </script>
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="icon" href="/favicon.ico" />
     <meta name="generator" content={Astro.generator} />
     <meta name="description" content={description} />
     <title>{pageTitle}</title>
   </head>
-  <body>
+  <body class="flex min-h-svh flex-col">
     <Nav currentPath={pathname} />
-    <main>
+    <main class="flex-1">
       <slot />
     </main>
     <footer class="border-t py-10">
@@ -32,7 +49,7 @@ const pathname = Astro.url.pathname;
         class="container-shell flex flex-col gap-2 text-sm text-(--text-soft) sm:flex-row sm:items-center sm:justify-between"
       >
         <p>© {new Date().getFullYear()} Idárcio Oliveira.</p>
-        <p>Feito com Astro + Tailwind — sem firulas, com carinho.</p>
+        <SocialIconDock />
       </div>
     </footer>
   </body>

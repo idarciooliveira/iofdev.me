@@ -12,18 +12,16 @@
 	--ring: #0ea5e9;
 }
 
-@media (prefers-color-scheme: dark) {
-	:root {
-		--bg: #0f172a;
-		--surface: #111827;
-		--surface-soft: #1f2937;
-		--text: #f8fafc;
-		--text-soft: #cbd5e1;
-		--accent: #38bdf8;
-		--accent-2: #fb923c;
-		--border: #334155;
-		--ring: #38bdf8;
-	}
+html[data-theme="dark"] {
+	--bg: #0f172a;
+	--surface: #111827;
+	--surface-soft: #1f2937;
+	--text: #f8fafc;
+	--text-soft: #cbd5e1;
+	--accent: #38bdf8;
+	--accent-2: #fb923c;
+	--border: #334155;
+	--ring: #38bdf8;
 }
 
 @layer base {
@@ -33,6 +31,14 @@
 
 	html {
 		scroll-behavior: smooth;
+	}
+
+	html[data-theme="light"] {
+		color-scheme: light;
+	}
+
+	html[data-theme="dark"] {
+		color-scheme: dark;
 	}
 
 	body {
@@ -87,6 +93,34 @@
 	.link-accent {
 		color: var(--accent);
 		@apply font-medium transition-opacity hover:opacity-80;
+	}
+
+	.icon-dock {
+		@apply inline-flex items-center gap-3 rounded-xl px-1 py-1;
+	}
+
+	.icon-dock-btn {
+		@apply inline-flex h-11 w-11 items-center justify-center rounded-lg text-(--text) transition duration-200 hover:bg-(--surface) hover:text-(--accent);
+	}
+
+	.icon-svg {
+		@apply h-8 w-8;
+	}
+
+	.theme-icon-light {
+		display: inline-flex;
+	}
+
+	.theme-icon-dark {
+		display: none;
+	}
+
+	html[data-theme="dark"] .theme-icon-light {
+		display: none;
+	}
+
+	html[data-theme="dark"] .theme-icon-dark {
+		display: inline-flex;
 	}
 
 	.gradient-block {
