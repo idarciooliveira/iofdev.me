@@ -8,7 +8,7 @@ const {
 } = Astro.props;
 ---
 
-<section class="page-section flex min-h-[calc(100svh-9rem)] items-center">
+<section class="flex items-center py-6 sm:py-8 lg:py-10">
   <div class="container-shell">
     <div
       class="grid gap-10 lg:grid-cols-[1.2fr_0.8fr] lg:items-center lg:gap-14"
@@ -36,12 +36,22 @@ const {
         </div>
       </div>
 
-      <div class="card grid-pattern relative min-h-64 overflow-hidden">
-        <div class="absolute inset-0 opacity-25 gradient-block"></div>
-        <p class="relative mt-auto text-sm text-(--text-soft)">
-          Foco em arquitetura frontend, experiência de produto e performance
-          web.
-        </p>
+      <div class="flex items-center justify-center">
+        <div
+          class="gradient-block h-56 w-56 rounded-full p-0.75 shadow-xl sm:h-64 sm:w-64 lg:h-68 lg:w-68"
+        >
+          <div
+            class="h-full w-full rounded-full border border-(--surface-soft) bg-(--surface) p-1"
+          >
+            <img
+              src="/profile-image.jpeg"
+              alt="Foto de perfil de Idárcio Oliveira"
+              class="h-full w-full rounded-full object-cover"
+              loading="eager"
+              decoding="async"
+            />
+          </div>
+        </div>
       </div>
     </div>
   </div>
