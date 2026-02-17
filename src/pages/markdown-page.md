@@ -1,5 +1,7 @@
 ---
 title: "Rascunho — Writing"
+description: "Rascunho da seção Writing com notas rápidas sobre frontend, produto e arquitetura."
+ogImage: "/moments/workshop.jpg"
 layout: ../layouts/main.astro
 ---
 

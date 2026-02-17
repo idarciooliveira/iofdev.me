@@ -5,12 +5,41 @@ import SocialIconDock from "../components/SocialIconDock.astro";
 
 const {
   title,
-  description = "Portfólio de Idárcio Oliveira — Engenheiro de Software.",
+  description,
+  canonical,
+  ogImage,
+  ogImageFallback = "/web-app-manifest-512x512.png",
+  twitterImage,
+  ogType = "website",
+  twitterCard = "summary_large_image",
   content,
 } = Astro.props;
 
 const pageTitle = title ?? content?.title ?? "Idárcio Oliveira — Portfólio";
+const pageDescription =
+  description ??
+  content?.description ??
+  "Portfólio de Idárcio Oliveira — Engenheiro de Software.";
 const pathname = Astro.url.pathname;
+const siteUrl = Astro.site ?? new URL(Astro.url.origin);
+const resolvedCanonical = canonical ?? content?.canonical;
+const resolvedOgImage = ogImage ?? content?.ogImage ?? "/favicon.svg";
+const resolvedOgImageFallback =
+  ogImageFallback ??
+  content?.ogImageFallback ??
+  "/web-app-manifest-512x512.png";
+const canonicalUrl = resolvedCanonical
+  ? new URL(resolvedCanonical, siteUrl).toString()
+  : new URL(pathname, siteUrl).toString();
+const ogImageUrl = new URL(resolvedOgImage, siteUrl).toString();
+const ogImageFallbackUrl = new URL(resolvedOgImageFallback, siteUrl).toString();
+const inferredTwitterImage =
+  twitterImage ??
+  content?.twitterImage ??
+  (resolvedOgImage.endsWith(".svg")
+    ? resolvedOgImageFallback
+    : resolvedOgImage);
+const twitterImageUrl = new URL(inferredTwitterImage, siteUrl).toString();
 ---
 
 <html lang="pt">
@@ -36,7 +65,24 @@ const pathname = Astro.url.pathname;
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="icon" href="/favicon.ico" />
     <meta name="generator" content={Astro.generator} />
-    <meta name="description" content={description} />
+    <meta name="description" content={pageDescription} />
+    <link rel="canonical" href={canonicalUrl} />
+    <meta property="og:locale" content="pt_AO" />
+    <meta property="og:site_name" content="Idárcio Oliveira" />
+    <meta property="og:type" content={ogType} />
+    <meta property="og:title" content={pageTitle} />
+    <meta property="og:description" content={pageDescription} />
+    <meta property="og:url" content={canonicalUrl} />
+    <meta property="og:image" content={ogImageUrl} />
+    <meta
+      property="og:image:alt"
+      content="Preview do site de Idárcio Oliveira"
+    />
+    <meta property="og:image" content={ogImageFallbackUrl} />
+    <meta name="twitter:card" content={twitterCard} />
+    <meta name="twitter:title" content={pageTitle} />
+    <meta name="twitter:description" content={pageDescription} />
+    <meta name="twitter:image" content={twitterImageUrl} />
     <title>{pageTitle}</title>
   </head>
   <body class="flex min-h-svh flex-col">
