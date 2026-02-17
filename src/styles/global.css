@@ -4,7 +4,7 @@
 	--bg: #f8fafc;
 	--surface: #ffffff;
 	--surface-soft: #f1f5f9;
-	--text: #001427;
+	--text: #0a0908;
 	--text-soft: #334155;
 	--accent: #0369a1;
 	--accent-2: #f97316;
@@ -13,8 +13,8 @@
 }
 
 html[data-theme="dark"] {
-	--bg: #001427;
-	--surface: #111827;
+	--bg: #0a0908;
+	--surface: #0a0908;
 	--surface-soft: #1f2937;
 	--text: #f8fafc;
 	--text-soft: #cbd5e1;
