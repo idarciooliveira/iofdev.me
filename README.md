@@ -4,7 +4,7 @@ Nova versão do portfólio pessoal construída com **Astro 5** e **Tailwind CSS 
 
 ## O que já está implementado
 
-- Nova estrutura de navegação: `Home`, `About`, `Projects`, `Moments`, `Writing`
+- Nova estrutura de navegação: `Home`, `About`, `Projects`, `Moments`, `Writing`. dsd
 - Layout global com header fixo, página centralizada e footer
 - Sistema de estilos com tokens CSS (cores, superfícies, contraste, gradientes)
 - Componentes reutilizáveis para seções, hero, cards de projetos e timeline
