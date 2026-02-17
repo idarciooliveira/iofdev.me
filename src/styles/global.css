@@ -133,4 +133,100 @@ html[data-theme="dark"] {
 			linear-gradient(to bottom, color-mix(in oklab, var(--text) 8%, transparent) 1px, transparent 1px);
 		background-size: 24px 24px;
 	}
+
+	.terminal {
+		@apply p-0;
+		background-color: color-mix(in oklab, var(--surface) 82%, var(--bg) 18%);
+		border-color: color-mix(in oklab, var(--border) 80%, var(--accent) 20%);
+	}
+
+	.terminal__chrome {
+		@apply flex items-center gap-2 border-b px-4 py-3;
+		background: color-mix(in oklab, var(--surface-soft) 88%, var(--accent) 12%);
+		border-color: color-mix(in oklab, var(--border) 84%, var(--accent) 16%);
+	}
+
+	.terminal__dot {
+		@apply inline-block h-3 w-3 rounded-full;
+	}
+
+	.terminal__dot--close {
+		background: color-mix(in oklab, var(--accent-2) 72%, var(--surface) 28%);
+	}
+
+	.terminal__dot--min {
+		background: color-mix(in oklab, #facc15 64%, var(--surface) 36%);
+	}
+
+	.terminal__dot--max {
+		background: color-mix(in oklab, #22c55e 66%, var(--surface) 34%);
+	}
+
+	.terminal__body {
+		@apply space-y-3 p-5 sm:p-6;
+		font-family: "JetBrains Mono", "SFMono-Regular", ui-monospace, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+	}
+
+	.terminal__line {
+		@apply flex items-center gap-2 text-base;
+		color: var(--text-soft);
+	}
+
+	.terminal__line--spaced {
+		@apply mt-2;
+	}
+
+	.terminal__prompt {
+		color: var(--accent);
+		font-weight: 700;
+	}
+
+	.terminal__name {
+		@apply text-3xl font-extrabold leading-tight sm:text-4xl;
+		letter-spacing: -0.02em;
+		color: var(--text);
+	}
+
+	.terminal__role {
+		@apply text-lg;
+		color: var(--text-soft);
+	}
+
+	.terminal__skills {
+		@apply mt-1 flex flex-wrap gap-2;
+	}
+
+	.terminal__chip {
+		@apply rounded-xl border px-3 py-1.5 text-sm font-medium;
+		background: color-mix(in oklab, var(--surface-soft) 70%, var(--accent) 30%);
+		border-color: color-mix(in oklab, var(--border) 55%, var(--accent) 45%);
+		color: color-mix(in oklab, var(--text) 90%, var(--accent) 10%);
+	}
+
+	.terminal__cursor {
+		display: inline-block;
+		width: 10px;
+		height: 1.1em;
+		border-radius: 2px;
+		background: color-mix(in oklab, var(--accent) 85%, white 15%);
+		animation: terminal-caret 1s steps(1, end) infinite;
+	}
+}
+
+@keyframes terminal-caret {
+	0%,
+	49% {
+		opacity: 1;
+	}
+
+	50%,
+	100% {
+		opacity: 0;
+	}
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.terminal__cursor {
+		animation: none;
+	}
 }

@@ -1,0 +1,45 @@
+---
+const skills = [
+  "Node.js",
+  "TypeScript",
+  "React Native",
+  "AWS",
+  "Docker",
+  "Kubernetes",
+];
+---
+
+<article
+  class="terminal card"
+  aria-label="Resumo profissional em formato de terminal"
+>
+  <header class="terminal__chrome" aria-hidden="true">
+    <span class="terminal__dot terminal__dot--close"></span>
+    <span class="terminal__dot terminal__dot--min"></span>
+    <span class="terminal__dot terminal__dot--max"></span>
+  </header>
+
+  <div class="terminal__body">
+    <p class="terminal__line">
+      <span class="terminal__prompt">$</span>
+      <span>whoami</span>
+    </p>
+
+    <h3 class="terminal__name">Idárcio Oliveira</h3>
+    <p class="terminal__role">Software Engineer</p>
+
+    <p class="terminal__line terminal__line--spaced">
+      <span class="terminal__prompt">$</span>
+      <span>skills</span>
+    </p>
+
+    <ul class="terminal__skills" aria-label="Principais skills">
+      {skills.map((skill) => <li class="terminal__chip">{skill}</li>)}
+    </ul>
+
+    <p class="terminal__line terminal__line--spaced" aria-hidden="true">
+      <span class="terminal__prompt">$</span>
+      <span class="terminal__cursor"></span>
+    </p>
+  </div>
+</article>
