@@ -80,10 +80,11 @@ html[data-theme="dark"] {
 		@apply mx-auto w-full max-w-5xl px-4 sm:px-6 lg:px-8;
 	}
 
-	/* Single shared alignment shell — header, hero, footer all use this */
+	/* Single shared alignment shell — header, hero, footer all use this.
+	   Matches reference: narrow centered column with consistent 24px horizontal padding */
 	.site-shell {
-		@apply mx-auto w-full px-6 sm:px-8 lg:px-12;
-		max-width: 1240px;
+		@apply mx-auto w-full px-6 sm:px-6;
+		max-width: 800px;
 	}
 
 	.site-header {
@@ -95,9 +96,9 @@ html[data-theme="dark"] {
 		display: flex;
 		align-items: center;
 		justify-content: space-between;
-		min-height: 72px;
-		padding-top: 12px;
-		padding-bottom: 12px;
+		min-height: 88px;
+		padding-top: 36px;
+		padding-bottom: 28px;
 	}
 
 	.logo-mark {
@@ -223,19 +224,19 @@ html[data-theme="dark"] {
 	.hero__grid {
 		display: grid;
 		gap: 2rem;
-		padding-top: 24px;
-		padding-bottom: 24px;
+		padding-top: 36px;
+		padding-bottom: 40px;
 		align-items: center;
 		width: 100%;
-		min-height: calc(100svh - 72px - 62px);
+		min-height: calc(100svh - 116px - 62px);
 	}
 
 	@media (min-width: 1024px) {
 		.hero__grid {
 			grid-template-columns: 1.05fr 0.95fr;
-			gap: 1rem;
-			padding-top: 16px;
-			padding-bottom: 16px;
+			gap: 2rem;
+			padding-top: 32px;
+			padding-bottom: 40px;
 		}
 	}
 
