@@ -1,4 +1,14 @@
 ---
+import "@fontsource/google-sans-code/300.css";
+import "@fontsource/google-sans-code/300-italic.css";
+import "@fontsource/google-sans-code/400.css";
+import "@fontsource/google-sans-code/400-italic.css";
+import "@fontsource/google-sans-code/500.css";
+import "@fontsource/google-sans-code/500-italic.css";
+import "@fontsource/google-sans-code/600.css";
+import "@fontsource/google-sans-code/600-italic.css";
+import "@fontsource/google-sans-code/700.css";
+import "@fontsource/google-sans-code/700-italic.css";
 import "../styles/global.css";
 import Nav from "../components/Nav.astro";
 import SocialIconDock from "../components/SocialIconDock.astro";
@@ -64,12 +74,7 @@ const twitterImageUrl = new URL(inferredTwitterImage, siteUrl).toString();
     </script>
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="icon" href="/favicon.ico" />
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Roboto:wght@400;500&display=swap"
-      rel="stylesheet"
-    />
+    <!-- Font: Google Sans Code (same family as AstroPaper, via Fontsource local bundle) -->
     <meta name="generator" content={Astro.generator} />
     <meta name="description" content={pageDescription} />
     <link rel="canonical" href={canonicalUrl} />
@@ -91,7 +96,7 @@ const twitterImageUrl = new URL(inferredTwitterImage, siteUrl).toString();
     <meta name="twitter:image" content={twitterImageUrl} />
     <title>{pageTitle}</title>
   </head>
-  <body class="flex min-h-svh flex-col">
+  <body class="font-app flex min-h-svh flex-col">
     <Nav currentPath={pathname} />
     <main class="flex-1">
       <slot />

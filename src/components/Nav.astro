@@ -2,10 +2,9 @@
 const { currentPath = "/" } = Astro.props;
 
 const links = [
-  { href: "/", label: "Home" },
+  { href: "/posts", label: "Posts" },
   { href: "/about", label: "About" },
   { href: "/projects", label: "Works" },
-  { href: "/blog", label: "Contact" },
 ];
 
 const isActive = (href: string) => {

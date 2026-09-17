@@ -46,12 +46,12 @@ const noteGroups = [
 ---
 
 <MainLayout
-  title="Writing — Idárcio Oliveira"
+  title="Posts — Idárcio Oliveira"
   description="Anotações, aprendizados e ideias sobre engenharia de software, frontend e produto."
   ogImage="/moments/workshop.jpg"
 >
   <Section
-    eyebrow="Writing"
+    eyebrow="Posts"
     title="Notas rápidas e aprendizados"
     description="Rascunhos e aprendizados sobre frontend, produto e engenharia em projetos reais."
   >
@@ -59,7 +59,7 @@ const noteGroups = [
       {
         noteGroups.map((group) => (
           <section>
-            <h3 class="mb-4 text-2xl font-bold tracking-tight sm:text-3xl">
+            <h3 class="mb-4 text-2xl font-semibold tracking-wide">
               {group.month}
             </h3>
 
@@ -67,7 +67,7 @@ const noteGroups = [
               {group.items.map((note) => (
                 <article class="card group transition-colors hover:border-(--accent)">
                   <div class="flex items-start justify-between gap-3">
-                    <h4 class="text-xl font-semibold leading-tight sm:text-2xl">
+                    <h4 class="text-lg font-medium leading-7">
                       {note.title}
                     </h4>
                   </div>

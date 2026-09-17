@@ -1,6 +1,22 @@
 @import "tailwindcss";
+@import "./typography.css";
+
+/* Same typographic setup as AstroPaper: single app font (Google Sans Code) */
+@theme inline {
+	--font-app: var(--font-google-sans-code);
+	/* Map AstroPaper prose color tokens to this project's palette
+	   so typography.css can stay identical to AstroPaper */
+	--color-background: var(--bg);
+	--color-foreground: var(--text);
+	--color-accent: var(--accent);
+	--color-accent-foreground: var(--surface);
+	--color-muted: var(--surface-soft);
+	--color-muted-foreground: var(--text-soft);
+	--color-border: var(--border-soft);
+}
 
 :root {
+	--font-google-sans-code: "Google Sans Code", ui-monospace, monospace;
 	--bg: #F9F9F9;
 	--surface: #FFFFFF;
 	--surface-soft: #EFEFEF;
@@ -11,8 +27,9 @@
 	--border: #363636;
 	--border-soft: #E4E4E4;
 	--ring: #363636;
-	--font-display: "Plus Jakarta Sans", "Visuelt Pro", "Inter Tight", system-ui, -apple-system, sans-serif;
-	--font-body: "Roboto", system-ui, -apple-system, "Segoe UI", sans-serif;
+	--font-display: var(--font-google-sans-code), monospace;
+	--font-body: var(--font-google-sans-code), monospace;
+	--font-mono: var(--font-google-sans-code), monospace;
 }
 
 html[data-theme="dark"] {
@@ -31,6 +48,8 @@ html[data-theme="dark"] {
 @layer base {
 	* {
 		border-color: var(--border-soft);
+		scrollbar-width: auto;
+		scrollbar-color: var(--surface-soft) transparent;
 	}
 
 	html {
@@ -45,12 +64,15 @@ html[data-theme="dark"] {
 		color-scheme: dark;
 	}
 
+	/* Same as AstroPaper: base 16px body, no custom heading scale —
+	   sizes come from Tailwind utilities + .app-prose (prose defaults) */
 	body {
 		margin: 0;
 		font-family: var(--font-body);
+		font-size: 1rem;
+		line-height: 1.5;
 		background: var(--bg);
 		color: var(--text);
-		line-height: 1.6;
 	}
 
 	a {
@@ -59,20 +81,25 @@ html[data-theme="dark"] {
 	}
 
 	a:focus-visible,
-	button:focus-visible {
+	button:focus-visible,
+	#main-content:focus-visible {
 		outline: 2px dashed var(--ring);
 		outline-offset: 3px;
 		border-radius: 0.25rem;
 	}
 
-	h1,
-	h2,
-	h3,
-	h4 {
-		font-family: var(--font-display);
-		line-height: 1.05;
-		letter-spacing: -0.03em;
+	button:not(:disabled),
+	[role="button"]:not(:disabled) {
+		cursor: pointer;
 	}
+
+	:target {
+		scroll-margin-block: 1rem;
+	}
+}
+
+@utility max-w-app {
+	max-width: var(--container-3xl);
 }
 
 @layer components {
@@ -106,10 +133,9 @@ html[data-theme="dark"] {
 		align-items: center;
 		color: var(--text);
 		font-family: var(--font-display);
-		font-size: 17px;
-		font-weight: 700;
-		letter-spacing: -0.02em;
-		line-height: 1;
+		font-size: 1.5rem;
+		font-weight: 600;
+		line-height: 1.75rem;
 		white-space: nowrap;
 	}
 
@@ -248,14 +274,11 @@ html[data-theme="dark"] {
 
 	.hero-title {
 		font-family: var(--font-display);
-		text-transform: lowercase;
-		letter-spacing: -0.035em;
-		line-height: 1.08;
-		font-weight: 800;
-		font-size: clamp(2.1rem, 4.2vw, 3.1rem);
+		font-weight: 700;
 		color: var(--text);
 		margin: 0;
 		text-wrap: balance;
+		@apply my-2 inline-block text-2xl sm:my-4 sm:text-3xl;
 	}
 
 	.hero-title__word {
@@ -264,10 +287,10 @@ html[data-theme="dark"] {
 
 	.hero-copy {
 		font-family: var(--font-body);
-		margin-top: 18px;
-		max-width: 430px;
-		font-size: 15px;
-		line-height: 1.65;
+		margin-top: 0.5rem;
+		max-width: 65ch;
+		font-size: 1rem;
+		line-height: 1.5;
 		color: var(--text-soft);
 	}
 
@@ -438,7 +461,7 @@ html[data-theme="dark"] {
 
 	.terminal__body {
 		@apply space-y-3 p-5 sm:p-6;
-		font-family: "JetBrains Mono", "SFMono-Regular", ui-monospace, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+		font-family: var(--font-google-sans-code), monospace;
 	}
 
 	.terminal__line {
@@ -456,8 +479,7 @@ html[data-theme="dark"] {
 	}
 
 	.terminal__name {
-		@apply text-3xl font-extrabold leading-tight sm:text-4xl;
-		letter-spacing: -0.02em;
+		@apply text-3xl font-bold leading-tight sm:text-4xl;
 		color: var(--text);
 	}
 
