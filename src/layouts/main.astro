@@ -64,6 +64,12 @@ const twitterImageUrl = new URL(inferredTwitterImage, siteUrl).toString();
     </script>
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="icon" href="/favicon.ico" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Roboto:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
     <meta name="generator" content={Astro.generator} />
     <meta name="description" content={pageDescription} />
     <link rel="canonical" href={canonicalUrl} />
@@ -90,9 +96,9 @@ const twitterImageUrl = new URL(inferredTwitterImage, siteUrl).toString();
     <main class="flex-1">
       <slot />
     </main>
-    <footer class="border-t py-6">
+    <footer class="site-footer">
       <div
-        class="container-shell flex flex-col items-center gap-2 text-center text-sm text-(--text-soft) sm:flex-row sm:items-center sm:justify-between sm:text-left"
+        class="site-shell site-footer__inner"
       >
         <p>© {new Date().getFullYear()} Todos os direitos reservados.</p>
         <SocialIconDock />

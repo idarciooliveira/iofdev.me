@@ -1,68 +1,73 @@
 ---
 const {
-  tag = "Software Engineer",
-  title = "Olá, sou o Idárcio Oliveira",
-  subtitle = "Construo experiências digitais rápidas, acessíveis e elegantes.",
-  primaryCta = { href: "/projects", label: "Ver projetos" },
-  secondaryCta = { href: "/about", label: "Sobre mim" },
+  title = "creative designer & developer.",
+  subtitle = "hi, i'm idárcio oliveira. a passionate software engineer and front end developer based in angola.",
+  primaryCta = { href: "/projects", label: "see my works" },
+  socials = [
+    { href: "https://github.com/idarciooliveira", label: "GitHub" },
+    { href: "https://www.linkedin.com/in/idarciooliveira", label: "LinkedIn" },
+    { href: "mailto:idarciooliveira@gmail.com", label: "Email" },
+  ],
+  imageSrc = "/profile-image.jpeg",
+  imageAlt = "portrait of idárcio oliveira",
 } = Astro.props;
+
+const words = String(title).split(" ");
 ---
 
-<section
-  class="flex min-h-[calc(100svh-8.5rem)] items-center justify-center py-10 sm:py-12 lg:py-0"
->
-  <div class="container-shell w-full px-5 sm:px-6 lg:px-8">
-    <div
-      class="grid gap-10 lg:grid-cols-[1.2fr_0.8fr] lg:items-center lg:gap-20"
-    >
-      <div
-        class="order-2 space-y-6 text-center lg:order-1 lg:space-y-7 lg:text-left"
-      >
-        <span class="badge mx-auto lg:mx-0">{tag}</span>
-        <h1 class="text-5xl font-black leading-[0.98] sm:text-6xl lg:text-7xl">
-          {title}
-        </h1>
-        <p
-          class="mx-auto max-w-3xl text-xl text-(--text-soft) sm:text-2xl lg:mx-0 lg:text-3xl"
-        >
-          {subtitle}
-        </p>
+<section class="hero">
+  <div class="site-shell hero__grid">
+    <div class="hero__copy">
+      <h1 class="hero-title">
+        {words.map((w, i) => (
+          <span class="hero-title__word">{w}{i < words.length - 1 ? "\u00A0" : ""}</span>
+        ))}
+      </h1>
+      <p class="hero-copy">
+        {subtitle}
+      </p>
 
-        <div
-          class="flex flex-col items-center gap-3 pt-2 sm:flex-row sm:justify-center sm:gap-4 lg:justify-start lg:pt-3"
-        >
-          <a
-            href={primaryCta.href}
-            class="inline-flex w-full justify-center rounded-lg bg-[#231942] px-7 py-3.5 text-lg font-semibold text-white transition-opacity hover:opacity-85 sm:w-auto"
-          >
-            {primaryCta.label}
-          </a>
-          <a
-            href={secondaryCta.href}
-            class="inline-flex w-full justify-center rounded-lg border px-7 py-3.5 text-lg font-semibold text-(--text) hover:bg-(--surface-soft) sm:w-auto"
-          >
-            {secondaryCta.label}
-          </a>
-        </div>
-      </div>
+      <a href={primaryCta.href} class="cta-minimal group">
+        <span class="cta-minimal__circle" aria-hidden="true"></span>
+        <span class="cta-minimal__label">{primaryCta.label}</span>
+        <span class="cta-minimal__arrow" aria-hidden="true">→</span>
+      </a>
 
-      <div class="order-1 flex items-center justify-center lg:order-2">
-        <div
-          class="gradient-block h-52 w-52 rounded-full p-0.75 shadow-xl sm:h-64 sm:w-64 lg:h-80 lg:w-80"
-        >
-          <div
-            class="h-full w-full rounded-full border border-(--surface-soft) bg-(--surface) p-1"
-          >
-            <img
-              src="/profile-image.jpeg"
-              alt="Foto de perfil de Idárcio Oliveira"
-              class="h-full w-full rounded-full object-cover"
-              loading="eager"
-              decoding="async"
-            />
-          </div>
-        </div>
+      <div class="hero__socials">
+        {
+          socials.map((item, i) => (
+            <>
+              <a
+                href={item.href}
+                target={item.href.startsWith("http") ? "_blank" : undefined}
+                rel={
+                  item.href.startsWith("http")
+                    ? "noreferrer noopener"
+                    : undefined
+                }
+                class="text-social"
+              >
+                {item.label}
+              </a>
+              {i < socials.length - 1 && (
+                <span aria-hidden="true" class="hero__sep">
+                  /
+                </span>
+              )}
+            </>
+          ))
+        }
       </div>
+    </div>
+
+    <div class="hero__visual" aria-hidden="false">
+      <img
+        src={imageSrc}
+        alt={imageAlt}
+        class="hero__photo"
+        loading="eager"
+        decoding="async"
+      />
     </div>
   </div>
 </section>

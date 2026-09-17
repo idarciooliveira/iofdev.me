@@ -2,10 +2,10 @@
 const { currentPath = "/" } = Astro.props;
 
 const links = [
+  { href: "/", label: "Home" },
   { href: "/about", label: "About" },
-  { href: "/projects", label: "Projects" },
-  { href: "/moments", label: "Moments" },
-  { href: "/blog", label: "Blog" },
+  { href: "/projects", label: "Works" },
+  { href: "/blog", label: "Contact" },
 ];
 
 const isActive = (href: string) => {
@@ -14,31 +14,37 @@ const isActive = (href: string) => {
 };
 ---
 
-<header class="sticky top-0 z-30 border-b bg-(--bg)/90 backdrop-blur">
-  <div
-    class="container-shell flex min-h-18 items-center justify-between gap-3 py-2"
-  >
-    <a
-      href="/"
-      class="justify-self-start text-base font-black tracking-[0.2em] uppercase"
-      >IOFDEV</a
-    >
+<header class="site-header">
+  <div class="site-shell site-header__inner">
+    <a href="/" class="logo-mark" aria-label="Home">
+      <svg viewBox="0 0 48 48" class="h-11 w-11" fill="none" aria-hidden="true">
+        <circle cx="24" cy="24" r="19" stroke="currentColor" stroke-width="3.5" />
+        <path
+          d="M24 14v10h11"
+          stroke="currentColor"
+          stroke-width="3.5"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        />
+        <circle cx="24" cy="24" r="3.2" fill="currentColor" />
+      </svg>
+    </a>
 
     <nav aria-label="Main navigation" class="hidden md:block">
-      <ul class="flex items-center justify-center gap-2 lg:gap-3">
+      <ul class="flex items-center gap-8 lg:gap-10">
         {
           links.map((link) => (
             <li>
               <a
                 href={link.href}
                 class:list={[
-                  "inline-flex whitespace-nowrap rounded-md px-3 py-2 text-sm font-medium transition-colors lg:px-4 lg:text-base",
-                  isActive(link.href)
-                    ? "underline underline-offset-8 text-(--text)"
-                    : "text-(--text-soft) hover:text-(--text)",
+                  "nav-link",
+                  isActive(link.href) && "nav-link--active",
                 ]}
+                aria-current={isActive(link.href) ? "page" : undefined}
               >
-                {link.label}
+                <span>{link.label}</span>
+                <span class="nav-link__dot" aria-hidden="true" />
               </a>
             </li>
           ))
@@ -50,7 +56,7 @@ const isActive = (href: string) => {
       <button
         id="nav-menu-toggle"
         type="button"
-        class="inline-flex h-11 w-11 items-center justify-center rounded-md border text-(--text-soft) transition hover:bg-(--surface-soft) hover:text-(--text) md:hidden"
+        class="inline-flex h-10 w-10 items-center justify-center rounded-full text-(--text) transition hover:bg-(--surface-soft) md:hidden"
         aria-label="Abrir menu de navegação"
         aria-expanded="false"
         aria-controls="mobile-menu"
@@ -83,12 +89,12 @@ const isActive = (href: string) => {
       <button
         id="theme-toggle"
         type="button"
-        class="inline-flex h-11 w-11 items-center justify-center rounded-md border text-(--text-soft) transition hover:bg-(--surface-soft) hover:text-(--text)"
+        class="inline-flex h-10 w-10 items-center justify-center rounded-full text-(--text) transition hover:bg-(--surface-soft)"
         aria-label="Alternar para modo escuro"
         aria-pressed="false"
       >
         <span class="theme-icon-light" aria-hidden="true">
-          <svg viewBox="0 0 24 24" class="h-6 w-6">
+          <svg viewBox="0 0 24 24" class="h-5 w-5">
             <path
               fill="none"
               stroke="currentColor"
@@ -101,7 +107,7 @@ const isActive = (href: string) => {
         </span>
 
         <span class="theme-icon-dark" aria-hidden="true">
-          <svg viewBox="0 0 24 24" class="h-6 w-6">
+          <svg viewBox="0 0 24 24" class="h-5 w-5">
             <path
               fill="none"
               stroke="currentColor"
@@ -116,8 +122,8 @@ const isActive = (href: string) => {
     </div>
   </div>
 
-  <div id="mobile-menu" class="hidden border-t md:hidden">
-    <nav aria-label="Navegação mobile" class="container-shell py-3">
+  <div id="mobile-menu" class="hidden border-t md:hidden" style="border-color: var(--border-soft)">
+    <nav aria-label="Navegação mobile" class="site-shell py-3">
       <ul class="flex flex-col gap-1">
         {
           links.map((link) => (
