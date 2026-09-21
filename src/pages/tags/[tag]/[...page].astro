@@ -1,0 +1,65 @@
+---
+import MainLayout from "../../../layouts/main.astro";
+import Section from "../../../components/Section.astro";
+import Breadcrumb from "../../../components/Breadcrumb.astro";
+import PostCard from "../../../components/PostCard.astro";
+import Pagination from "../../../components/Pagination.astro";
+import { blog, site } from "../../../config";
+import { getReadingTime, getSortedPosts, getUniqueTags, slugify } from "../../../utils/posts";
+
+export async function getStaticPaths({ paginate }: { paginate: Function }) {
+  const posts = await getSortedPosts();
+  const tags = await getUniqueTags();
+  return tags.flatMap((t) => {
+    const filtered = posts.filter((p) => p.data.tags.some((name: string) => slugify(name) === t.tag));
+    return paginate(filtered, {
+      params: { tag: t.tag },
+      pageSize: blog.perPage,
+      props: { tagName: t.tagName },
+    });
+  });
+}
+
+const { page, tagName } = Astro.props as any;
+const { tag } = Astro.params;
+const title = page.currentPage === 1 ? `Tag: ${tagName} — ${site.title}` : `Tag: ${tagName} (página ${page.currentPage}) — ${site.title}`;
+---
+
+<MainLayout
+  title={title}
+  description={`Posts sobre ${tagName}: notas e aprendizados de engenharia de software.`}
+>
+  <Section eyebrow="Tag" title={`#${tagName}`} description={`${page.total} post(s) sobre este tema.`}>
+    <h1 class="sr-only">Posts sobre {tagName}</h1>
+    <Breadcrumb
+      trail={[
+        { href: "/posts", label: "Posts" },
+        { href: "/tags", label: "Tags" },
+        { label: `#${tagName}` },
+      ]}
+    />
+    <div class="space-y-4">
+      {page.data.map((post: any) => {
+        const slug = post.id.replace(/\.(md|mdx)$/, "");
+        const { minutes } = getReadingTime(post.body ?? "");
+        return (
+          <PostCard
+            slug={slug}
+            title={post.data.title}
+            description={post.data.description}
+            pubDate={post.data.pubDate}
+            updatedDate={post.data.updatedDate}
+            tags={post.data.tags}
+            minutes={minutes}
+          />
+        );
+      })}
+    </div>
+    <Pagination
+      prevUrl={page.url.prev}
+      nextUrl={page.url.next}
+      currentPage={page.currentPage}
+      lastPage={page.lastPage}
+    />
+  </Section>
+</MainLayout>

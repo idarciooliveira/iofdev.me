@@ -1,0 +1,18 @@
+---
+import MainLayout from "../layouts/main.astro";
+import Section from "../components/Section.astro";
+import { site } from "../config";
+---
+
+<MainLayout
+  title={`Página não encontrada — ${site.title}`}
+  description="A página que procura não existe ou foi movida."
+  noindex
+>
+  <Section eyebrow="404" title="Página não encontrada" description="O link pode estar errado ou a página foi movida.">
+    <div class="flex flex-wrap gap-4">
+      <a href="/" class="link-accent font-semibold">← Voltar ao início</a>
+      <a href="/posts" class="link-accent font-semibold">Ver posts</a>
+    </div>
+  </Section>
+</MainLayout>

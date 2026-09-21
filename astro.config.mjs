@@ -1,9 +1,13 @@
 // @ts-check
 
+import mdx from '@astrojs/mdx';
+import react from '@astrojs/react';
+import sitemap from '@astrojs/sitemap';
+import rehypeAutolinkHeadings from 'rehype-autolink-headings';
+import rehypeSlug from 'rehype-slug';
+import remarkToc from 'remark-toc';
 import tailwindcss from '@tailwindcss/vite';
 import { defineConfig } from 'astro/config';
-
-import react from '@astrojs/react';
 
 // https://astro.build/config
 // Note: AstroPaper loads "Google Sans Code" via Astro Fonts API.
@@ -15,5 +19,14 @@ export default defineConfig({
       plugins: [tailwindcss()],
 	},
 
-  integrations: [react()],
+  integrations: [mdx(), sitemap(), react()],
+
+  markdown: {
+    remarkPlugins: [[remarkToc, { heading: 'Índice|Table of contents' }]],
+    rehypePlugins: [
+      rehypeSlug,
+      [rehypeAutolinkHeadings, { behavior: 'append' }],
+    ],
+    shikiConfig: { theme: 'github-dark-default' },
+  },
 });

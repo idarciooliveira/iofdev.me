@@ -1,0 +1,107 @@
+---
+import MainLayout from "../../layouts/main.astro";
+import Breadcrumb from "../../components/Breadcrumb.astro";
+import ShareLinks from "../../components/ShareLinks.astro";
+import { site } from "../../config";
+import { formatDate, getReadingTime, getSortedPosts, slugify } from "../../utils/posts";
+import { render } from "astro:content";
+
+export async function getStaticPaths() {
+  const posts = await getSortedPosts();
+  return posts.map((post, i) => ({
+    params: { slug: post.id.replace(/\.(md|mdx)$/, "") },
+    props: {
+      post,
+      prev: posts[i - 1] ?? null,
+      next: posts[i + 1] ?? null,
+    },
+  }));
+}
+
+const { post, prev, next } = Astro.props;
+const { Content } = await render(post);
+const { title, description, pubDate, updatedDate, tags, heroImage, canonicalURL, author } =
+  post.data;
+
+const rawHero = heroImage;
+const pageOgImage = rawHero ?? site.ogImage;
+const pageUrl = new URL(`/posts/${post.id.replace(/\.(md|mdx)$/, "")}/`, Astro.site ?? site.url).toString();
+const { minutes, text: readingText } = getReadingTime(post.body ?? "");
+
+const schema = {
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  headline: title,
+  description,
+  image: new URL(pageOgImage, Astro.site ?? site.url).toString(),
+  datePublished: pubDate.toISOString(),
+  ...(updatedDate && { dateModified: updatedDate.toISOString() }),
+  author: [{ "@type": "Person", name: author, url: site.profile }],
+  mainEntityOfPage: { "@type": "WebPage", "@id": pageUrl },
+};
+---
+
+<MainLayout
+  title={`${title} | ${site.title}`}
+  description={description}
+  ogImage={pageOgImage}
+  canonicalURL={canonicalURL}
+  ogType="article"
+  pubDatetime={pubDate}
+  modDatetime={updatedDate}
+  schema={schema}
+>
+  <div class="page-section">
+    <div class="container-shell max-w-3xl">
+      <Breadcrumb trail={[{ href: "/posts", label: "Posts" }, { label: title }]} />
+
+      <header>
+        <h1 class="text-3xl font-bold tracking-tight sm:text-4xl">{title}</h1>
+        <div class="mt-4 flex flex-wrap items-center gap-x-4 gap-y-2 text-sm text-(--text-soft)">
+          <span>Por {author}</span>
+          <time datetime={pubDate.toISOString()}>{formatDate(pubDate)}</time>
+          {updatedDate && updatedDate > pubDate && (
+            <span>· Atualizado em {formatDate(updatedDate)}</span>
+          )}
+          <span>· {readingText}</span>
+        </div>
+        {tags.length > 0 && (
+          <ul class="mt-4 flex flex-wrap gap-2" aria-label="Tags">
+            {tags.map((tag: string) => (
+              <li>
+                <a href={`/tags/${slugify(tag)}/`} class="badge transition-colors hover:border-(--accent) hover:text-(--accent)">
+                  #{tag}
+                </a>
+              </li>
+            ))}
+          </ul>
+        )}
+      </header>
+
+      <article class="app-prose mt-8">
+        <Content />
+      </article>
+
+      <ShareLinks title={title} url={pageUrl} />
+
+      <nav aria-label="Posts adjacentes" class="mt-10 grid gap-4 sm:grid-cols-2" data-pagefind-ignore>
+        {prev ? (
+          <a href={`/posts/${prev.id.replace(/\.(md|mdx)$/, "")}/`} class="card block hover:border-(--accent)">
+            <p class="text-sm text-(--text-soft)">← Anterior</p>
+            <p class="mt-1 font-semibold">{prev.data.title}</p>
+          </a>
+        ) : <span />}
+        {next ? (
+          <a href={`/posts/${next.id.replace(/\.(md|mdx)$/, "")}/`} class="card block text-right hover:border-(--accent)">
+            <p class="text-sm text-(--text-soft)">Seguinte →</p>
+            <p class="mt-1 font-semibold">{next.data.title}</p>
+          </a>
+        ) : <span />}
+      </nav>
+
+      <p class="mt-8">
+        <a href="/posts" class="link-accent text-sm font-semibold">← Voltar para Posts</a>
+      </p>
+    </div>
+  </div>
+</MainLayout>

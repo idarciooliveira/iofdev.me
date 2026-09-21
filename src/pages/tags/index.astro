@@ -1,0 +1,32 @@
+---
+import MainLayout from "../../layouts/main.astro";
+import Section from "../../components/Section.astro";
+import Breadcrumb from "../../components/Breadcrumb.astro";
+import { site } from "../../config";
+import { getUniqueTags } from "../../utils/posts";
+
+const tags = await getUniqueTags();
+---
+
+<MainLayout
+  title={`Tags — ${site.title}`}
+  description="Todos os temas abordados nos posts: frontend, arquitetura, produto, acessibilidade e mais."
+>
+  <Section eyebrow="Tags" title="Explorar por tema" description="Todos os temas dos posts, ordenados por frequência.">
+    <h1 class="sr-only">Tags — explorar posts por tema</h1>
+    <Breadcrumb trail={[{ href: "/posts", label: "Posts" }, { label: "Tags" }]} />
+    {tags.length === 0 ? (
+      <p class="text-(--text-soft)">Ainda não há tags. Publique o primeiro post.</p>
+    ) : (
+      <ul class="flex flex-wrap gap-2">
+        {tags.map((t) => (
+          <li>
+            <a href={`/tags/${t.tag}/`} class="badge transition-colors hover:border-(--accent) hover:text-(--accent)">
+              #{t.tagName} ({t.count})
+            </a>
+          </li>
+        ))}
+      </ul>
+    )}
+  </Section>
+</MainLayout>

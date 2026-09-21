@@ -1,0 +1,28 @@
+---
+interface Props {
+  trail?: { href?: string; label: string }[];
+}
+
+const { trail = [] } = Astro.props;
+const items = [{ href: "/", label: "Início" }, ...trail];
+---
+
+<nav aria-label="breadcrumb" class="mb-6 text-sm text-(--text-soft)">
+  <ol class="flex flex-wrap items-center gap-1.5">
+    {
+      items.map((item, i) => {
+        const isLast = i === items.length - 1;
+        return (
+          <li class="flex items-center gap-1.5">
+            {i > 0 && <span aria-hidden="true">»</span>}
+            {isLast || !item.href ? (
+              <span aria-current="page" class="text-(--text)">{item.label}</span>
+            ) : (
+              <a href={item.href} class="link-accent">{item.label}</a>
+            )}
+          </li>
+        );
+      })
+    }
+  </ol>
+</nav>
