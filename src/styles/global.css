@@ -103,12 +103,9 @@ html[data-theme="dark"] {
 }
 
 @layer components {
-	.container-shell {
-		@apply mx-auto w-full max-w-5xl px-4 sm:px-6 lg:px-8;
-	}
-
-	/* Single shared alignment shell — header, hero, footer all use this.
-	   Matches reference: narrow centered column with consistent 24px horizontal padding */
+	/* Single shared alignment shell — header, hero, sections, footer all
+	   use this. Narrow centered column (800px) with consistent 24px
+	   horizontal padding, so all left/right edges line up. */
 	.site-shell {
 		@apply mx-auto w-full px-6 sm:px-6;
 		max-width: 800px;

@@ -3,7 +3,6 @@ import MainLayout from "../layouts/main.astro";
 import Hero from "../components/Hero.astro";
 import Section from "../components/Section.astro";
 import PostCard from "../components/PostCard.astro";
-import { blog } from "../config";
 import { getReadingTime, getSortedPosts } from "../utils/posts";
 
 const recentPosts = (await getSortedPosts()).slice(0, 3);
@@ -26,7 +25,7 @@ const recentPosts = (await getSortedPosts()).slice(0, 3);
       title="Notas recentes"
       description="Aprendizados e ideias sobre frontend, produto e engenharia."
     >
-      <div class="space-y-4">
+      <ul>
         {recentPosts.map((post) => {
           const slug = post.id.replace(/\.(md|mdx)$/, "");
           const { minutes } = getReadingTime(post.body ?? "");
@@ -36,13 +35,11 @@ const recentPosts = (await getSortedPosts()).slice(0, 3);
               title={post.data.title}
               description={post.data.description}
               pubDate={post.data.pubDate}
-              updatedDate={post.data.updatedDate}
-              tags={post.data.tags}
               minutes={minutes}
             />
           );
         })}
-      </div>
+      </ul>
       <p class="mt-6">
         <a href="/posts" class="link-accent text-sm font-semibold">Ver todos os posts →</a>
       </p>

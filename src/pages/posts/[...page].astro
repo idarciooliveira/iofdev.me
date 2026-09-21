@@ -5,7 +5,7 @@ import Breadcrumb from "../../components/Breadcrumb.astro";
 import PostCard from "../../components/PostCard.astro";
 import Pagination from "../../components/Pagination.astro";
 import { blog, site } from "../../config";
-import { getReadingTime, getSortedPosts, getUniqueTags } from "../../utils/posts";
+import { getReadingTime, getSortedPosts } from "../../utils/posts";
 import type { Page } from "astro";
 
 export async function getStaticPaths({ paginate }: { paginate: Function }) {
@@ -18,15 +18,28 @@ interface Props {
 }
 
 const { page } = Astro.props;
-const isFirstPage = page.currentPage === 1;
-const tags = isFirstPage ? await getUniqueTags() : [];
-const featured = isFirstPage
-  ? (await getSortedPosts()).filter((p) => p.data.featured)
-  : [];
 const pageTitle =
   page.currentPage === 1
     ? `Posts — ${site.title}`
     : `Posts (página ${page.currentPage}) — ${site.title}`;
+
+// Archives-style grouping (AstroPaper archives pattern):
+// year (desc) → month (desc) → posts (newest first).
+type Post = (typeof page.data)[number];
+const postsByYear = new Map<number, Post[]>();
+for (const post of page.data as Post[]) {
+  const year = new Date(post.data.pubDate).getFullYear();
+  const group = postsByYear.get(year) ?? [];
+  group.push(post);
+  postsByYear.set(year, group);
+}
+const years = [...postsByYear.keys()].sort((a, b) => b - a);
+
+const monthFormatter = new Intl.DateTimeFormat("pt", { month: "long" });
+const monthName = (monthIndex: number) => {
+  const name = monthFormatter.format(new Date(2000, monthIndex, 1));
+  return name.charAt(0).toUpperCase() + name.slice(1);
+};
 ---
 
 <MainLayout
@@ -43,46 +56,52 @@ const pageTitle =
     <h1 class="sr-only">Posts — notas sobre engenharia de software</h1>
     <Breadcrumb trail={[{ label: page.currentPage > 1 ? `Posts (página ${page.currentPage})` : "Posts" }]} />
 
-    {isFirstPage && featured.length > 0 && (
-      <div class="mb-10">
-        <h2 class="mb-4 text-2xl font-bold tracking-tight">Destaques</h2>
-        <div class="space-y-4">
-          {featured.map((post) => {
-            const slug = post.id.replace(/\.(md|mdx)$/, "");
-            const { minutes } = getReadingTime(post.body ?? "");
+    {years.map((year) => {
+      const yearPosts = postsByYear.get(year)!;
+      const postsByMonth = new Map<number, Post[]>();
+      for (const post of yearPosts) {
+        const month = new Date(post.data.pubDate).getMonth();
+        const group = postsByMonth.get(month) ?? [];
+        group.push(post);
+        postsByMonth.set(month, group);
+      }
+      const months = [...postsByMonth.keys()].sort((a, b) => b - a);
+      return (
+        <section aria-label={`Posts de ${year}`} class="mb-10 last:mb-0">
+          <span class="text-2xl font-bold tracking-tight">{year}</span>
+          <sup class="ml-1 text-sm text-(--text-soft)">{yearPosts.length}</sup>
+          <div aria-hidden="true" class="mt-2 h-px bg-(--accent)" />
+          {months.map((month) => {
+            const monthPosts = postsByMonth.get(month)!;
             return (
-              <PostCard
-                slug={slug}
-                title={post.data.title}
-                description={post.data.description}
-                pubDate={post.data.pubDate}
-                updatedDate={post.data.updatedDate}
-                tags={post.data.tags}
-                minutes={minutes}
-              />
+              <div class="flex flex-col sm:flex-row">
+                <div class="mt-6 min-w-36 text-lg sm:my-6">
+                  <span class="font-bold">{monthName(month)}</span>
+                  <sup class="ml-1 text-xs text-(--text-soft)">
+                    {monthPosts.length}
+                  </sup>
+                </div>
+                <ul>
+                  {monthPosts.map((post) => {
+                    const slug = post.id.replace(/\.(md|mdx)$/, "");
+                    const { minutes } = getReadingTime(post.body ?? "");
+                    return (
+                      <PostCard
+                        slug={slug}
+                        title={post.data.title}
+                        description={post.data.description}
+                        pubDate={post.data.pubDate}
+                        minutes={minutes}
+                      />
+                    );
+                  })}
+                </ul>
+              </div>
             );
           })}
-        </div>
-      </div>
-    )}
-
-    <div class="space-y-4">
-      {page.data.map((post: any) => {
-        const slug = post.id.replace(/\.(md|mdx)$/, "");
-        const { minutes } = getReadingTime(post.body ?? "");
-        return (
-          <PostCard
-            slug={slug}
-            title={post.data.title}
-            description={post.data.description}
-            pubDate={post.data.pubDate}
-            updatedDate={post.data.updatedDate}
-            tags={post.data.tags}
-            minutes={minutes}
-          />
-        );
-      })}
-    </div>
+        </section>
+      );
+    })}
 
     <Pagination
       prevUrl={page.url.prev}
@@ -90,20 +109,5 @@ const pageTitle =
       currentPage={page.currentPage}
       lastPage={page.lastPage}
     />
-
-    {isFirstPage && tags.length > 0 && (
-      <div class="mt-12">
-        <h2 class="mb-4 text-2xl font-bold tracking-tight">Explorar por tag</h2>
-        <ul class="flex flex-wrap gap-2">
-          {tags.map((t) => (
-            <li>
-              <a href={`/tags/${t.tag}/`} class="badge transition-colors hover:border-(--accent) hover:text-(--accent)">
-                #{t.tagName} ({t.count})
-              </a>
-            </li>
-          ))}
-        </ul>
-      </div>
-    )}
   </Section>
 </MainLayout>

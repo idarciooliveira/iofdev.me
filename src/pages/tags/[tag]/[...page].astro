@@ -38,7 +38,7 @@ const title = page.currentPage === 1 ? `Tag: ${tagName} — ${site.title}` : `Ta
         { label: `#${tagName}` },
       ]}
     />
-    <div class="space-y-4">
+    <ul>
       {page.data.map((post: any) => {
         const slug = post.id.replace(/\.(md|mdx)$/, "");
         const { minutes } = getReadingTime(post.body ?? "");
@@ -48,13 +48,11 @@ const title = page.currentPage === 1 ? `Tag: ${tagName} — ${site.title}` : `Ta
             title={post.data.title}
             description={post.data.description}
             pubDate={post.data.pubDate}
-            updatedDate={post.data.updatedDate}
-            tags={post.data.tags}
             minutes={minutes}
           />
         );
       })}
-    </div>
+    </ul>
     <Pagination
       prevUrl={page.url.prev}
       nextUrl={page.url.next}
