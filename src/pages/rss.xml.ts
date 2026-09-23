@@ -1,6 +1,6 @@
 import rss from "@astrojs/rss";
 import { site } from "../../src/config";
-import { getSortedPosts } from "../../src/utils/posts";
+import { getSlug, getSortedPosts } from "../../src/utils/posts";
 import type { APIContext } from "astro";
 
 export async function GET(context: APIContext) {
@@ -13,7 +13,7 @@ export async function GET(context: APIContext) {
       title: post.data.title,
       description: post.data.description,
       pubDate: post.data.updatedDate ?? post.data.pubDate,
-      link: `/posts/${post.id.replace(/\.(md|mdx)$/, "")}/`,
+      link: `/posts/${getSlug(post.id)}/`,
       categories: post.data.tags,
     })),
   });

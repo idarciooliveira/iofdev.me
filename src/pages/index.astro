@@ -3,7 +3,7 @@ import MainLayout from "../layouts/main.astro";
 import Hero from "../components/Hero.astro";
 import Section from "../components/Section.astro";
 import PostCard from "../components/PostCard.astro";
-import { getReadingTime, getSortedPosts } from "../utils/posts";
+import { getReadingTime, getSlug, getSortedPosts } from "../utils/posts";
 
 const recentPosts = (await getSortedPosts()).slice(0, 3);
 ---
@@ -14,8 +14,8 @@ const recentPosts = (await getSortedPosts()).slice(0, 3);
   ogImage="/profile-image.jpeg"
 >
   <Hero
-    title="software engineer."
-    subtitle="hi, i'm idárcio oliveira. a passionate software engineer and front end developer based in angola."
+    title="hi, i'm idárcio oliveira."
+    subtitle="A passionate software engineer and front end developer based in angola."
     primaryCta={{ href: "/projects", label: "see my works" }}
   />
 
@@ -23,7 +23,7 @@ const recentPosts = (await getSortedPosts()).slice(0, 3);
     <Section tight>
       <ul>
         {recentPosts.map((post) => {
-          const slug = post.id.replace(/\.(md|mdx)$/, "");
+          const slug = getSlug(post.id);
           const { minutes } = getReadingTime(post.body ?? "");
           return (
             <PostCard

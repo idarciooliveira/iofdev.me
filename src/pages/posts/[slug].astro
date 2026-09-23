@@ -4,14 +4,14 @@ import ShareLinks from "../../components/ShareLinks.astro";
 import ScrollProgressBar from "../../components/ScrollProgressBar.astro";
 import BackToTopButton from "../../components/BackToTopButton.astro";
 import { site } from "../../config";
-import { formatDate, getReadingTime, getSortedPosts, slugify } from "../../utils/posts";
+import { formatDate, getReadingTime, getSlug, getSortedPosts, slugify } from "../../utils/posts";
 import { toTransitionName } from "../../utils/transitionName";
 import { render } from "astro:content";
 
 export async function getStaticPaths() {
   const posts = await getSortedPosts();
   return posts.map((post, i) => ({
-    params: { slug: post.id.replace(/\.(md|mdx)$/, "") },
+    params: { slug: getSlug(post.id) },
     props: {
       post,
       prev: posts[i - 1] ?? null,
@@ -22,13 +22,13 @@ export async function getStaticPaths() {
 
 const { post, prev, next } = Astro.props;
 const { Content } = await render(post);
-const slug = post.id.replace(/\.(md|mdx)$/, "");
+const slug = getSlug(post.id);
 const { title, description, pubDate, updatedDate, tags, heroImage, canonicalURL, author } =
   post.data;
 
 const rawHero = heroImage;
 const pageOgImage = rawHero ?? site.ogImage;
-const pageUrl = new URL(`/posts/${post.id.replace(/\.(md|mdx)$/, "")}/`, Astro.site ?? site.url).toString();
+const pageUrl = new URL(`/posts/${slug}/`, Astro.site ?? site.url).toString();
 const { minutes, text: readingText } = getReadingTime(post.body ?? "");
 
 const schema = {
@@ -105,13 +105,13 @@ const schema = {
 
         <nav aria-label="Posts adjacentes" class="flex items-start justify-between gap-4" data-pagefind-ignore>
           {prev ? (
-            <a href={`/posts/${prev.id.replace(/\.(md|mdx)$/, "")}/`} class="post-footer__next !text-left">
+            <a href={`/posts/${getSlug(prev.id)}/`} class="post-footer__next !text-left">
               <span class="post-footer__next-kicker !justify-start">← Previous Post</span>
               <p class="post-footer__next-title">{prev.data.title}</p>
             </a>
           ) : <span />}
           {next ? (
-            <a href={`/posts/${next.id.replace(/\.(md|mdx)$/, "")}/`} class="post-footer__next ml-auto">
+            <a href={`/posts/${getSlug(next.id)}/`} class="post-footer__next ml-auto">
               <span class="post-footer__next-kicker">Next Post
                 <svg viewBox="0 0 24 24" aria-hidden="true" class="size-5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                   <path d="m9 18 6-6-6-6" />

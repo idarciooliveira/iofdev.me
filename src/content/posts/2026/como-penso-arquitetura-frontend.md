@@ -3,7 +3,7 @@ title: "Como penso arquitetura frontend em produtos em crescimento"
 description: "Uma abordagem prática para equilibrar velocidade, qualidade e autonomia de times em frontends que escalam."
 pubDate: 2026-02-13
 tags: ["frontend", "arquitetura"]
-heroImage: "/opne-telemetry-cover.jpg"
+heroImage: "/posts/2026/como-penso-arquitetura-frontend/cover.jpg"
 ---
 
 ## O problema real
@@ -32,6 +32,6 @@ Cache, autenticação, logs e métricas ficam na camada de plataforma. Features 
 
 ## Conclusão
 
-![OpenTelemetry — observabilidade na camada de plataforma](/opne-telemetry-cover.jpg)
+![OpenTelemetry — observabilidade na camada de plataforma](/posts/2026/como-penso-arquitetura-frontend/cover.webp)
 
 Arquitetura boa é a que um developer novo entende em uma tarde. Fronteiras claras, tokens consistentes e plataforma compartilhada — o resto é disciplina de revisão de código.

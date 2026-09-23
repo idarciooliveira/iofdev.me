@@ -5,7 +5,7 @@ import Breadcrumb from "../../../components/Breadcrumb.astro";
 import PostCard from "../../../components/PostCard.astro";
 import Pagination from "../../../components/Pagination.astro";
 import { blog, site } from "../../../config";
-import { getReadingTime, getSortedPosts, getUniqueTags, slugify } from "../../../utils/posts";
+import { getReadingTime, getSlug, getSortedPosts, getUniqueTags, slugify } from "../../../utils/posts";
 
 export async function getStaticPaths({ paginate }: { paginate: Function }) {
   const posts = await getSortedPosts();
@@ -40,7 +40,7 @@ const title = page.currentPage === 1 ? `Tag: ${tagName} — ${site.title}` : `Ta
     />
     <ul>
       {page.data.map((post: any) => {
-        const slug = post.id.replace(/\.(md|mdx)$/, "");
+        const slug = getSlug(post.id);
         const { minutes } = getReadingTime(post.body ?? "");
         return (
           <PostCard

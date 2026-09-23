@@ -4,7 +4,7 @@ import Section from "../../components/Section.astro";
 import PostCard from "../../components/PostCard.astro";
 import Pagination from "../../components/Pagination.astro";
 import { blog, site } from "../../config";
-import { getReadingTime, getSortedPosts } from "../../utils/posts";
+import { getReadingTime, getSlug, getSortedPosts } from "../../utils/posts";
 import type { Page } from "astro";
 
 export async function getStaticPaths({ paginate }: { paginate: Function }) {
@@ -81,7 +81,7 @@ const monthName = (monthIndex: number) => {
                 </div>
                 <ul>
                   {monthPosts.map((post) => {
-                    const slug = post.id.replace(/\.(md|mdx)$/, "");
+                    const slug = getSlug(post.id);
                     const { minutes } = getReadingTime(post.body ?? "");
                     return (
                       <PostCard

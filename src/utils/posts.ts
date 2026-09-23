@@ -2,6 +2,14 @@ import { getCollection, type CollectionEntry } from "astro:content";
 
 export type BlogPost = CollectionEntry<"blog">;
 
+/** URL slug for a post, stable across year-folder organization.
+ *  e.g. "2026/my-post.md" → "my-post", "my-post.mdx" → "my-post". */
+export const getSlug = (id: string) =>
+  id
+    .replace(/\.(md|mdx)$/, "")
+    .split("/")
+    .pop() as string;
+
 export const slugify = (value: string) =>
   value
     .normalize("NFD")
