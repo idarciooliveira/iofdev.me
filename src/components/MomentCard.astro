@@ -1,27 +1,96 @@
 ---
-const { year, title, description, image, imageAlt } = Astro.props;
+import type { Moment } from "../data/moments";
+
+interface Props extends Moment {
+  index: number;
+}
+
+const { year, title, description, image, imageAlt, location, index } =
+  Astro.props as Props;
+const alt = imageAlt ?? title;
 ---
 
-<article class="card relative overflow-hidden p-4">
-  <div class="absolute inset-x-0 top-0 h-1 gradient-block"></div>
-
+<figure
+  class="moment-card group mb-4 break-inside-avoid overflow-hidden rounded-2xl border bg-(--surface)"
+  style="border-color: var(--border-soft)"
+  data-year={year}
+  data-index={index}
+>
   {
-    image && (
-      <div class="mb-3 overflow-hidden rounded-lg border border-(--surface-soft)">
-        <img
-          src={image}
-          alt={imageAlt ?? title}
-          class="h-44 w-full object-cover"
-          loading="lazy"
-          decoding="async"
-        />
+    image ? (
+      <button
+        type="button"
+        class="moment-open block w-full cursor-zoom-in text-left"
+        data-image={image}
+        data-title={title}
+        data-description={description}
+        data-year={year}
+        data-location={location ?? ""}
+        data-alt={alt}
+        aria-label={`Ampliar: ${title}`}
+      >
+        <div class="relative overflow-hidden">
+          <img
+            src={image}
+            alt={alt}
+            loading="lazy"
+            decoding="async"
+            class="w-full object-cover transition duration-500 group-hover:scale-[1.04]"
+          />
+          <div
+            class="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/55 via-black/0 to-black/10"
+            aria-hidden="true"
+          />
+          <span class="absolute top-3 left-3 inline-flex items-center rounded-full bg-black/65 px-2.5 py-1 text-[11px] font-bold tracking-[0.12em] text-white uppercase backdrop-blur">
+            {year}
+          </span>
+          {location && (
+            <span class="absolute bottom-3 left-3 inline-flex max-w-[calc(100%-1.5rem)] items-center gap-1.5 truncate rounded-full bg-black/65 px-2.5 py-1 text-xs font-medium text-white backdrop-blur">
+              <svg viewBox="0 0 24 24" class="h-3.5 w-3.5 shrink-0" aria-hidden="true">
+                <path
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M12 21s-7-5.5-7-11a7 7 0 0 1 14 0c0 5.5-7 11-7 11Z"
+                />
+                <circle cx="12" cy="10" r="2.5" fill="none" stroke="currentColor" stroke-width="2" />
+              </svg>
+              <span class="truncate">{location}</span>
+            </span>
+          )}
+          <span class="absolute right-3 bottom-3 inline-flex h-8 w-8 items-center justify-center rounded-full bg-white/90 text-black opacity-0 transition group-hover:opacity-100">
+            <svg viewBox="0 0 24 24" class="h-4 w-4" aria-hidden="true">
+              <path
+                fill="none"
+                stroke="currentColor"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M12 5v14M5 12h14"
+              />
+            </svg>
+          </span>
+        </div>
+      </button>
+    ) : (
+      <div class="relative flex min-h-44 flex-col justify-end overflow-hidden bg-gradient-to-br from-(--surface-soft) to-(--bg) p-4">
+        <span class="absolute top-3 left-3 inline-flex items-center rounded-full border px-2.5 py-1 text-[11px] font-bold tracking-[0.12em] uppercase">
+          {year}
+        </span>
+        <p class="text-xs text-(--text-soft)">📷 photo coming soon</p>
       </div>
     )
   }
 
-  <p class="text-xs font-bold tracking-[0.12em] text-(--text-soft) uppercase">
-    {year}
-  </p>
-  <h3 class="mt-1.5 text-lg font-medium leading-7">{title}</h3>
-  <p class="mt-1.5 text-sm text-(--text-soft)">{description}</p>
-</article>
+  <figcaption class="p-4">
+    <h3 class="text-[15px] leading-6 font-semibold text-balance">{title}</h3>
+    <p class="mt-1.5 text-sm leading-6 text-(--text-soft)">{description}</p>
+    {
+      !image && location && (
+        <p class="mt-2 text-xs font-medium text-(--text-soft)">📍 {location}</p>
+      )
+    }
+  </figcaption>
+</figure>

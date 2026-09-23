@@ -2,90 +2,195 @@
 import MainLayout from "../layouts/main.astro";
 import Section from "../components/Section.astro";
 import MomentCard from "../components/MomentCard.astro";
+import { moments } from "../data/moments";
 
-const moments = [
-  {
-    year: "2019",
-    title: "Gala Huíla Talento 2019 Final",
-    description: "Um marco especial no início da minha jornada em tecnologia.",
-    image: "/moments/huila-talento.jpg",
-    imageAlt: "Gala Huíla Talento 2019 Final",
-  },
-  {
-    year: "2019",
-    title: "GinPro Hackaton Universitário, was my first hackaton",
-    description: "Minha primeira experiência em hackathon universitário.",
-    image: "/moments/hackaton.jpg",
-    imageAlt: "GinPro Hackaton Universitário, was my first hackaton",
-  },
-  {
-    year: "2019",
-    title: "My first bootcamp about programming",
-    description: "Primeiro bootcamp de programação e aceleração prática.",
-    image: "/moments/bootcamp.jpg",
-    imageAlt: "My first bootcamp about programming",
-  },
-  {
-    year: "2020",
-    title: "Final of LISPA JUMPSTART powered by Acelera Angola & BNA",
-    description:
-      "Participação na final do programa de aceleração LISPA JUMPSTART.",
-    image: "/moments/lispa.jpg",
-    imageAlt: "Final of LISPA JUMPSTART powered by Acelera Angola & BNA",
-  },
-  {
-    year: "2021",
-    title:
-      "My first workshop as a speaker where I talked a bit about programming as a vehicle for developing local solutions.",
-    description:
-      "Meu primeiro workshop como speaker sobre impacto local com tecnologia.",
-    image: "/moments/workshop.jpg",
-    imageAlt:
-      "My first workshop as a speaker where I talked a bit about programming as a vehicle for developing local solutions.",
-  },
-  {
-    year: "2022",
-    title:
-      "The day of the launch of the first mobile application I built as Mobile Developer on a Team",
-    description: "Lançamento do primeiro aplicativo mobile em equipa.",
-    image: "/moments/mutundoexpress.jpg",
-    imageAlt:
-      "The day of the launch of the first mobile application I built as Mobile Developer on a Team",
-  },
-  {
-    year: "2023",
-    title:
-      "The day of the launch of the first two products I participated in as the leader of the development team",
-    description:
-      "Lançamento dos dois primeiros produtos com liderança técnica.",
-  },
-  {
-    year: "2023",
-    title:
-      "Christmas charity event with the children of Criança Feliz Angola, lots of fun and play",
-    description: "Ação solidária de Natal com a Criança Feliz Angola.",
-  },
-  {
-    year: "2024",
-    title: "Winner of Huila Talent as Best Tech Project Powered By Tigra",
-    description:
-      "Reconhecimento como melhor projeto tech no Huíla Talento Powered by Tigra.",
-  },
-];
+const years = [...new Set(moments.map((m) => m.year))].sort((a, b) =>
+  b.localeCompare(a),
+);
+const places = new Set(
+  moments.map((m) => m.location).filter((l): l is string => Boolean(l)),
+).size;
+const withPhoto = moments.filter((m) => m.image).length;
 ---
 
 <MainLayout
-  title="Momentos — Idárcio Oliveira"
-  description="Linha do tempo de momentos e marcos da carreira de Idárcio Oliveira."
+  title="Moments — Idárcio Oliveira"
+  description="Travel-style gallery of milestones from Idárcio Oliveira's journey as a developer in Angola."
   ogImage="/moments/huila-talento.jpg"
 >
   <Section
     eyebrow="Moments"
-    title="Marcos da jornada"
-    description="Alguns momentos importantes no início da minha carreira como developer."
+    title="Travel log of a builder"
+    description="Small stamps from my journey — hackathons, bootcamps, launches, community. Click any photo to view it full-screen. To add a new one, just drop the image in public/moments and add one entry in src/data/moments.ts."
   >
-    <div class="grid gap-4 md:grid-cols-3">
-      {moments.map((moment) => <MomentCard {...moment} />)}
+    <div class="mb-6 flex flex-wrap items-center gap-2 text-sm text-(--text-soft)">
+      <span class="badge">{moments.length} moments</span>
+      <span class="badge">{withPhoto} photos</span>
+      {places > 0 && <span class="badge">{places} places</span>}
+      <span class="ml-auto hidden sm:inline">🖱️ click to enlarge · filter by year ↓</span>
     </div>
+
+    {
+      years.length > 1 && (
+        <div class="mb-8 flex flex-wrap gap-2" role="group" aria-label="Filtrar por ano">
+          <button
+            type="button"
+            data-filter="all"
+            class="moment-filter rounded-full border px-4 py-1.5 text-sm font-semibold transition"
+            aria-pressed="true"
+          >
+            All
+          </button>
+          {years.map((y) => (
+            <button
+              type="button"
+              data-filter={y}
+              class="moment-filter rounded-full border px-4 py-1.5 text-sm font-medium transition"
+              aria-pressed="false"
+            >
+              {y}
+            </button>
+          ))}
+        </div>
+      )
+    }
+
+    <div id="moments-grid" class="columns-1 gap-4 sm:columns-2">
+      {moments.map((moment, i) => <MomentCard {...moment} index={i} />)}
+    </div>
+
+    <p id="moments-empty" class="hidden py-10 text-center text-sm text-(--text-soft)">
+      No moments for this year yet.
+    </p>
   </Section>
+
+  <dialog
+    id="moment-lightbox"
+    class="m-auto max-h-[92vh] w-[min(920px,92vw)] overflow-hidden rounded-2xl border-0 bg-transparent p-0 backdrop:bg-black/80"
+    aria-label="Photo viewer"
+  >
+    <div class="overflow-hidden rounded-2xl bg-(--surface)" style="border: 1px solid var(--border-soft)">
+      <div class="relative bg-black">
+        <img id="lightbox-img" src="" alt="" class="max-h-[70vh] w-full object-contain" />
+        <button
+          id="lightbox-close"
+          type="button"
+          class="absolute top-3 right-3 inline-flex h-10 w-10 items-center justify-center rounded-full bg-black/65 text-white backdrop-blur transition hover:bg-black/85"
+          aria-label="Fechar"
+        >
+          ✕
+        </button>
+        <button
+          id="lightbox-prev"
+          type="button"
+          class="absolute top-1/2 left-3 inline-flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full bg-black/65 text-white backdrop-blur transition hover:bg-black/85"
+          aria-label="Foto anterior"
+        >
+          ←
+        </button>
+        <button
+          id="lightbox-next"
+          type="button"
+          class="absolute top-1/2 right-3 inline-flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full bg-black/65 text-white backdrop-blur transition hover:bg-black/85"
+          aria-label="Próxima foto"
+        >
+          →
+        </button>
+      </div>
+      <div class="p-5">
+        <p id="lightbox-meta" class="text-xs font-bold tracking-[0.12em] text-(--text-soft) uppercase"></p>
+        <h3 id="lightbox-title" class="mt-1 text-lg font-semibold text-balance"></h3>
+        <p id="lightbox-desc" class="mt-1 text-sm text-(--text-soft)"></p>
+      </div>
+    </div>
+  </dialog>
 </MainLayout>
+
+<style>
+  .moment-filter {
+    border-color: var(--border-soft);
+    background: var(--surface);
+    color: var(--text-soft);
+  }
+  .moment-filter:hover {
+    color: var(--text);
+  }
+  .moment-filter[aria-pressed="true"] {
+    background: var(--text);
+    border-color: var(--text);
+    color: var(--bg);
+  }
+  dialog::backdrop {
+    background: rgba(0, 0, 0, 0.8);
+  }
+</style>
+
+<script>
+  const filterButtons = document.querySelectorAll(".moment-filter");
+  const cards = document.querySelectorAll(".moment-card");
+  const emptyMsg = document.getElementById("moments-empty");
+
+  filterButtons.forEach((btn) => {
+    btn.addEventListener("click", () => {
+      const filter = btn.getAttribute("data-filter");
+      filterButtons.forEach((b) => b.setAttribute("aria-pressed", String(b === btn)));
+      let visible = 0;
+      cards.forEach((card) => {
+        const show =
+          filter === "all" || card.getAttribute("data-year") === filter;
+        (card as HTMLElement).style.display = show ? "" : "none";
+        if (show) visible++;
+      });
+      emptyMsg?.classList.toggle("hidden", visible > 0);
+    });
+  });
+
+  // Lightbox — collects only cards that have a photo
+  const dialog = document.getElementById("moment-lightbox") as HTMLDialogElement | null;
+  const img = document.getElementById("lightbox-img") as HTMLImageElement | null;
+  const meta = document.getElementById("lightbox-meta");
+  const titleEl = document.getElementById("lightbox-title");
+  const descEl = document.getElementById("lightbox-desc");
+  const openers = [...document.querySelectorAll<HTMLButtonElement>(".moment-open")];
+  let current = 0;
+
+  const show = (i: number) => {
+    const btn = openers[i];
+    if (!btn || !img || !dialog) return;
+    current = (i + openers.length) % openers.length;
+    const active = openers[current];
+    img.src = active.dataset.image ?? "";
+    img.alt = active.dataset.alt ?? active.dataset.title ?? "";
+    if (meta) {
+      const loc = active.dataset.location ? ` · ${active.dataset.location}` : "";
+      meta.textContent = `${active.dataset.year ?? ""}${loc}`;
+    }
+    if (titleEl) titleEl.textContent = active.dataset.title ?? "";
+    if (descEl) descEl.textContent = active.dataset.description ?? "";
+  };
+
+  openers.forEach((btn, i) => {
+    btn.addEventListener("click", () => {
+      show(i);
+      if (dialog && !dialog.open) dialog.showModal();
+    });
+  });
+
+  document.getElementById("lightbox-close")?.addEventListener("click", () => dialog?.close());
+  document.getElementById("lightbox-prev")?.addEventListener("click", (e) => {
+    e.stopPropagation();
+    show(current - 1);
+  });
+  document.getElementById("lightbox-next")?.addEventListener("click", (e) => {
+    e.stopPropagation();
+    show(current + 1);
+  });
+  dialog?.addEventListener("click", (e) => {
+    if (e.target === dialog) dialog.close();
+  });
+  document.addEventListener("keydown", (e) => {
+    if (!dialog?.open) return;
+    if (e.key === "ArrowLeft") show(current - 1);
+    if (e.key === "ArrowRight") show(current + 1);
+  });
+</script>
