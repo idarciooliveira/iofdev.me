@@ -24,6 +24,7 @@
 	--text-soft: #6B6B6B;
 	--accent: #363636;
 	--accent-2: #363636;
+	--post-title: #3C8FC0;
 	--border: #363636;
 	--border-soft: #E4E4E4;
 	--ring: #363636;
@@ -40,6 +41,7 @@ html[data-theme="dark"] {
 	--text-soft: #A8A8A8;
 	--accent: #F9F9F9;
 	--accent-2: #F9F9F9;
+	--post-title: #D9B8FA;
 	--border: #F9F9F9;
 	--border-soft: #2B2B2B;
 	--ring: #F9F9F9;
@@ -120,9 +122,9 @@ html[data-theme="dark"] {
 		display: flex;
 		align-items: center;
 		justify-content: space-between;
-		min-height: 88px;
-		padding-top: 36px;
-		padding-bottom: 28px;
+		min-height: 72px;
+		padding-top: 20px;
+		padding-bottom: 16px;
 	}
 
 	.logo-mark {
@@ -141,7 +143,7 @@ html[data-theme="dark"] {
 	}
 
 	.page-section--tight {
-		@apply pt-4 pb-14 sm:pt-6 sm:pb-16;
+		@apply pt-0 pb-14 sm:pt-2 sm:pb-16;
 	}
 
 	.card {
@@ -251,19 +253,19 @@ html[data-theme="dark"] {
 	.hero__grid {
 		display: grid;
 		gap: 2rem;
-		padding-top: 36px;
-		padding-bottom: 40px;
+		padding-top: 24px;
+		padding-bottom: 28px;
 		align-items: center;
 		width: 100%;
-		min-height: calc(100svh - 116px - 62px);
+		min-height: 0;
 	}
 
 	@media (min-width: 1024px) {
 		.hero__grid {
 			grid-template-columns: 1.05fr 0.95fr;
 			gap: 2rem;
-			padding-top: 32px;
-			padding-bottom: 40px;
+			padding-top: 24px;
+			padding-bottom: 28px;
 		}
 	}
 
@@ -301,7 +303,7 @@ html[data-theme="dark"] {
 		display: inline-flex;
 		align-items: center;
 		gap: 12px;
-		margin-top: 26px;
+		margin-top: 20px;
 		padding: 12px 8px 12px 28px;
 		font-size: 13px;
 		font-weight: 800;
@@ -350,13 +352,13 @@ html[data-theme="dark"] {
 	.hero__socials {
 		display: flex;
 		align-items: center;
-		margin-top: 28px;
+		margin-top: 20px;
 		margin-left: -8px;
 	}
 
 	@media (min-width: 1024px) {
 		.hero__socials {
-			margin-top: 32px;
+			margin-top: 24px;
 		}
 	}
 
@@ -485,19 +487,6 @@ html[data-theme="dark"] {
 		margin-left: -8px;
 	}
 
-	.post-footer__top {
-		display: inline-flex;
-		align-items: center;
-		gap: 6px;
-		white-space: nowrap;
-		color: var(--text);
-		font-size: 15px;
-	}
-
-	.post-footer__top:hover {
-		color: var(--accent);
-	}
-
 	.post-footer__dotted {
 		margin: 28px 0 0;
 		border: 0;
@@ -521,7 +510,7 @@ html[data-theme="dark"] {
 
 	.post-footer__next-title {
 		margin-top: 4px;
-		color: var(--accent);
+		color: var(--post-title);
 		font-weight: 600;
 	}
 
