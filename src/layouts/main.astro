@@ -157,11 +157,14 @@ const defaultSchema: Record<string, unknown> = {
       <slot />
     </main>
     <footer class="site-footer">
-      <div
-        class="site-shell site-footer__inner"
-      >
-        <p>© {new Date().getFullYear()} Todos os direitos reservados.</p>
-        <SocialIconDock />
+      <div class="site-shell">
+        <hr class="site-footer__rule" />
+        <div class="site-footer__inner">
+          <p class="site-footer__license">
+            Steal this post → CC BY 4.0 · Code MIT
+          </p>
+          <SocialIconDock />
+        </div>
       </div>
     </footer>
   </body>

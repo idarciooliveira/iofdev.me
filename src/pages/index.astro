@@ -20,11 +20,7 @@ const recentPosts = (await getSortedPosts()).slice(0, 3);
   />
 
   {recentPosts.length > 0 && (
-    <Section
-      eyebrow="Posts"
-      title="Notas recentes"
-      description="Aprendizados e ideias sobre frontend, produto e engenharia."
-    >
+    <Section tight>
       <ul>
         {recentPosts.map((post) => {
           const slug = post.id.replace(/\.(md|mdx)$/, "");
@@ -40,9 +36,7 @@ const recentPosts = (await getSortedPosts()).slice(0, 3);
           );
         })}
       </ul>
-      <p class="mt-6">
-        <a href="/posts" class="link-accent text-sm font-semibold">Ver todos os posts →</a>
-      </p>
+      <a href="/posts" class="content-footer__cta">All Posts →</a>
     </Section>
   )}
 </MainLayout>

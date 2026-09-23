@@ -1,7 +1,6 @@
 ---
 import MainLayout from "../../layouts/main.astro";
 import Section from "../../components/Section.astro";
-import Breadcrumb from "../../components/Breadcrumb.astro";
 import PostCard from "../../components/PostCard.astro";
 import Pagination from "../../components/Pagination.astro";
 import { blog, site } from "../../config";
@@ -54,7 +53,6 @@ const monthName = (monthIndex: number) => {
     description="Rascunhos e aprendizados sobre frontend, produto e engenharia em projetos reais."
   >
     <h1 class="sr-only">Posts — notas sobre engenharia de software</h1>
-    <Breadcrumb trail={[{ label: page.currentPage > 1 ? `Posts (página ${page.currentPage})` : "Posts" }]} />
 
     {years.map((year) => {
       const yearPosts = postsByYear.get(year)!;
