@@ -12,7 +12,7 @@ const tags = await getUniqueTags();
   title={`Tags — ${site.title}`}
   description="Todos os temas abordados nos posts: frontend, arquitetura, produto, acessibilidade e mais."
 >
-  <Section eyebrow="Tags" title="Explorar por tema" description="Todos os temas dos posts, ordenados por frequência.">
+  <Section title="Explorar por tema" description="Todos os temas dos posts, ordenados por frequência.">
     <h1 class="sr-only">Tags — explorar posts por tema</h1>
     <Breadcrumb trail={[{ href: "/posts", label: "Posts" }, { label: "Tags" }]} />
     {tags.length === 0 ? (

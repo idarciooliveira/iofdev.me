@@ -29,7 +29,7 @@ const title = page.currentPage === 1 ? `Tag: ${tagName} — ${site.title}` : `Ta
   title={title}
   description={`Posts sobre ${tagName}: notas e aprendizados de engenharia de software.`}
 >
-  <Section eyebrow="Tag" title={`#${tagName}`} description={`${page.total} post(s) sobre este tema.`}>
+  <Section title={`#${tagName}`} description={`${page.total} post(s) sobre este tema.`}>
     <h1 class="sr-only">Posts sobre {tagName}</h1>
     <Breadcrumb
       trail={[
