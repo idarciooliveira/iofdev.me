@@ -73,6 +73,14 @@ const schema = {
         </div>
       </header>
 
+      {heroImage && (
+        <img
+          src={heroImage}
+          alt={title}
+          class="mt-6 aspect-[21/9] w-full rounded-lg border border-(--border-soft) object-cover"
+        />
+      )}
+
       <article class="app-prose mt-8">
         <Content />
       </article>
