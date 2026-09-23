@@ -11,16 +11,14 @@ const alt = imageAlt ?? title;
 ---
 
 <figure
-  class="moment-card group mb-4 break-inside-avoid overflow-hidden rounded-2xl border bg-(--surface)"
-  style="border-color: var(--border-soft)"
-  data-year={year}
+  class="moment-card group relative aspect-[4/3] h-full overflow-hidden rounded-2xl"
   data-index={index}
 >
   {
     image ? (
       <button
         type="button"
-        class="moment-open block w-full cursor-zoom-in text-left"
+        class="moment-open block h-full w-full cursor-zoom-in text-left"
         data-image={image}
         data-title={title}
         data-description={description}
@@ -29,23 +27,25 @@ const alt = imageAlt ?? title;
         data-alt={alt}
         aria-label={`Ampliar: ${title}`}
       >
-        <div class="relative overflow-hidden">
-          <img
-            src={image}
-            alt={alt}
-            loading="lazy"
-            decoding="async"
-            class="w-full object-cover transition duration-500 group-hover:scale-[1.04]"
-          />
-          <div
-            class="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/55 via-black/0 to-black/10"
-            aria-hidden="true"
-          />
-          <span class="absolute top-3 left-3 inline-flex items-center rounded-full bg-black/65 px-2.5 py-1 text-[11px] font-bold tracking-[0.12em] text-white uppercase backdrop-blur">
-            {year}
-          </span>
+        <img
+          src={image}
+          alt={alt}
+          width="800"
+          height="600"
+          loading="lazy"
+          decoding="async"
+          class="absolute inset-0 h-full w-full object-cover transition duration-500 group-hover:scale-[1.05]"
+        />
+        <div
+          class="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/80 via-black/25 to-transparent"
+          aria-hidden="true"
+        />
+        <div class="absolute inset-x-0 bottom-0 p-4">
+          <h3 class="line-clamp-2 text-base leading-6 font-bold text-white text-balance">
+            {title}
+          </h3>
           {location && (
-            <span class="absolute bottom-3 left-3 inline-flex max-w-[calc(100%-1.5rem)] items-center gap-1.5 truncate rounded-full bg-black/65 px-2.5 py-1 text-xs font-medium text-white backdrop-blur">
+            <p class="mt-1.5 flex items-center gap-1.5 truncate text-xs font-medium text-white/85">
               <svg viewBox="0 0 24 24" class="h-3.5 w-3.5 shrink-0" aria-hidden="true">
                 <path
                   fill="none"
@@ -58,39 +58,25 @@ const alt = imageAlt ?? title;
                 <circle cx="12" cy="10" r="2.5" fill="none" stroke="currentColor" stroke-width="2" />
               </svg>
               <span class="truncate">{location}</span>
-            </span>
+            </p>
           )}
-          <span class="absolute right-3 bottom-3 inline-flex h-8 w-8 items-center justify-center rounded-full bg-white/90 text-black opacity-0 transition group-hover:opacity-100">
-            <svg viewBox="0 0 24 24" class="h-4 w-4" aria-hidden="true">
-              <path
-                fill="none"
-                stroke="currentColor"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M12 5v14M5 12h14"
-              />
-            </svg>
-          </span>
         </div>
       </button>
     ) : (
-      <div class="relative flex min-h-44 flex-col justify-end overflow-hidden bg-gradient-to-br from-(--surface-soft) to-(--bg) p-4">
-        <span class="absolute top-3 left-3 inline-flex items-center rounded-full border px-2.5 py-1 text-[11px] font-bold tracking-[0.12em] uppercase">
-          {year}
-        </span>
-        <p class="text-xs text-(--text-soft)">📷 photo coming soon</p>
+      <div class="relative h-full w-full bg-gradient-to-br from-(--surface-soft) to-(--bg)">
+        <div
+          class="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent"
+          aria-hidden="true"
+        />
+        <div class="absolute inset-x-0 bottom-0 p-4">
+          <p class="text-[11px] font-bold tracking-[0.14em] text-(--text-soft) uppercase">
+            📷 photo coming soon
+          </p>
+          <h3 class="mt-1 line-clamp-2 text-base leading-6 font-bold text-balance">
+            {title}
+          </h3>
+        </div>
       </div>
     )
   }
-
-  <figcaption class="p-4">
-    <h3 class="text-[15px] leading-6 font-semibold text-balance">{title}</h3>
-    <p class="mt-1.5 text-sm leading-6 text-(--text-soft)">{description}</p>
-    {
-      !image && location && (
-        <p class="mt-2 text-xs font-medium text-(--text-soft)">📍 {location}</p>
-      )
-    }
-  </figcaption>
 </figure>

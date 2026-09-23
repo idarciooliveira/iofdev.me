@@ -3,65 +3,21 @@ import MainLayout from "../layouts/main.astro";
 import Section from "../components/Section.astro";
 import MomentCard from "../components/MomentCard.astro";
 import { moments } from "../data/moments";
-
-const years = [...new Set(moments.map((m) => m.year))].sort((a, b) =>
-  b.localeCompare(a),
-);
-const places = new Set(
-  moments.map((m) => m.location).filter((l): l is string => Boolean(l)),
-).size;
-const withPhoto = moments.filter((m) => m.image).length;
 ---
 
 <MainLayout
   title="Moments — Idárcio Oliveira"
   description="Travel-style gallery of milestones from Idárcio Oliveira's journey as a developer in Angola."
-  ogImage="/moments/huila-talento.jpg"
+  ogImage="/og-default.jpg"
 >
   <Section
     eyebrow="Moments"
     title="Travel log of a builder"
-    description="Small stamps from my journey — hackathons, bootcamps, launches, community. Click any photo to view it full-screen. To add a new one, just drop the image in public/moments and add one entry in src/data/moments.ts."
+    description="Small stamps from my journey — hackathons, bootcamps, launches, community."
   >
-    <div class="mb-6 flex flex-wrap items-center gap-2 text-sm text-(--text-soft)">
-      <span class="badge">{moments.length} moments</span>
-      <span class="badge">{withPhoto} photos</span>
-      {places > 0 && <span class="badge">{places} places</span>}
-      <span class="ml-auto hidden sm:inline">🖱️ click to enlarge · filter by year ↓</span>
-    </div>
-
-    {
-      years.length > 1 && (
-        <div class="mb-8 flex flex-wrap gap-2" role="group" aria-label="Filtrar por ano">
-          <button
-            type="button"
-            data-filter="all"
-            class="moment-filter rounded-full border px-4 py-1.5 text-sm font-semibold transition"
-            aria-pressed="true"
-          >
-            All
-          </button>
-          {years.map((y) => (
-            <button
-              type="button"
-              data-filter={y}
-              class="moment-filter rounded-full border px-4 py-1.5 text-sm font-medium transition"
-              aria-pressed="false"
-            >
-              {y}
-            </button>
-          ))}
-        </div>
-      )
-    }
-
-    <div id="moments-grid" class="columns-1 gap-4 sm:columns-2">
+    <div id="moments-grid" class="grid gap-x-6 gap-y-8 sm:grid-cols-2 lg:grid-cols-3">
       {moments.map((moment, i) => <MomentCard {...moment} index={i} />)}
     </div>
-
-    <p id="moments-empty" class="hidden py-10 text-center text-sm text-(--text-soft)">
-      No moments for this year yet.
-    </p>
   </Section>
 
   <dialog
@@ -107,44 +63,12 @@ const withPhoto = moments.filter((m) => m.image).length;
 </MainLayout>
 
 <style>
-  .moment-filter {
-    border-color: var(--border-soft);
-    background: var(--surface);
-    color: var(--text-soft);
-  }
-  .moment-filter:hover {
-    color: var(--text);
-  }
-  .moment-filter[aria-pressed="true"] {
-    background: var(--text);
-    border-color: var(--text);
-    color: var(--bg);
-  }
   dialog::backdrop {
     background: rgba(0, 0, 0, 0.8);
   }
 </style>
 
 <script>
-  const filterButtons = document.querySelectorAll(".moment-filter");
-  const cards = document.querySelectorAll(".moment-card");
-  const emptyMsg = document.getElementById("moments-empty");
-
-  filterButtons.forEach((btn) => {
-    btn.addEventListener("click", () => {
-      const filter = btn.getAttribute("data-filter");
-      filterButtons.forEach((b) => b.setAttribute("aria-pressed", String(b === btn)));
-      let visible = 0;
-      cards.forEach((card) => {
-        const show =
-          filter === "all" || card.getAttribute("data-year") === filter;
-        (card as HTMLElement).style.display = show ? "" : "none";
-        if (show) visible++;
-      });
-      emptyMsg?.classList.toggle("hidden", visible > 0);
-    });
-  });
-
   // Lightbox — collects only cards that have a photo
   const dialog = document.getElementById("moment-lightbox") as HTMLDialogElement | null;
   const img = document.getElementById("lightbox-img") as HTMLImageElement | null;
