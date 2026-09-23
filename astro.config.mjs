@@ -3,6 +3,7 @@
 import mdx from '@astrojs/mdx';
 import react from '@astrojs/react';
 import sitemap from '@astrojs/sitemap';
+import { unified } from '@astrojs/markdown-remark';
 import rehypeAutolinkHeadings from 'rehype-autolink-headings';
 import rehypeSlug from 'rehype-slug';
 import remarkToc from 'remark-toc';
@@ -22,11 +23,13 @@ export default defineConfig({
   integrations: [mdx(), sitemap(), react()],
 
   markdown: {
-    remarkPlugins: [[remarkToc, { heading: 'Índice|Table of contents' }]],
-    rehypePlugins: [
-      rehypeSlug,
-      [rehypeAutolinkHeadings, { behavior: 'append' }],
-    ],
+    processor: unified({
+      remarkPlugins: [[remarkToc, { heading: 'Índice|Table of contents' }]],
+      rehypePlugins: [
+        rehypeSlug,
+        [rehypeAutolinkHeadings, { behavior: 'append' }],
+      ],
+    }),
     shikiConfig: { theme: 'github-dark-default' },
   },
 });
