@@ -137,27 +137,17 @@ const isActive = (href: string) => {
 </header>
 
 <script>
-  const storageKey = "theme";
-  const root = document.documentElement;
-  const themeButton = document.getElementById("theme-toggle");
-  const menuButton = document.getElementById("nav-menu-toggle");
-  const mobileMenu = document.getElementById("mobile-menu");
-  const menuIcon = menuButton?.querySelector(".nav-icon-menu");
-  const closeIcon = menuButton?.querySelector(".nav-icon-close");
-
-  const syncToggleUi = (theme: "light" | "dark") => {
-    if (!themeButton) return;
-    const isDark = theme === "dark";
-    themeButton.setAttribute("aria-pressed", String(isDark));
-    themeButton.setAttribute(
-      "aria-label",
-      isDark ? "Alternar para modo claro" : "Alternar para modo escuro",
-    );
-  };
-
-  const setMobileMenuState = (isOpen: boolean) => {
-    if (!menuButton || !mobileMenu) return;
-
+  // Mobile menu only — theme toggle lives in src/scripts/theme.ts.
+  // Re-initialized on astro:after-swap because ClientRouter swaps the
+  // header DOM instead of doing a full page load (same pattern as
+  // clone/astro-paper/src/components/Header.astro).
+  const setMobileMenuState = (
+    menuButton: HTMLElement,
+    mobileMenu: HTMLElement,
+    menuIcon: Element | null,
+    closeIcon: Element | null,
+    isOpen: boolean,
+  ) => {
     menuButton.setAttribute("aria-expanded", String(isOpen));
     menuButton.setAttribute(
       "aria-label",
@@ -168,50 +158,82 @@ const isActive = (href: string) => {
     closeIcon?.classList.toggle("hidden", !isOpen);
   };
 
-  const currentTheme =
-    root.getAttribute("data-theme") === "dark" ? "dark" : "light";
-  syncToggleUi(currentTheme);
-  setMobileMenuState(false);
+  const closeMobileMenu = () => {
+    const menuButton = document.getElementById("nav-menu-toggle");
+    const mobileMenu = document.getElementById("mobile-menu");
+    if (!menuButton || !mobileMenu) return;
+    setMobileMenuState(
+      menuButton,
+      mobileMenu,
+      menuButton.querySelector(".nav-icon-menu"),
+      menuButton.querySelector(".nav-icon-close"),
+      false,
+    );
+  };
 
-  if (themeButton) {
-    themeButton.addEventListener("click", () => {
-      const nextTheme =
-        root.getAttribute("data-theme") === "dark" ? "light" : "dark";
-      root.setAttribute("data-theme", nextTheme);
-      localStorage.setItem(storageKey, nextTheme);
-      syncToggleUi(nextTheme);
-    });
-  }
+  const initMobileMenu = () => {
+    const menuButton = document.getElementById("nav-menu-toggle");
+    const mobileMenu = document.getElementById("mobile-menu");
+    if (!menuButton || !mobileMenu) return;
+    const menuIcon = menuButton.querySelector(".nav-icon-menu");
+    const closeIcon = menuButton.querySelector(".nav-icon-close");
 
-  if (menuButton && mobileMenu) {
-    menuButton.addEventListener("click", () => {
-      const isOpen = menuButton.getAttribute("aria-expanded") === "true";
-      setMobileMenuState(!isOpen);
-    });
+    setMobileMenuState(menuButton, mobileMenu, menuIcon, closeIcon, false);
 
-    mobileMenu.querySelectorAll("a").forEach((link) => {
-      link.addEventListener("click", () => {
-        setMobileMenuState(false);
+    const boundButton = menuButton as HTMLButtonElement & {
+      __menuBound?: boolean;
+    };
+    if (!boundButton.__menuBound) {
+      boundButton.__menuBound = true;
+      menuButton.addEventListener("click", () => {
+        const isOpen = menuButton.getAttribute("aria-expanded") === "true";
+        setMobileMenuState(
+          menuButton,
+          mobileMenu,
+          menuButton.querySelector(".nav-icon-menu"),
+          menuButton.querySelector(".nav-icon-close"),
+          !isOpen,
+        );
       });
-    });
 
-    document.addEventListener("keydown", (event) => {
-      if (event.key === "Escape") {
-        setMobileMenuState(false);
-      }
-    });
+      mobileMenu.querySelectorAll("a").forEach((link) => {
+        link.addEventListener("click", closeMobileMenu);
+      });
+    }
 
-    document.addEventListener("click", (event) => {
-      const target = event.target as Node;
-      if (!menuButton.contains(target) && !mobileMenu.contains(target)) {
-        setMobileMenuState(false);
-      }
-    });
+    // Document/window listeners are global — register once.
+    const w = window as Window & { __navMenuGlobalBound?: boolean };
+    if (!w.__navMenuGlobalBound) {
+      w.__navMenuGlobalBound = true;
+      document.addEventListener("keydown", (event) => {
+        if (event.key === "Escape") {
+          closeMobileMenu();
+        }
+      });
 
-    window.addEventListener("resize", () => {
-      if (window.innerWidth >= 768) {
-        setMobileMenuState(false);
-      }
-    });
-  }
+      document.addEventListener("click", (event) => {
+        const target = event.target as Node;
+        const btn = document.getElementById("nav-menu-toggle");
+        const menu = document.getElementById("mobile-menu");
+        if (
+          btn &&
+          menu &&
+          !btn.contains(target) &&
+          !menu.contains(target)
+        ) {
+          closeMobileMenu();
+        }
+      });
+
+      window.addEventListener("resize", () => {
+        if (window.innerWidth >= 768) {
+          closeMobileMenu();
+        }
+      });
+
+      document.addEventListener("astro:after-swap", initMobileMenu);
+    }
+  };
+
+  initMobileMenu();
 </script>

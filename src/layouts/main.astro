@@ -108,6 +108,8 @@ const defaultSchema: Record<string, unknown> = {
               ? "dark"
               : "light";
         document.documentElement.setAttribute("data-theme", theme);
+        // Expose value so src/scripts/theme.ts can skip re-detection.
+        window.__theme = { value: theme };
       })();
     </script>
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
@@ -121,7 +123,8 @@ const defaultSchema: Record<string, unknown> = {
     <meta name="description" content={pageDescription} />
     <meta name="author" content={site.author} />
     {noindex && <meta name="robots" content="noindex, nofollow" />}
-    <meta name="theme-color" content="#0f1115" />
+    {/* Filled at runtime by src/scripts/theme.ts to match the current background colour */}
+    <meta name="theme-color" content="" />
     <link rel="canonical" href={canonicalHref} />
     <link rel="sitemap" href="/sitemap-index.xml" />
     <link
@@ -169,5 +172,8 @@ const defaultSchema: Record<string, unknown> = {
         </div>
       </div>
     </footer>
+    <script>
+      import "../scripts/theme";
+    </script>
   </body>
 </html>
