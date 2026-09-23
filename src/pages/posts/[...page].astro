@@ -72,8 +72,8 @@ const monthName = (monthIndex: number) => {
           {months.map((month) => {
             const monthPosts = postsByMonth.get(month)!;
             return (
-              <div class="flex flex-col sm:flex-row">
-                <div class="mt-6 min-w-36 text-lg sm:my-6">
+              <div class="mt-8">
+                <div class="text-xl">
                   <span class="font-bold">{monthName(month)}</span>
                   <sup class="ml-1 text-xs text-(--text-soft)">
                     {monthPosts.length}
