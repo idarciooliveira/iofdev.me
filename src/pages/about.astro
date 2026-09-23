@@ -7,44 +7,55 @@ const experiences = [
   {
     role: "Software Engineer",
     company: "People In Need",
-    location: "Angola",
     period: "Atual",
-    description:
-      "Responsável pelo desenvolvimento e manutenção do aplicativo de LogBook para gestão de frotas, deploy de apps móveis e APIs em servidores internos, além de integração com serviços usados por missões em diferentes países.",
+    details: [
+      "Responsável pelo desenvolvimento e manutenção do aplicativo de LogBook para gestão de frotas usado por missões em diferentes países.",
+      "Deploy de apps móveis e APIs em servidores internos, além de integração com serviços críticos usados pela organização.",
+    ],
   },
   {
     role: "Frontend e Mobile Developer",
     company: "Mutundo Express - Food trading and distribution platform",
-    location: "Angola",
     period: "2022 — 2024",
-    description:
-      "Desenho de arquitetura e desenvolvimento do app Android e iOS com React Native, implementação de pipeline CI/CD e gestão completa de distribuição nas lojas Google Play e Apple Store.",
+    details: [
+      "Desenho de arquitetura e desenvolvimento do app Android e iOS com React Native.",
+      "Implementação de pipeline CI/CD e gestão completa de distribuição nas lojas Google Play e Apple Store.",
+    ],
   },
   {
     role: "Backend Developer",
     company: "Njilayetu - Routing e geolocation services platform",
-    location: "Angola",
     period: "2022 — 2023",
-    description:
-      "Implementação dos serviços de roteamento e geolocalização, integração com APIs de pagamento, e-mail e webhooks, documentação da API com Swagger UI e deploy dos serviços da plataforma.",
+    details: [
+      "Implementação dos serviços de roteamento e geolocalização da plataforma.",
+      "Integração com APIs de pagamento, e-mail e webhooks para suportar operações críticas.",
+      "Documentação da API com Swagger UI e deploy dos serviços da plataforma.",
+    ],
   },
   {
-    role: "Technical Lead",
-    company:
-      "Tecnofarma - Health platform that connects patients from hospital services with medications in pharmacies",
-    location: "Angola",
-    period: "2019 — 2021",
-    description:
-      "Liderança de ponta a ponta no desenvolvimento da plataforma, orientação técnica da equipa, definição de arquitetura robusta para backend e frontend e integração de serviços externos com foco em entregas de valor.",
-  },
-  {
-    role: "Junior Backend Developer",
     company:
       "Tecnobase - Distribuição de produtos informáticos e prestação de serviços tecnológicos",
-    location: "Huíla - Lubango",
-    period: "2018",
-    description:
-      "Atuação em manutenção e reparação de computadores, instalação de redes, elaboração de relatórios e desenvolvimento do projeto TecnoFarma, uma aplicação de gestão hospitalar.",
+    period: "2018 — 2021",
+    positions: [
+      {
+        role: "Team Lead",
+        context: "TecnoFarma project",
+        period: "2019 — 2021",
+        details: [
+          "Promovido a Team Lead dentro da mesma empresa para liderar de ponta a ponta o desenvolvimento da plataforma TecnoFarma.",
+          "Definição de arquitetura robusta para backend e frontend com foco em entregas de valor.",
+          "Integração de serviços externos para conectar pacientes, hospitais e farmácias.",
+        ],
+      },
+      {
+        role: "Junior Backend Developer",
+        period: "2018",
+        details: [
+          "Atuação em manutenção e reparação de computadores, instalação de redes e elaboração de relatórios.",
+          "Desenvolvimento do projeto TecnoFarma, uma aplicação de gestão hospitalar.",
+        ],
+      },
+    ],
   },
 ];
 ---
@@ -86,34 +97,91 @@ const experiences = [
   <Section title="Proudly from Angola 🇦🇴">
     <article class="card">
       <p class="text-base leading-7 text-justify">
-        I am from Angola, and that identity is a big part of how I build
-        products: practical, resilient, and people-first. I care deeply about
-        creating technology that solves local and global challenges with real
-        value.
+        I'm from Cabinda — a small province in the north of Angola — and that
+        origin shapes how I build products: practical, resilient, and
+        people-first. Growing up there taught me to do a lot with little and
+        to design for real constraints.
       </p>
-      <p class="mt-4 text-sm text-(--text-soft)">
-        Home: Angola <span aria-hidden="true">🇦🇴</span>
+      <p class="mt-4 text-base leading-7 text-justify">
+        I care deeply about creating technology that solves local and global
+        challenges with real value, carrying Cabinda and Angola with me
+        wherever I ship.
       </p>
+      <aside class="mt-6">
+        <img
+          src="/angola-map.jpg"
+          alt="Map of Angola highlighting Cabinda"
+          class="max-h-80 w-full rounded-xl object-cover"
+          loading="lazy"
+        />
+      </aside>
     </article>
   </Section>
   <Section title="Work Experiences">
-    <div class="space-y-4">
+    <ol class="space-y-10">
       {
-        experiences.map((item) => (
-          <article class="card">
-            <div class="flex flex-wrap items-start justify-between gap-3">
-              <div>
-                <h3 class="text-lg font-medium">{item.role}</h3>
-                <p class="text-sm text-(--text-soft)">
-                  {item.company} · {item.location}
+        experiences.map((item, index) => (
+          <li class="relative pl-6 sm:pl-8">
+            {index < experiences.length - 1 && (
+              <span
+                aria-hidden="true"
+                class="absolute top-6 bottom-[-2.5rem] left-[5px] w-px bg-(--border-soft) sm:left-[5px]"
+              />
+            )}
+            <span
+              aria-hidden="true"
+              class="absolute top-2 left-0 h-[7px] w-[7px] rounded-full bg-(--text)"
+            />
+            {"positions" in item ? (
+              <>
+                <h3 class="text-base font-bold sm:text-lg">{item.company}</h3>
+                <p class="mt-1 text-sm text-(--text) sm:text-[15px]">
+                  {item.period}
                 </p>
-              </div>
-              <p class="text-sm text-(--text-soft)">{item.period}</p>
-            </div>
-            <p class="mt-4 text-sm text-(--text-soft)">{item.description}</p>
-          </article>
+                <div class="mt-6 space-y-8">
+                  {item.positions.map((pos) => (
+                    <div>
+                      <p class="text-[15px] font-semibold sm:text-base">
+                        {pos.role}
+                        {pos.context && (
+                          <span class="font-normal text-(--text-soft)">
+                            {" "}
+                            — {pos.context}
+                          </span>
+                        )}
+                      </p>
+                      <p class="mt-0.5 text-sm text-(--text-soft)">
+                        {pos.period}
+                      </p>
+                      <div class="mt-3 space-y-4">
+                        {pos.details.map((paragraph) => (
+                          <p class="text-sm leading-7 text-(--text-soft) sm:text-[15px]">
+                            {paragraph}
+                          </p>
+                        ))}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </>
+            ) : (
+              <>
+                <h3 class="text-base font-bold sm:text-lg">{item.role}</h3>
+                <p class="mt-1 text-sm text-(--text) sm:text-[15px]">
+                  {item.company} • {item.period}
+                </p>
+                <div class="mt-4 space-y-4">
+                  {item.details.map((paragraph) => (
+                    <p class="text-sm leading-7 text-(--text-soft) sm:text-[15px]">
+                      {paragraph}
+                    </p>
+                  ))}
+                </div>
+              </>
+            )}
+          </li>
         ))
       }
-    </div>
+    </ol>
   </Section>
 </MainLayout>
