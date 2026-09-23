@@ -14,6 +14,8 @@ interface Props {
   minutes: number;
 }
 
+import { toTransitionName } from "../utils/transitionName";
+
 const { slug, title, description, pubDate, minutes } = Astro.props;
 
 const tz = "Africa/Luanda";
@@ -33,7 +35,9 @@ const dateLabel = `${day} ${mon}, ${year}`;
     href={`/posts/${slug}/`}
     class="inline-block text-lg font-medium text-(--accent) decoration-dashed underline-offset-4 hover:underline focus-visible:no-underline focus-visible:underline-offset-0"
   >
-    {title}
+    <span transition:name={toTransitionName(slug)} class="inline-block">
+      {title}
+    </span>
   </a>
   <div class="mt-1 flex items-center gap-x-2 text-(--text-soft)">
     <svg

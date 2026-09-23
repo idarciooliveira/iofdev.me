@@ -10,6 +10,7 @@ import "@fontsource/google-sans-code/600-italic.css";
 import "@fontsource/google-sans-code/700.css";
 import "@fontsource/google-sans-code/700-italic.css";
 import "../styles/global.css";
+import { ClientRouter } from "astro:transitions";
 import Nav from "../components/Nav.astro";
 import SocialIconDock from "../components/SocialIconDock.astro";
 import { site } from "../config";
@@ -88,10 +89,11 @@ const defaultSchema: Record<string, unknown> = {
 };
 ---
 
-<html lang={site.lang}>
+<html lang={site.lang} class="overflow-y-scroll scroll-smooth">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width" />
+    <ClientRouter />
     <script is:inline>
       (() => {
         const storageKey = "theme";

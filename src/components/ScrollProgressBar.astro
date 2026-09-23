@@ -1,0 +1,60 @@
+---
+/**
+ * Top scroll progress bar — port of AstroPaper's inline
+ * createProgressBar()/updateScrollProgress() in
+ * clone/astro-paper/src/pages/posts/[...slug]/index.astro.
+ * Rendered declaratively (instead of document.createElement)
+ * so ClientRouter swaps can't duplicate it.
+ */
+---
+
+<div
+  aria-hidden="true"
+  class="fixed inset-x-0 top-0 z-[60] h-1 w-full"
+  style="background: transparent"
+>
+  <div id="post-progress-bar" class="h-1 w-0" style="background: var(--accent)"></div>
+</div>
+
+<script is:inline data-astro-rerun>
+  function initPostProgress() {
+    const bar = document.getElementById("post-progress-bar");
+    if (!bar) return;
+
+    const update = () => {
+      const doc = document.documentElement;
+      const winScroll = document.body.scrollTop || doc.scrollTop;
+      const height = doc.scrollHeight - doc.clientHeight;
+      const scrolled = height > 0 ? (winScroll / height) * 100 : 0;
+      bar.style.width = scrolled + "%";
+    };
+
+    let ticking = false;
+    const onScroll = () => {
+      if (!ticking) {
+        window.requestAnimationFrame(() => {
+          update();
+          ticking = false;
+        });
+        ticking = true;
+      }
+    };
+
+    document.removeEventListener("scroll", window.__postProgressOnScroll ?? (() => {}));
+    window.removeEventListener("resize", window.__postProgressOnScroll ?? (() => {}));
+    document.addEventListener("scroll", onScroll, { passive: true });
+    window.__postProgressOnScroll = onScroll;
+    window.addEventListener("resize", onScroll);
+    update();
+  }
+  initPostProgress();
+
+  if (window.__postProgressAfterSwap) {
+    document.removeEventListener("astro:after-swap", window.__postProgressAfterSwap);
+  }
+  window.__postProgressAfterSwap = () => {
+    window.scrollTo({ left: 0, top: 0, behavior: "instant" });
+    initPostProgress();
+  };
+  document.addEventListener("astro:after-swap", window.__postProgressAfterSwap);
+</script>

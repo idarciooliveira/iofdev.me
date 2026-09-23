@@ -1,0 +1,106 @@
+---
+/**
+ * Floating back-to-top button with conic-gradient scroll ring.
+ * Port of clone/astro-paper/src/pages/posts/[...slug]/_components/BackToTopButton.astro,
+ * adapted to this repo's tokens (--accent / --surface).
+ */
+---
+
+<div
+  id="btt-btn-container"
+  class="fixed right-4 bottom-8 z-50 translate-y-14 opacity-0 transition duration-500"
+>
+  <button
+    data-button="back-to-top"
+    type="button"
+    aria-label="Back to top"
+    class="relative size-14 rounded-full px-2 py-1 shadow-xl"
+    style="background: var(--surface); border: 1px solid var(--border-soft)"
+  >
+    <span
+      id="progress-indicator"
+      aria-hidden="true"
+      class="absolute inset-0 -z-10 block size-14 scale-110 rounded-full bg-transparent"
+    ></span>
+    <svg
+      viewBox="0 0 24 24"
+      aria-hidden="true"
+      class="mx-auto size-6 rotate-90"
+      fill="none"
+      stroke="currentColor"
+      stroke-width="2"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+    >
+      <path d="M19 12H5" />
+      <path d="m12 19-7-7 7-7" />
+    </svg>
+  </button>
+</div>
+
+<script is:inline data-astro-rerun>
+  function initBackToTop() {
+    const rootElement = document.documentElement;
+    const btnContainer = document.querySelector("#btt-btn-container");
+    const backToTopBtn = document.querySelector("[data-button='back-to-top']");
+    const progressIndicator = document.querySelector("#progress-indicator");
+
+    if (!rootElement || !btnContainer || !backToTopBtn || !progressIndicator) return;
+
+    const scrollToTop = () => {
+      const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      if (reduced) {
+        document.body.scrollTop = 0;
+        rootElement.scrollTop = 0;
+      } else {
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      }
+    };
+    if (!backToTopBtn.__bttBound) {
+      backToTopBtn.addEventListener("click", scrollToTop);
+      backToTopBtn.__bttBound = true;
+    }
+
+    let lastVisible = null;
+    function handleScroll() {
+      const scrollTotal = rootElement.scrollHeight - rootElement.clientHeight;
+      if (scrollTotal <= 0) return;
+      const scrollTop = rootElement.scrollTop;
+      const scrollPercent = Math.floor((scrollTop / scrollTotal) * 100);
+
+      progressIndicator.style.setProperty(
+        "background-image",
+        `conic-gradient(var(--accent), var(--accent) ${scrollPercent}%, transparent ${scrollPercent}%)`,
+      );
+
+      const isVisible = scrollTop / scrollTotal > 0.3;
+
+      if (isVisible !== lastVisible) {
+        btnContainer.classList.toggle("opacity-100", isVisible);
+        btnContainer.classList.toggle("translate-y-0", isVisible);
+        btnContainer.classList.toggle("opacity-0", !isVisible);
+        btnContainer.classList.toggle("translate-y-14", !isVisible);
+        lastVisible = isVisible;
+      }
+    }
+
+    let ticking = false;
+    const onScroll = () => {
+      if (!ticking) {
+        window.requestAnimationFrame(() => {
+          handleScroll();
+          ticking = false;
+        });
+        ticking = true;
+      }
+    };
+
+    if (window.__bttOnScroll) {
+      document.removeEventListener("scroll", window.__bttOnScroll);
+    }
+    document.addEventListener("scroll", onScroll, { passive: true });
+    window.__bttOnScroll = onScroll;
+    handleScroll();
+  }
+  initBackToTop();
+</script>
