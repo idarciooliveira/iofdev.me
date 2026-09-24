@@ -1,0 +1,294 @@
+---
+import MainLayout from "../layouts/main.astro";
+import Section from "../components/Section.astro";
+import { shelves } from "../data/books";
+
+const stars = (n: number) => "★".repeat(n) + "☆".repeat(Math.max(0, 5 - n));
+
+/** Split a shelf row into pairs so small screens can stack 2 books per mini-shelf. */
+const chunkPairs = <T,>(arr: T[]): T[][] => {
+  const out: T[][] = [];
+  for (let i = 0; i < arr.length; i += 2) out.push(arr.slice(i, i + 2));
+  return out;
+};
+---
+
+<MainLayout
+  title="Books — Idárcio Oliveira"
+  description="My personal bookshelf — the books I've read, on classic wood wall shelves."
+  ogImage="/og-default.jpg"
+>
+  <Section
+    title="My bookshelf"
+    description="The books I've read, kept on wood shelves. Hover or tap a book to see its title — more notes coming soon."
+  >
+    <div class="a-wall">
+      {
+        shelves.map((shelf, si) => (
+          <div class="a-row">
+            <span class="a-mount a-mount--left" aria-hidden="true" />
+            <span class="a-mount a-mount--right" aria-hidden="true" />
+            <span class="a-cable a-cable--left" aria-hidden="true" />
+            <span class="a-cable a-cable--right" aria-hidden="true" />
+            <div class="a-books">
+              {chunkPairs(shelf.books).map((pair) => (
+                <div class="a-unit">
+                  <div class="a-pair">
+                    {pair.map((book) => (
+                      <div class="a-book" tabindex="0">
+                        {book.favorite && (
+                          <span class="a-fav" title="Favorite">★</span>
+                        )}
+                        <img src={book.cover} alt={book.coverAlt} loading="lazy" />
+                        <span class="a-tip">
+                          <strong>{book.title}</strong>
+                          <em>{book.author} · {stars(book.rating ?? 4)}</em>
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                  <div class="a-plank a-plank--mini" aria-hidden="true">
+                    <span class="a-screw a-screw--l1" />
+                    <span class="a-screw a-screw--r1" />
+                  </div>
+                </div>
+              ))}
+            </div>
+            <div class="a-plank a-plank--full" aria-hidden="true">
+              <span class="a-screw a-screw--l1" />
+              <span class="a-screw a-screw--l2" />
+              <span class="a-screw a-screw--r1" />
+              <span class="a-screw a-screw--r2" />
+            </div>
+            {si === 0 && <div class="a-shadow" aria-hidden="true" />}
+          </div>
+        ))
+      }
+    </div>
+  </Section>
+</MainLayout>
+
+<style>
+  /* ============ Classic wall shelf (final) ============ */
+  .a-wall {
+    background:
+      radial-gradient(1200px 300px at 50% -60px, rgba(255,255,255,.7), transparent 60%),
+      linear-gradient(180deg, color-mix(in oklab, var(--surface) 60%, var(--surface-soft) 40%), var(--surface-soft));
+    border: 1px solid var(--border-soft);
+    border-radius: 20px;
+    padding: 34px 18px 10px;
+    /* Keep tooltips visible: they render above the books, outside the
+       shelf box. Never clip here — page-level containers handle
+       horizontal overflow instead. */
+    overflow: visible;
+  }
+  html[data-theme="dark"] .a-wall {
+    background: linear-gradient(180deg, #1b1b1b, #141414);
+  }
+  .a-row { position: relative; margin-bottom: 26px; }
+  .a-row:last-child { margin-bottom: 10px; }
+
+  /* Wall mounts: cables anchor here, on the wall — clear of the books. */
+  .a-mount {
+    position: absolute; top: 4px; width: 10px; height: 10px; border-radius: 50%; z-index: 0;
+    background: radial-gradient(circle at 35% 35%, #f0f0f0, #8a8a8a 55%, #3a3a3a);
+    box-shadow: inset 0 0 2px rgba(0,0,0,.6), 0 1px 2px rgba(0,0,0,.3);
+  }
+  .a-mount--left { left: 52px; }
+  .a-mount--right { right: 52px; }
+
+  /* Cables run from the wall mounts down to the plank ends, behind the books. */
+  .a-cable {
+    position: absolute; top: 10px; bottom: 52px; width: 2px; z-index: 0;
+    background: linear-gradient(180deg, #9a9a9a, #555);
+  }
+  .a-cable--left { left: 56px; transform: rotate(-11deg); transform-origin: top center; }
+  .a-cable--right { right: 56px; transform: rotate(11deg); transform-origin: top center; }
+
+  /* Desktop: units/pairs dissolve so all 4 books share one row + one plank.
+     Sizing: 4 × 128px + 3 × 24px = 584px max, fits 800px shell minus
+     wall padding (36px) and row padding (128px) = 636px available. */
+  .a-books {
+    position: relative; z-index: 1;
+    display: flex; align-items: flex-end; justify-content: center;
+    gap: clamp(12px, 2.5vw, 24px);
+    padding: 0 64px;
+  }
+  .a-unit, .a-pair { display: contents; }
+  .a-plank--mini { display: none; }
+  .a-book {
+    position: relative; width: clamp(96px, 16vw, 128px); aspect-ratio: 2 / 3;
+    flex: 0 1 auto; min-width: 0;
+    transform-origin: bottom center;
+    transition: transform .28s ease;
+    cursor: pointer;
+  }
+  .a-book img {
+    width: 100%; height: 100%; object-fit: cover; display: block;
+    border-radius: 2px 5px 5px 2px;
+    box-shadow:
+      inset 6px 0 10px -4px rgba(0,0,0,.45),
+      inset -1px 0 0 rgba(255,255,255,.35),
+      0 10px 18px -8px rgba(0,0,0,.5);
+    background: #ddd;
+  }
+  .a-book::before { /* spine highlight */
+    content: ""; position: absolute; inset: 0 auto 0 0; width: 8px;
+    background: linear-gradient(90deg, rgba(0,0,0,.38), rgba(255,255,255,.28), transparent);
+    border-radius: 2px 0 0 2px; pointer-events: none;
+  }
+  .a-book::after { /* floor shadow */
+    content: ""; position: absolute; left: 6%; right: 6%; bottom: -9px; height: 10px;
+    background: radial-gradient(50% 100% at 50% 50%, rgba(0,0,0,.4), transparent 70%);
+    filter: blur(1px); z-index: -1;
+  }
+  .a-book:focus-visible, .a-book.is-open { transform: translateY(-10px) rotate(-.6deg); z-index: 10; }
+  .a-book:focus-within { z-index: 10; }
+  .a-fav {
+    position: absolute; top: -9px; right: -7px; z-index: 2;
+    width: 22px; height: 26px; display: grid; place-items: center;
+    background: linear-gradient(180deg, #e23b3b, #b81f1f);
+    color: #fff; font-size: 13px; line-height: 1;
+    clip-path: polygon(0 0, 100% 0, 100% 100%, 50% 78%, 0 100%);
+    box-shadow: 0 4px 8px rgba(0,0,0,.3);
+  }
+  .a-tip {
+    position: absolute; left: 50%; bottom: calc(100% + 10px); transform: translateX(-50%) translateY(4px);
+    min-width: 140px; max-width: min(180px, 68vw); text-align: center;
+    background: var(--text); color: var(--bg);
+    border-radius: 10px; padding: 8px 10px; font-size: 12px; line-height: 1.45;
+    opacity: 0; pointer-events: none; transition: .22s ease; z-index: 30;
+    white-space: normal;
+  }
+  .a-tip strong { display: block; font-size: 12.5px; }
+  .a-tip em { font-style: normal; opacity: .75; font-size: 11.5px; }
+  /* Touch toggle (.is-open) + keyboard focus work everywhere.
+     Hover is desktop-only (see media query below) so sticky mobile
+     :hover can't keep a tooltip stuck open or show two at once. */
+  .a-book:focus-visible .a-tip, .a-book.is-open .a-tip {
+    opacity: 1; transform: translateX(-50%) translateY(0);
+  }
+  /* Desktop with a real mouse: hover lifts the book and shows its title. */
+  @media (hover: hover) and (pointer: fine) {
+    .a-book:hover { transform: translateY(-10px) rotate(-.6deg); z-index: 10; }
+    .a-book:hover .a-tip { opacity: 1; transform: translateX(-50%) translateY(0); }
+  }
+
+  .a-plank {
+    position: relative; z-index: 1; height: 18px; margin-top: -2px; border-radius: 3px;
+    background:
+      repeating-linear-gradient(93deg, rgba(0,0,0,.06) 0 14px, transparent 14px 34px, rgba(255,255,255,.06) 34px 36px),
+      linear-gradient(180deg, #e0aa6b 0%, #c98d4e 22%, #a76b32 55%, #8a5426 78%, #6f421e 100%);
+    box-shadow:
+      inset 0 2px 0 rgba(255,255,255,.55),
+      inset 0 -3px 0 rgba(0,0,0,.28),
+      0 14px 22px -10px rgba(0,0,0,.5);
+  }
+  .a-plank::after { /* front edge */
+    content: ""; position: absolute; inset: auto 0 -7px 0; height: 7px; border-radius: 0 0 3px 3px;
+    background: linear-gradient(180deg, #5d3717, #3f2410);
+  }
+  .a-screw { position: absolute; bottom: 5px; width: 7px; height: 7px; border-radius: 50%;
+    background: radial-gradient(circle at 35% 35%, #eee, #777 60%, #333); box-shadow: inset 0 0 2px #000; }
+  .a-screw--l1 { left: 12px; } .a-screw--l2 { left: 30px; }
+  .a-screw--r1 { right: 12px; } .a-screw--r2 { right: 30px; }
+  .a-shadow { height: 22px; margin: 6px 24px 0; background: radial-gradient(60% 100% at 50% 0, rgba(0,0,0,.22), transparent 70%); }
+
+  /* Mid widths (large phones landscape / small tablets): narrower gutters
+     so 4 books still fit — e.g. 641px: 458px content vs 477px available. */
+  @media (max-width: 860px) {
+    .a-books { padding: 0 40px; }
+  }
+
+  /* ============ Small screens: 2 books per mini-shelf, no horizontal scroll ============ */
+  @media (max-width: 640px) {
+    .a-wall { padding: 64px 12px 8px; }
+    .a-cable, .a-mount { display: none; }
+    .a-books {
+      display: flex; flex-direction: column;
+      gap: 20px; padding: 0 4px;
+    }
+    .a-unit { display: block; width: 100%; max-width: 300px; margin-inline: auto; }
+    .a-pair { display: flex; align-items: flex-end; justify-content: center; gap: 12px; }
+    /* Small enough for iPhone 13 (390px) and 320px devices:
+       2 × ~28vw + 12px gap stays well inside the wall with room for the plank. */
+    .a-book { width: clamp(84px, 28vw, 118px); flex: 0 1 118px; }
+    .a-tip { min-width: 0; max-width: 44vw; font-size: 11px; }
+    /* Keep edge tooltips inside the viewport */
+    .a-pair .a-book:first-child .a-tip { left: 0; transform: translateX(0) translateY(4px); }
+    .a-pair .a-book:first-child:focus-visible .a-tip,
+    .a-pair .a-book:first-child.is-open .a-tip { transform: translateX(0) translateY(0); }
+    .a-pair .a-book:last-child .a-tip { left: auto; right: 0; transform: translateX(0) translateY(4px); }
+    .a-pair .a-book:last-child:focus-visible .a-tip,
+    .a-pair .a-book:last-child.is-open .a-tip { transform: translateX(0) translateY(0); }
+    .a-plank--mini { display: block; margin-inline: 0; }
+    .a-plank--full { display: none; }
+  }
+
+  /* Desktop hover on edge books (small window + real mouse): keep the
+     edge-anchored transform so the tooltip stays in the viewport. */
+  @media (max-width: 640px) and (hover: hover) and (pointer: fine) {
+    .a-pair .a-book:first-child:hover .a-tip { transform: translateX(0) translateY(0); }
+    .a-pair .a-book:last-child:hover .a-tip { transform: translateX(0) translateY(0); }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .a-book, .a-tip { transition: none; }
+  }
+</style>
+
+<script>
+  // Tap toggle: first tap opens the tooltip, second tap on the same book closes it.
+  // (Tooltip itself is pointer-events:none, so all touches land on the book.)
+  function initBookToggle() {
+    const books = Array.from(document.querySelectorAll(".a-book"));
+    if (!books.length) return;
+    books.forEach((book) => {
+      if (book.dataset.toggleBound) return;
+      book.dataset.toggleBound = "true";
+      book.addEventListener("click", () => {
+        const wasOpen = book.classList.contains("is-open");
+        books.forEach((b) => {
+          if (b !== book) b.classList.remove("is-open");
+        });
+        if (wasOpen) {
+          book.classList.remove("is-open");
+          book.blur();
+        } else {
+          book.classList.add("is-open");
+        }
+      });
+      // Desktop: hovering another book drops a tap-opened tooltip elsewhere,
+      // so a hover tooltip + a tap tooltip can never show two at once.
+      book.addEventListener("mouseenter", () => {
+        if (window.matchMedia("(hover: hover) and (pointer: fine)").matches) {
+          books.forEach((b) => {
+            if (b !== book) b.classList.remove("is-open");
+          });
+        }
+      });
+      book.addEventListener("focusout", () => {
+        // Keyboard / focus leaving the book closes its tooltip.
+        requestAnimationFrame(() => {
+          if (!book.contains(document.activeElement)) book.classList.remove("is-open");
+        });
+      });
+      book.addEventListener("keydown", (e) => {
+        if (e.key === "Escape") {
+          book.classList.remove("is-open");
+          book.blur();
+        }
+      });
+    });
+    if (!document.dataset.booksOutsideBound) {
+      document.dataset.booksOutsideBound = "true";
+      document.addEventListener("click", (e) => {
+        if (!(e.target instanceof Element) || !e.target.closest(".a-book")) {
+          document.querySelectorAll(".a-book.is-open").forEach((b) => b.classList.remove("is-open"));
+        }
+      });
+    }
+  }
+  initBookToggle();
+  document.addEventListener("astro:page-load", initBookToggle);
+</script>

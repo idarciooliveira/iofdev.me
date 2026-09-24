@@ -17,7 +17,10 @@ import { defineConfig } from 'astro/config';
 export default defineConfig({
   site: 'https://iofdev.me',
   vite: {
-      plugins: [tailwindcss()],
+	server: {
+	  allowedHosts: true,
+	},
+	plugins: [tailwindcss()],
 	},
 
   integrations: [mdx(), sitemap(), react()],
