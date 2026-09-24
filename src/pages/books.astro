@@ -1,7 +1,7 @@
 ---
 import MainLayout from "../layouts/main.astro";
 import Section from "../components/Section.astro";
-import { shelves } from "../data/books";
+import { shelves, currentlyReading } from "../data/books";
 
 const stars = (n: number) => "★".repeat(n) + "☆".repeat(Math.max(0, 5 - n));
 
@@ -24,6 +24,23 @@ const chunkPairs = <T,>(arr: T[]): T[][] => {
   >
     <div class="a-wall">
       {
+        currentlyReading.length > 0 && (
+          <div class="a-now">
+            <span class="a-now__badge">Currently reading</span>
+            {currentlyReading.map((book) => (
+              <div class="a-now__book">
+                <img src={book.cover} alt={book.coverAlt} loading="eager" />
+                <div class="a-now__meta">
+                  <strong>{book.title}</strong>
+                  <em>{book.author}</em>
+                  {book.takeaway && <p>{book.takeaway}</p>}
+                </div>
+              </div>
+            ))}
+          </div>
+        )
+      }
+      {
         shelves.map((shelf, si) => (
           <div class="a-row">
             <span class="a-mount a-mount--left" aria-hidden="true" />
@@ -39,10 +56,13 @@ const chunkPairs = <T,>(arr: T[]): T[][] => {
                         {book.favorite && (
                           <span class="a-fav" title="Favorite">★</span>
                         )}
+                        {book.status === "Reading" && (
+                          <span class="a-reading" title="Currently reading">Reading</span>
+                        )}
                         <img src={book.cover} alt={book.coverAlt} loading="lazy" />
                         <span class="a-tip">
                           <strong>{book.title}</strong>
-                          <em>{book.author} · {stars(book.rating ?? 4)}</em>
+                          <em>{book.author} · {book.status === "Reading" ? "Reading now" : stars(book.rating ?? 4)}</em>
                         </span>
                       </div>
                     ))}
@@ -94,23 +114,23 @@ const chunkPairs = <T,>(arr: T[]): T[][] => {
     background: radial-gradient(circle at 35% 35%, #f0f0f0, #8a8a8a 55%, #3a3a3a);
     box-shadow: inset 0 0 2px rgba(0,0,0,.6), 0 1px 2px rgba(0,0,0,.3);
   }
-  .a-mount--left { left: 52px; }
-  .a-mount--right { right: 52px; }
+  .a-mount--left { left: 22px; }
+  .a-mount--right { right: 22px; }
 
   /* Cables run from the wall mounts down to the plank ends, behind the books. */
   .a-cable {
     position: absolute; top: 10px; bottom: 52px; width: 2px; z-index: 0;
     background: linear-gradient(180deg, #9a9a9a, #555);
   }
-  .a-cable--left { left: 56px; transform: rotate(-11deg); transform-origin: top center; }
-  .a-cable--right { right: 56px; transform: rotate(11deg); transform-origin: top center; }
+  .a-cable--left { left: 26px; transform: rotate(-6deg); transform-origin: top center; }
+  .a-cable--right { right: 26px; transform: rotate(6deg); transform-origin: top center; }
 
   /* Desktop: units/pairs dissolve so all 4 books share one row + one plank.
      Sizing: 4 × 128px + 3 × 24px = 584px max, fits 800px shell minus
      wall padding (36px) and row padding (128px) = 636px available. */
   .a-books {
     position: relative; z-index: 1;
-    display: flex; align-items: flex-end; justify-content: center;
+    display: flex; align-items: flex-end; justify-content: flex-start;
     gap: clamp(12px, 2.5vw, 24px);
     padding: 0 64px;
   }
@@ -152,6 +172,35 @@ const chunkPairs = <T,>(arr: T[]): T[][] => {
     clip-path: polygon(0 0, 100% 0, 100% 100%, 50% 78%, 0 100%);
     box-shadow: 0 4px 8px rgba(0,0,0,.3);
   }
+  .a-reading {
+    position: absolute; top: -11px; left: -8px; z-index: 2;
+    background: linear-gradient(180deg, #16a34a, #15803d);
+    color: #fff; font-size: 10px; font-weight: 700; letter-spacing: .04em;
+    text-transform: uppercase; padding: 4px 8px; border-radius: 999px;
+    box-shadow: 0 4px 8px rgba(0,0,0,.3); white-space: nowrap;
+  }
+  /* Currently-reading spotlight above the shelves */
+  .a-now {
+    position: relative; z-index: 1;
+    border: 1px solid var(--border-soft); border-radius: 14px;
+    background: color-mix(in oklab, var(--surface) 70%, transparent);
+    padding: 16px; margin: 0 46px 26px;
+  }
+  .a-now__badge {
+    display: inline-block; font-size: 11px; font-weight: 700;
+    letter-spacing: .06em; text-transform: uppercase;
+    color: #fff; background: linear-gradient(180deg, #16a34a, #15803d);
+    padding: 4px 10px; border-radius: 999px; margin-bottom: 12px;
+  }
+  .a-now__book { display: flex; gap: 14px; align-items: flex-start; }
+  .a-now__book img {
+    width: 72px; aspect-ratio: 2 / 3; object-fit: cover; flex: none;
+    border-radius: 2px 5px 5px 2px;
+    box-shadow: 0 10px 18px -8px rgba(0,0,0,.5);
+  }
+  .a-now__meta strong { display: block; font-size: 15px; line-height: 1.35; }
+  .a-now__meta em { font-style: normal; opacity: .7; font-size: 13px; }
+  .a-now__meta p { margin: 6px 0 0; font-size: 13px; line-height: 1.5; opacity: .85; }
   .a-tip {
     position: absolute; left: 50%; bottom: calc(100% + 10px); transform: translateX(-50%) translateY(4px);
     min-width: 140px; max-width: min(180px, 68vw); text-align: center;
@@ -209,7 +258,7 @@ const chunkPairs = <T,>(arr: T[]): T[][] => {
       gap: 20px; padding: 0 4px;
     }
     .a-unit { display: block; width: 100%; max-width: 300px; margin-inline: auto; }
-    .a-pair { display: flex; align-items: flex-end; justify-content: center; gap: 12px; }
+    .a-pair { display: flex; align-items: flex-end; justify-content: flex-start; gap: 12px; }
     /* Small enough for iPhone 13 (390px) and 320px devices:
        2 × ~28vw + 12px gap stays well inside the wall with room for the plank. */
     .a-book { width: clamp(84px, 28vw, 118px); flex: 0 1 118px; }
@@ -223,6 +272,7 @@ const chunkPairs = <T,>(arr: T[]): T[][] => {
     .a-pair .a-book:last-child.is-open .a-tip { transform: translateX(0) translateY(0); }
     .a-plank--mini { display: block; margin-inline: 0; }
     .a-plank--full { display: none; }
+    .a-now { margin: 0 0 20px; }
   }
 
   /* Desktop hover on edge books (small window + real mouse): keep the
