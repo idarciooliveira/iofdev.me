@@ -6,9 +6,9 @@ tags: ["frontend", "arquitetura"]
 heroImage: "/posts/2026/como-penso-arquitetura-frontend/cover.jpg"
 ---
 
-## O problema real
+## O problema
 
-Todo produto em crescimento chega ao ponto em que o frontend vira gargalo: builds lentos, componentes duplicados, medo de refatorar. A causa raramente é a framework — é a falta de fronteiras claras entre domínios.
+Todo produto em crescimento chega ao ponto em que o frontend vira gargalo: builds lentos, componentes duplicados, medo de refatorar. A causa raramente é a framework. É a falta de fronteiras claras entre domínios.
 
 ## Três camadas que uso
 
@@ -18,7 +18,7 @@ Cores, espaçamentos e tipografia vivem em tokens, não em valores soltos. Quand
 
 ### 2. Domínio: features isoladas
 
-Cada área de produto tem sua pasta com componentes, hooks e tipos próprios. Código compartilhado só sobe de nível quando o terceiro uso aparece — nunca antes.
+Cada área de produto tem sua pasta com componentes, hooks e tipos próprios. Código compartilhado só sobe de nível quando o terceiro uso aparece. Nunca antes.
 
 ### 3. Plataforma: roteamento, dados e observabilidade
 
@@ -27,11 +27,11 @@ Cache, autenticação, logs e métricas ficam na camada de plataforma. Features 
 ## Regras de decisão
 
 - **Regra dos três usos** antes de generalizar um componente.
-- **Contratos tipados** entre frontend e API — [documentação leve economiza retrabalho](/posts/notas-de-campo-decisoes-produto).
+- **Contratos tipados** entre frontend e API: [documentação leve economiza retrabalho](/posts/notas-de-campo-decisoes-produto).
 - **Métricas antes de micro-otimização**: Core Web Vitals primeiro, bundle depois.
 
 ## Conclusão
 
-![OpenTelemetry — observabilidade na camada de plataforma](/posts/2026/como-penso-arquitetura-frontend/cover.webp)
+![OpenTelemetry: observabilidade na camada de plataforma](/posts/2026/como-penso-arquitetura-frontend/cover.webp)
 
-Arquitetura boa é a que um developer novo entende em uma tarde. Fronteiras claras, tokens consistentes e plataforma compartilhada — o resto é disciplina de revisão de código.
+Arquitetura boa é a que um developer novo entende em uma tarde. Fronteiras claras, tokens consistentes e plataforma compartilhada. O resto é disciplina de revisão de código.

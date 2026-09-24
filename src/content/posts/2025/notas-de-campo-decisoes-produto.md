@@ -7,7 +7,7 @@ tags: ["produto", "carreira"]
 
 ## Contexto
 
-Em times pequenos, retrabalho quase nunca é falta de talento — é falta de contexto partilhado. Estas quatro práticas reduziram drasticamente o vai-e-volta nos projetos onde trabalhei.
+Em times pequenos, o retrabalho vem quase sempre de contexto partilhado em falta, não de falta de talento. Estas quatro práticas cortaram o vai-e-volta nos projetos onde trabalhei.
 
 ## 1. ADR de uma página
 
@@ -19,7 +19,7 @@ Antes de decisões reversíveis caras (migração, nova lib, mudança de API), e
 
 ## 3. Demo semanal curta
 
-Quinze minutos, ecrã partilhado, sem slides. Problemas de UX aparecem em dias, não em meses.
+Quinze minutos com ecrã partilhado e sem slides. Problemas de UX aparecem em dias, não em meses.
 
 ## 4. Log de decisões no repo
 
@@ -27,4 +27,4 @@ Um `DECISIONS.md` com data, decisão e motivo. Daqui a seis meses, ninguém prec
 
 ## Conclusão
 
-Processo leve não é burocracia — é memória externa do time. Escreva pouco, mas escreva sempre no mesmo lugar.
+Processo leve serve de memória externa do time. Escreva pouco, mas escreva sempre no mesmo lugar.

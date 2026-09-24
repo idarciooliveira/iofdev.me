@@ -29,7 +29,7 @@ export const books: Book[] = [
     status: "Reading",
     favorite: false,
     shelf: "Currently Reading",
-    takeaway: "Currently reading — building real apps on top of foundation models.",
+    takeaway: "Currently reading. Notes on building apps on foundation models.",
   },
   {
     slug: "the-alchemist",
@@ -41,7 +41,7 @@ export const books: Book[] = [
     status: "Finished",
     favorite: true,
     shelf: "Mindset & Meaning",
-    takeaway: "Follow your personal legend — the universe conspires with those who move.",
+    takeaway: "Follow your personal legend. Keep moving.",
   },
   {
     slug: "12-rules-for-life",
@@ -65,7 +65,7 @@ export const books: Book[] = [
     status: "Finished",
     favorite: false,
     shelf: "Mindset & Meaning",
-    takeaway: "Master your mind — callous it through suffering and accountability.",
+    takeaway: "Callous your mind through hard work and accountability.",
   },
   {
     slug: "the-way-of-the-superior-man",
@@ -77,7 +77,7 @@ export const books: Book[] = [
     status: "Finished",
     favorite: true,
     shelf: "Mindset & Meaning",
-    takeaway: "Live your purpose fully — presence over distraction.",
+    takeaway: "Live your purpose. Stay present.",
   },
   {
     slug: "the-defining-decade",
@@ -89,7 +89,7 @@ export const books: Book[] = [
     status: "Finished",
     favorite: true,
     shelf: "Life & Purpose",
-    takeaway: "Your twenties matter — build identity, work and love capital now.",
+    takeaway: "Your twenties matter. Build work skills, relationships and identity early.",
   },
   {
     slug: "the-holy-bible-kjv",
@@ -101,7 +101,7 @@ export const books: Book[] = [
     status: "Finished",
     favorite: false,
     shelf: "Life & Purpose",
-    takeaway: "Wisdom, purpose and grounding — the foundational text.",
+    takeaway: "A grounding text I return to.",
   },
   {
     slug: "14-habits-highly-productive-developers",
@@ -113,7 +113,7 @@ export const books: Book[] = [
     status: "Finished",
     favorite: false,
     shelf: "Life & Purpose",
-    takeaway: "Small habits compound — focus, learn in public, stay healthy.",
+    takeaway: "Small habits add up. Focus, learn in public, stay healthy.",
   },
   {
     slug: "o-homem-mais-rico-da-babilonia",
@@ -125,7 +125,7 @@ export const books: Book[] = [
     status: "Finished",
     favorite: true,
     shelf: "Money & Focus",
-    takeaway: "Pay yourself first — save 10%, control spending, make money work.",
+    takeaway: "Pay yourself first. Save 10%, control spending, put money to work.",
   },
   {
     slug: "os-segredos-da-mente-milionaria",
@@ -137,7 +137,7 @@ export const books: Book[] = [
     status: "Finished",
     favorite: false,
     shelf: "Money & Focus",
-    takeaway: "Your money blueprint shapes wealth — think rich to get rich.",
+    takeaway: "Your money habits shape what you keep.",
   },
   {
     slug: "a-unica-coisa",
@@ -149,7 +149,7 @@ export const books: Book[] = [
     status: "Finished",
     favorite: false,
     shelf: "Money & Focus",
-    takeaway: "Focus is the one thing — what matters most right now?",
+    takeaway: "Focus on what matters most right now.",
   },
   {
     slug: "a-vaca-roxa",
@@ -161,7 +161,7 @@ export const books: Book[] = [
     status: "Finished",
     favorite: false,
     shelf: "Business & Story",
-    takeaway: "Be remarkable — transform your business to stand out.",
+    takeaway: "Be worth noticing.",
   },
   {
     slug: "como-as-gigantes-caem",
@@ -173,7 +173,7 @@ export const books: Book[] = [
     status: "Finished",
     favorite: false,
     shelf: "Business & Story",
-    takeaway: "Decline has five stages — discipline is how companies avoid the fall.",
+    takeaway: "How companies decline in five stages, and how discipline slows it.",
   },
   {
     slug: "historias-que-o-meu-chefe-nunca-me-contou",
@@ -185,7 +185,7 @@ export const books: Book[] = [
     status: "Finished",
     favorite: false,
     shelf: "Business & Story",
-    takeaway: "Use storytelling to optimize and inspire your team.",
+    takeaway: "Storytelling for leading teams.",
   },
 ];
 

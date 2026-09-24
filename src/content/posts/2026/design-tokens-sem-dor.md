@@ -17,7 +17,7 @@ Valores brutos: paleta (`blue-500`), escala de espaço (`4, 8, 16`), fontes. Rar
 
 ### 2. Tokens semânticos
 
-Significado: `--surface`, `--text`, `--text-soft`, `--accent`, `--border-soft`. É aqui que temas claro/escuro acontecem — trocam-se os valores, não os componentes.
+Significado: `--surface`, `--text`, `--text-soft`, `--accent`, `--border-soft`. É aqui que os temas claro e escuro vivem: trocam-se os valores sem mexer nos componentes.
 
 ### 3. Tokens de componente
 
@@ -31,4 +31,4 @@ Casos específicos: altura do botão, raio do card. Só crie quando o padrão se
 
 ## Quando escalar
 
-Comece com ~20 tokens semânticos. Se um valor aparece em três componentes com o mesmo papel, vira token. Antes disso, é detalhe local — e detalhe local pode ficar local.
+Comece com ~20 tokens semânticos. Se um valor aparece em três componentes com o mesmo papel, vira token. Antes disso, é detalhe local, e detalhe local pode ficar local.
