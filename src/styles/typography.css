@@ -4,7 +4,9 @@
   /* ===== Override default Tailwind Typography styles ===== */
   /* Ported verbatim from AstroPaper (clone/astro-paper/src/styles/typography.css) */
   .app-prose {
-    @apply prose;
+    @apply prose max-w-none;
+
+    max-width: none;
 
     h1,
     h2,
