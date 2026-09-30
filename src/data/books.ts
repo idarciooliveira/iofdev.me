@@ -21,6 +21,17 @@ export interface Book {
  */
 export const books: Book[] = [
   {
+    slug: "sobre-a-brevidade-da-vida-seneca",
+    title: "Sobre a Brevidade da Vida",
+    author: "Sêneca",
+    cover: "/books/sobre-a-brevidade-da-vida-seneca.jpg",
+    coverAlt: "Cover of Sobre a Brevidade da Vida by Sêneca",
+    status: "Reading",
+    favorite: false,
+    shelf: "Currently Reading",
+    takeaway: "Currently reading. Edição bilíngue sobre o uso do tempo.",
+  },
+  {
     slug: "ai-engineering",
     title: "AI Engineering: Building Applications with Foundation Models",
     author: "Chip Huyen",
