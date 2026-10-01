@@ -8,8 +8,6 @@ heroImage: "/posts/2026/opencode-alternativa-agentes-codigo/cover.jpg"
 
 Os coding agents vieram para ficar. Tornaram-se o novo framework de JavaScript. Todos os dias sai um agente novo, um modelo novo ou uma ferramenta de IA nova. Dá para fingir que é moda, mas quem já delegou tarefas repetitivas a um coding agent não volta atrás.
 
-![Logótipo do OpenCode, o coding agent open source](/posts/2026/opencode-alternativa-agentes-codigo/cover.webp)
-
 O problema é que isto não é grátis. Para usar um coding agent a sério, pagas uma chave de API ou uma subscrição. A subscrição quase sempre compensa, porque os laboratórios subsidiam o uso. Pagas menos e consomes mais do que consumirias em API.
 
 Então qual é a melhor subscrição, ou o melhor modelo, para ti? A resposta típica é "depende". Vou tentar ser mais concreto.
