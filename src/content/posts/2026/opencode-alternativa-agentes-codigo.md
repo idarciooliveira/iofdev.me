@@ -49,7 +49,7 @@ Esta tabela mostra quanto pesa cada plano, com 20 USD a 21.000 Kz e 10 USD a 10.
 
 Conforme a tua fase e o que ganhas, continua caro. Para quem está no primeiro degrau, 7,6% do salário numa ferramenta pesa.
 
-## Quanto plano precisas
+## Qual plano pagar?
 
 Pela minha experiência, a maioria dos profissionais fica bem com 20 USD por mês, seja Claude ou ChatGPT. Se programas pouco e o teu trabalho é sobretudo documentos e apresentações, chega com folga. Um programador pleno que usa coding agent todos os dias também aguenta com este plano, desde que gira bem o consumo.
 
@@ -75,7 +75,7 @@ O que mais pesa no dia a dia:
 
 Se queres começar a trabalhar com coding agents sem gastar muito, não conheço entrada mais barata.
 
-## Configurar passo a passo
+## Como configurar o OpenCode
 
 ### 1. Instalar
 
