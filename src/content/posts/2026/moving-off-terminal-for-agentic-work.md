@@ -1,5 +1,5 @@
 ---
-title: "A sair do terminal para trabalhar com coding agents"
+title: "Moving off terminal for agentic work"
 description: "Como passei das conversas no navegador e da sidebar do VS Code para coding agents no terminal, aplicações desktop e o T3 Code."
 pubDate: 2026-10-02
 tags: ["ia", "produtividade", "coding-agents"]
