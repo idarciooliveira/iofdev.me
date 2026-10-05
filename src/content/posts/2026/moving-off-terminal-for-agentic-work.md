@@ -16,7 +16,7 @@ No início, usava as versões web do ChatGPT e do Claude. Explicava uma ideia, c
 
 Comecei assim porque era quase grátis. Bastava abrir um separador no navegador e pedir ajuda, sem mudar nada no meu ambiente de trabalho. Era útil para pequenos trechos de código, mas tornava-se cansativo à medida que as tarefas cresciam.
 
-Depois, o Copilot trouxe o preenchimento automático para dentro do VS Code. Foi a primeira vez que tive a IA mesmo ao lado do código. A seguir, as ferramentas começaram a fazer mais. Já conseguiam analisar o projeto, editar ficheiros, executar comandos e implementar uma funcionalidade completa.
+Na altura já existia o Copilot e o auto complete mas atrapalhava mais do que ajudava, depois foram adicionadas as extensões de IA sidebar, foi a primeira vez que tive a IA ao lado do código de forma mais intuitiva. A seguir, as ferramentas começaram a fazer mais. Já conseguiam analisar o projeto, editar ficheiros, executar comandos e implementar uma funcionalidade completa.
 
 Durante alguns meses, usei uma sidebar de IA no VS Code. Na altura, pareceu-me uma grande melhoria. Já não precisava de andar a passar perguntas e trechos de código entre o navegador e o VS Code. O coding agent estava dentro do projeto e tinha acesso aos ficheiros em que eu trabalhava.
 
