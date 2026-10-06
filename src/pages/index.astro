@@ -5,13 +5,25 @@ import Section from "../components/Section.astro";
 import PostCard from "../components/PostCard.astro";
 import { defaultLang, postsPath } from "../i18n";
 import { getListedPosts, getReadingTime, getSlug } from "../utils/posts";
+import { schemaIds } from "../utils/schema";
 
 const recentPosts = (await getListedPosts(defaultLang)).slice(0, 3);
+const ids = schemaIds(Astro.site!);
+const schema = {
+  "@type": "WebPage",
+  "@id": `${new URL("/", Astro.site!)}#webpage`,
+  url: new URL("/", Astro.site!).toString(),
+  name: "Idárcio Oliveira, Software Engineer",
+  isPartOf: { "@id": ids.website },
+  about: { "@id": ids.person },
+  mainEntity: { "@id": ids.person },
+};
 ---
 
 <MainLayout
-  title="idárcio oliveira — software engineer"
-  description="Projects, work history and notes from Idárcio Oliveira, a software engineer based in Angola."
+  title="Idárcio Oliveira — Software Engineer in Angola"
+  description="Idárcio Oliveira is a software engineer and tech lead based in Angola. Backend and mobile apps with TypeScript, NestJS, PostgreSQL and React Native. Posts, work history and contact."
+  schema={schema}
   ogImage="/og-default.jpg"
 >
   <Hero
