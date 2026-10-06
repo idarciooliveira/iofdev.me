@@ -14,7 +14,7 @@ import { ClientRouter } from "astro:transitions";
 import Analytics from "@vercel/analytics/astro";
 import Nav from "../components/Nav.astro";
 import SocialIconDock from "../components/SocialIconDock.astro";
-import { site } from "../config";
+import { person, site } from "../config";
 import { personSchema, websiteSchema } from "../utils/schema";
 import { defaultLang, langInfo, rssPath, type Lang } from "../i18n";
 
@@ -141,7 +141,7 @@ const jsonLd = {
     <meta name="title" content={pageTitle} />
     <meta name="description" content={pageDescription} />
     <meta name="author" content={site.author} />
-    {noindex && <meta name="robots" content="noindex, nofollow" />}
+    {noindex && <meta name="robots" content="noindex, follow" />}
     {/* Filled at runtime by src/scripts/theme.ts to match the current background colour */}
     <meta name="theme-color" content="" />
     <link rel="canonical" href={canonicalHref} />
@@ -156,6 +156,7 @@ const jsonLd = {
       />
     )}
     <link rel="sitemap" href="/sitemap-index.xml" />
+    {person.sameAs.map((href) => <link rel="me" href={href} />)}
     <link
       rel="alternate"
       type="application/rss+xml"
