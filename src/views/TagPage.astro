@@ -22,6 +22,7 @@ const t = ui[lang];
   title={`${t.tagPageTitle(tagName, page.currentPage)} — ${site.title}`}
   description={t.tagDescription(tagName)}
   lang={lang}
+  noindex
 >
   <Section title={`#${tagName}`} description={t.tagCount(page.total)}>
     <h1 class="sr-only">{t.tagH1(tagName)}</h1>
