@@ -13,27 +13,33 @@ interface Props {
   pubDate: Date;
   minutes: number;
   heroImage?: string;
+  lang?: Lang;
+  /** Show a language badge, for lists that mix languages. */
+  showLang?: boolean;
 }
 
 import { toTransitionName } from "../utils/transitionName";
+import { langInfo, postUrl, ui, type Lang } from "../i18n";
 
-const { slug, title, description, pubDate, minutes, heroImage } = Astro.props;
+const { slug, title, description, pubDate, minutes, heroImage, lang = "pt", showLang = false } = Astro.props;
+const href = postUrl(lang, slug);
+const dateLocale = langInfo[lang].dateLocale;
 
 const tz = "Africa/Luanda";
-const day = pubDate.toLocaleDateString("pt", { day: "numeric", timeZone: tz });
+const day = pubDate.toLocaleDateString(dateLocale, { day: "numeric", timeZone: tz });
 const mon = pubDate
-  .toLocaleDateString("pt", { month: "short", timeZone: tz })
+  .toLocaleDateString(dateLocale, { month: "short", timeZone: tz })
   .replace(/\./g, "");
-const year = pubDate.toLocaleDateString("pt", {
+const year = pubDate.toLocaleDateString(dateLocale, {
   year: "numeric",
   timeZone: tz,
 });
 const dateLabel = `${day} ${mon}, ${year}`;
 ---
 
-<li class="my-6">
+<li class="my-6" lang={lang}>
   <a
-    href={`/posts/${slug}/`}
+    href={href}
     class="inline-block pb-1 text-lg font-medium text-(--post-title) decoration-dashed underline-offset-4 hover:underline focus-visible:no-underline focus-visible:underline-offset-0"
   >
     <span transition:name={toTransitionName(slug)} class="inline-block">
@@ -61,12 +67,13 @@ const dateLabel = `${day} ${mon}, ${year}`;
       {dateLabel}
     </time>
     <span aria-hidden="true" class="text-sm italic">•</span>
-    <span class="text-sm italic">{minutes} min de leitura</span>
+    <span class="text-sm italic">{ui[lang].readingTime(minutes)}</span>
+    {showLang && <span class="badge text-xs">{langInfo[lang].label}</span>}
   </div>
   {heroImage ? (
     <div class="mt-2 flex items-start gap-4">
       <a
-        href={`/posts/${slug}/`}
+        href={href}
         class="shrink-0"
         aria-hidden="true"
         tabindex="-1"

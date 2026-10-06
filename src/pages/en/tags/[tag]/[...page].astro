@@ -1,0 +1,12 @@
+---
+import TagPage from "../../../../views/TagPage.astro";
+import { tagPaths } from "../../../../utils/routes";
+
+export async function getStaticPaths({ paginate }: { paginate: any }) {
+  return tagPaths("en", paginate);
+}
+
+const { page, tagName } = Astro.props;
+---
+
+<TagPage lang="en" page={page} tagName={tagName} />

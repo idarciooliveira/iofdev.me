@@ -1,10 +1,13 @@
 ---
+import { ui, type Lang } from "../i18n";
+
 interface Props {
   trail?: { href?: string; label: string }[];
+  lang?: Lang;
 }
 
-const { trail = [] } = Astro.props;
-const items = [{ href: "/", label: "Início" }, ...trail];
+const { trail = [], lang = "pt" } = Astro.props;
+const items = [{ href: "/", label: ui[lang].home }, ...trail];
 ---
 
 <nav aria-label="breadcrumb" class="mb-6 text-sm text-(--text-soft)">

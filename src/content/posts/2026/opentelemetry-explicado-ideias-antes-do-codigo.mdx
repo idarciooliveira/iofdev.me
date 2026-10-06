@@ -1,0 +1,238 @@
+---
+title: "OpenTelemetry explicado: as ideias antes do código"
+description: "Uma introdução visual e interativa à observabilidade e ao OpenTelemetry. Sinais, traces, Collector e sampling, sem precisar de código."
+pubDate: 2026-09-22
+lang: "pt"
+translationKey: "opentelemetry-concepts"
+heroImage: "/posts/2026/opentelemetry-concepts/cover.png"
+tags: ["observabilidade", "opentelemetry"]
+---
+
+import OtelTimeline from "../../../components/otel/OtelTimeline.tsx";
+import ThreePillars from "../../../components/otel/ThreePillars.tsx";
+import TraceExplorer from "../../../components/otel/TraceExplorer.tsx";
+import TraceparentDecoder from "../../../components/otel/TraceparentDecoder.tsx";
+import ArchitectureMap from "../../../components/otel/ArchitectureMap.tsx";
+import InstrumentLab from "../../../components/otel/InstrumentLab.tsx";
+import CollectorPipeline from "../../../components/otel/CollectorPipeline.tsx";
+import DeploymentPatterns from "../../../components/otel/DeploymentPatterns.tsx";
+import SamplingLab from "../../../components/otel/SamplingLab.tsx";
+
+A primeira vez que algo que construí funcionou na minha máquina e falhou em produção, não tive como descobrir porquê. Não dava para ligar um debugger nem pôr um `console.log` num servidor que eu não controlava. Só me restava adivinhar.
+
+O OpenTelemetry existe para resolver este problema. A maioria das introduções começa pelo código. Esta fica pelas ideias, sem demo para seguir nem configuração para copiar.
+
+Todos os diagramas abaixo são interativos, por isso clica e mexe à vontade.
+
+## Índice
+
+## Monitorização diz-te que algo avariou
+
+A monitorização tradicional parte de uma lista de perguntas que pensaste antes de tempo. O CPU está acima de 90%? O disco está cheio? O site responde 200? Escreves os alertas e, quando um dispara, sabes que há um problema.
+
+Isso funciona até a falha ser uma que não previste, como um checkout que só falha para utilizadores de uma região, com um cupão aplicado, depois de um deploy de há três horas. Ninguém escreveu um alerta para isso.
+
+Observabilidade é a capacidade de perceber o que se passa dentro de um sistema a partir dos dados que ele produz. A palavra vem da teoria de controlo, onde Rudolf Kalman a usou em 1960 para sistemas cujo estado interno se consegue deduzir das saídas. O software pediu-a emprestada e o sentido prático é simples. Se o teu sistema emite dados bons e suficientes, consegues fazer perguntas novas sem enviar código novo.
+
+### Porque é que os sistemas distribuídos tornam isto mais difícil
+
+Um sistema distribuído é um grupo de computadores independentes a trabalhar em conjunto como se fossem um só. Um pedido de um utilizador é dividido por vários serviços, muitas vezes em várias máquinas.
+
+Convém olhar para três camadas.
+
+- A carga de trabalho. As operações que o sistema executa, por exemplo um pedido de checkout dividido em tarefas mais pequenas entre serviços.
+- As abstrações de software. Contentores, pods, load balancers. A estrutura onde o trabalho corre.
+- As máquinas físicas. CPU, memória e disco.
+
+Uma lentidão pode começar em qualquer uma delas, e o sintoma aparece muitas vezes noutra. Perceber o sistema obriga a recolher sinais das três e a descobrir como se relacionam.
+
+## Uma história curta
+
+O OpenTelemetry vem de cerca de uma década de ferramentas concorrentes e de uma fusão que pôs fim a uma disputa de standards.
+
+<OtelTimeline client:visible lang="pt" />
+
+Antes de 2019 tinhas de escolher. O OpenTracing dava-te uma API de tracing neutra, sem implementação. O OpenCensus dava-te uma implementação para traces e métricas, presa aos seus próprios exporters. As bibliotecas não conseguiam escolher um sem irritar metade dos utilizadores. Juntar os dois permitiu que os autores de bibliotecas instrumentassem uma só vez, e que quem é dono da aplicação escolha para onde vão os dados.
+
+## Telemetria e os seus sinais
+
+Telemetria é a recolha e transmissão automática de dados de um sistema em execução, para veres como ele se comporta sem estares lá. Um sistema torna-se observável quando produz esses dados de uma forma sobre a qual consegues raciocinar.
+
+Os dados vêm em tipos, chamados sinais. Os três que mais importam são logs, métricas e traces. Chamam-lhes os três pilares da observabilidade, e cada um responde a uma pergunta diferente.
+
+### Logs
+
+Um log é um registo de eventos só de escrita. Cada entrada tem uma data e uma mensagem a descrever o que aconteceu.
+
+O problema dos logs sempre foi o formato. Cada equipa escrevia à sua maneira e, com o volume a crescer, ler à vista deixou de funcionar. A solução foram os logs estruturados. Em vez de uma frase, cada evento é um conjunto de pares chave e valor que uma máquina consegue filtrar e agrupar.
+
+### Métricas
+
+Uma métrica é um número calculado a partir de muitos eventos. Uma contagem, uma taxa, uma média, um percentil, registados ao longo do tempo. As métricas são baratas de guardar porque resumem. Mostram bem a direção e explicam mal um caso isolado.
+
+### Traces
+
+Um trace regista a viagem de um pedido enquanto atravessa um sistema. Há três termos a conhecer.
+
+- Um trace é a viagem completa de um pedido.
+- Um span é uma unidade de trabalho dentro dessa viagem, como uma query à base de dados ou uma chamada HTTP de saída.
+- Propagação de contexto é como o trace ID viaja de um serviço para o seguinte, para que o trabalho relacionado fique ligado.
+
+Aqui está o mesmo checkout falhado visto por cada sinal. Muda entre os separadores e depois liga o interruptor de correlação.
+
+<ThreePillars client:visible lang="pt" />
+
+Com o interruptor ligado, as linhas de log trazem um trace ID e o pico da métrica aponta para um trace concreto. Cada sinal sozinho dá uma pista. Ligados, dão-te um caminho de "algo está lento" até "esta chamada exata deu timeout".
+
+A metáfora dos pilares tem um limite. Sugere que precisas dos três para teres observabilidade e que cada um vive à parte, quando o valor está na forma como se ligam.
+
+## Como um trace se mantém inteiro
+
+O tracing funciona graças a um passo que quase não se vê. Quando o serviço A chama o serviço B pela rede, B não faz ideia de que faz parte de um pedido maior. A tem de lho dizer.
+
+Fá-lo juntando um cabeçalho à chamada. O cabeçalho leva o trace ID e o ID do span que chama. B lê-o e cria os seus próprios spans como filhos. Repete isto em cada salto e tens um só trace.
+
+Experimenta repetir o pedido e depois desliga a propagação de contexto para veres como é um sistema sem ela.
+
+<TraceExplorer client:visible lang="pt" />
+
+Sem propagação, cada serviço continua a produzir dados, mas não consegues saber que peças pertencem ao mesmo pedido.
+
+O cabeçalho tem um formato padrão, definido pela especificação W3C Trace Context. É por isso que um serviço escrito em Go consegue passar um trace a um escrito em Java, com ferramentas diferentes.
+
+<TraceparentDecoder client:visible lang="pt" />
+
+## O que é o OpenTelemetry
+
+O OpenTelemetry, normalmente abreviado para OTel, é um projeto open source da Cloud Native Computing Foundation. Define uma forma padrão de gerar, recolher e exportar telemetria. Tem três objetivos.
+
+- Telemetria unificada. Traces, métricas e logs partilham um só modelo, o que torna possível correlacioná-los.
+- Neutralidade face a fornecedores. Podes enviar dados para muitos backends diferentes sem mudar como os produzes.
+- Suporte multiplataforma. Há implementações para Java, Python, Go, JavaScript, .NET e muitas outras linguagens.
+
+É igualmente importante saber o que o OpenTelemetry não é.
+
+| O OpenTelemetry é | O OpenTelemetry não é |
+| --- | --- |
+| Uma especificação, APIs, SDKs e um protocolo | Um sítio para guardar ou consultar os teus dados |
+| Uma forma de produzir telemetria num formato padrão | Uma ferramenta de dashboards ou alertas |
+| O Collector, um pipeline para mover telemetria | Um substituto do Jaeger, do Prometheus ou de um fornecedor |
+
+O OTel trata de como a telemetria é produzida e movida. Outra coisa trata de onde é guardada e vista, e manter as duas separadas é o que te permite trocar qualquer uma.
+
+### Porque é que as equipas adotam
+
+- Instrumentas uma vez e os mesmos dados funcionam com qualquer backend.
+- Gerar telemetria está separado de a analisar, por isso trocar de fornecedor não obriga a mexer em todos os serviços.
+- Frameworks e bibliotecas podem incluir chamadas OTel, e o software fica observável por defeito.
+- Dados correlacionados reduzem a carga mental de quem está de prevenção às 3 da manhã.
+
+## A especificação e as suas partes
+
+No centro do projeto está uma especificação independente da linguagem. Define três coisas.
+
+- Terminologia, para que todos usem as mesmas palavras.
+- A API, que descreve as operações disponíveis para criar telemetria.
+- O SDK, que descreve como essas operações devem ser implementadas.
+
+Cada linguagem tem depois a sua implementação, que segue a especificação, com níveis de maturidade diferentes. Como a API e o SDK estão separados, uma biblioteca pode depender só do pequeno pacote da API. Se uma aplicação nunca instalar o SDK, essas chamadas não fazem nada. Este desenho é o que permite que as bibliotecas populares venham com instrumentação incluída.
+
+O OpenTelemetry define também convenções semânticas, que são nomes acordados para atributos comuns. Quando todas as frameworks HTTP reportam o método da mesma maneira, um dashboard escrito uma vez serve para todas.
+
+Entre o teu código e o teu backend há uma cadeia de peças. Clica nelas.
+
+<ArchitectureMap client:visible lang="pt" />
+
+O protocolo do meio é o OTLP, o OpenTelemetry Protocol. Transporta os três sinais sobre gRPC ou HTTP. Muitos backends aceitam agora OTLP diretamente, e isso explica em boa parte porque é prático trocá-los.
+
+## Instrumentação
+
+Instrumentação é o que transforma uma aplicação que não diz nada numa que emite dados sobre si própria. Há três maneiras de lá chegar.
+
+- A instrumentação automática usa um agente que se liga à aplicação e instrumenta bibliotecas comuns sem mudar código. É a forma mais rápida de começar.
+- As bibliotecas de instrumentação são pacotes separados que juntam chamadas OTel a frameworks sem suporte nativo.
+- A instrumentação manual é escrever as chamadas no teu próprio código. Dá mais trabalho e dá mais controlo, sobretudo para detalhes de negócio como o ID de uma encomenda.
+
+Costuma compensar começar pela automática e juntar spans manuais onde os dados genéricos não chegam.
+
+### Instrumentos de métricas
+
+Nas métricas, o OpenTelemetry divide a ideia em passos. Um instrumento capta uma medição. O meter organiza o fluxo de medições ao longo do tempo, e o resultado é uma métrica que podes desenhar num gráfico e usar em alertas.
+
+O tipo de instrumento que escolhes decide que perguntas consegues responder mais tarde.
+
+<InstrumentLab client:visible lang="pt" />
+
+O histograma merece atenção especial. Uma latência média de 120 ms parece boa até um pedido em vinte demorar quatro segundos.
+
+### Os quatro golden signals
+
+Quando não sabes bem o que medir, o livro de SRE da Google sugere quatro coisas para qualquer serviço que trate pedidos.
+
+| Sinal | A pergunta a que responde |
+| --- | --- |
+| Tráfego | Quanta procura o sistema está a tratar? |
+| Erros | Que fração dos pedidos falha? |
+| Latência | Quanto tempo demora um pedido? |
+| Saturação | Quão cheio está o recurso mais limitado? |
+
+## O Collector
+
+O Collector é um programa separado, escrito em Go, que fica entre as tuas aplicações e o teu backend. Recebe telemetria, processa-a e envia-a para a frente. Pensa nele como um intermediário.
+
+Porque acrescentar mais uma peça? Porque tira trabalho à aplicação e dá-te um só sítio para mudar o comportamento. Queres descartar dados ruidosos, mascarar um email ou enviar uma cópia a um segundo fornecedor? Mudas o Collector, não cada serviço.
+
+Um pipeline tem três tipos de componentes.
+
+- Os receivers recebem os dados. Podem ficar à escuta de envios, como o OTLP, ou ir buscar a uma fonte, como um endpoint do Prometheus.
+- Os processors alteram os dados a meio do caminho. Os motivos comuns são melhorar a qualidade renomeando ou juntando atributos, cortar custos descartando o que não precisas, remover campos sensíveis e controlar o fluxo com batching e retries.
+- Os exporters enviam os dados para fora, convertendo-os para o formato que o destino quer.
+
+Descreves tudo isto num ficheiro YAML, com receivers, processors, exporters e uma secção que os liga em pipelines. Não vou mostrar o ficheiro, porque a ideia cabe numa frase. Se listares dois exporters, cada um recebe uma cópia dos dados. Se dois receivers alimentarem um pipeline, os dados juntam-se.
+
+Monta um pipeline aqui em baixo e vê o que acontece a cada item.
+
+<CollectorPipeline client:visible lang="pt" />
+
+### Onde correr
+
+Há três formas comuns de fazer deploy de um Collector, e não são exclusivas.
+
+<DeploymentPatterns client:visible lang="pt" />
+
+## Sampling
+
+Seguir todos os pedidos num sistema movimentado produz muitos dados. Guardá-los todos é caro, e a maioria é o mesmo pedido bem-sucedido e aborrecido repetido milhões de vezes.
+
+Podes cortar custos filtrando ou agregando, mas esses métodos perdem a ligação ao tráfego original. O sampling mantém-na. A ideia é a representatividade, um grupo mais pequeno bem escolhido pode representar o maior.
+
+Os termos são simples. Um trace é sampled se for guardado e exportado, e not sampled se for descartado.
+
+Há duas abordagens principais.
+
+- O head sampling decide no início do trace. Guarda 10% e descarta 90%, antes de se saber mais alguma coisa.
+- O tail sampling espera até o trace estar completo e depois decide com base no que aconteceu.
+
+Põe os dois modos em 10% e compara.
+
+<SamplingLab client:visible lang="pt" />
+
+Com head sampling, os erros que te interessam são descartados à mesma taxa que tudo o resto. Com tail sampling podes escrever regras como guardar todos os erros, guardar todos os traces com mais de dois segundos e guardar um décimo do resto. Ficas com os traces interessantes e continuas a cortar a maior parte do volume.
+
+O tail sampling não é de borla. O sistema tem de guardar todos os spans em memória até o trace terminar, e todos os spans de um trace têm de chegar ao mesmo Collector. É comum combinar head sampling, para um limite máximo firme, com tail sampling para decisões mais inteligentes, conforme o que se consegue pagar para operar.
+
+## Hábitos que compensam
+
+- Instrumentar com OTel e enviar tudo por um Collector em vez de diretamente da aplicação. Os backends passam a ser um detalhe de configuração.
+- Pôr o trace ID em todas as linhas de log. É a correlação mais barata que podes juntar.
+- Combinar cedo os nomes dos atributos e usar as convenções semânticas em vez de inventar as tuas.
+- Começar pelos golden signals e depois juntar detalhe onde um incidente te ensinou que faltava alguma coisa.
+- Vigiar o custo desde a primeira semana. O volume e os atributos de alta cardinalidade é que fazem crescer as faturas de telemetria, e o sampling e a filtragem são as principais formas de os controlar.
+
+## Para onde ir daqui
+
+Se queres experimentar isto num serviço real, mantém o primeiro passo pequeno. Escolhe um serviço. Liga a instrumentação automática. Envia os dados para um Collector local e para um visualizador de traces como o Jaeger. Depois dispara um pedido e lê o trace.
+
+Quando vires o teu próprio pedido desenhado em spans, o vocabulário deixa de ser abstrato.
+
+Os detalhes estão na [documentação do OpenTelemetry](https://opentelemetry.io/docs/), que cobre cada linguagem e a configuração do Collector.

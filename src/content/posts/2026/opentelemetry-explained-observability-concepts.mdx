@@ -1,0 +1,238 @@
+---
+title: "OpenTelemetry explained: the ideas before the code"
+description: "A visual, interactive introduction to observability and OpenTelemetry. Signals, traces, the Collector and sampling, with no code required."
+pubDate: 2026-09-22
+lang: "en"
+translationKey: "opentelemetry-concepts"
+heroImage: "/posts/2026/opentelemetry-concepts/cover.png"
+tags: ["observability", "opentelemetry"]
+---
+
+import OtelTimeline from "../../../components/otel/OtelTimeline.tsx";
+import ThreePillars from "../../../components/otel/ThreePillars.tsx";
+import TraceExplorer from "../../../components/otel/TraceExplorer.tsx";
+import TraceparentDecoder from "../../../components/otel/TraceparentDecoder.tsx";
+import ArchitectureMap from "../../../components/otel/ArchitectureMap.tsx";
+import InstrumentLab from "../../../components/otel/InstrumentLab.tsx";
+import CollectorPipeline from "../../../components/otel/CollectorPipeline.tsx";
+import DeploymentPatterns from "../../../components/otel/DeploymentPatterns.tsx";
+import SamplingLab from "../../../components/otel/SamplingLab.tsx";
+
+The first time something I built worked on my machine and failed in production, I had no way to find out why. I couldn't attach a debugger or add a `console.log` to a server I didn't control. All I could do was guess.
+
+OpenTelemetry exists to fix that problem. Most introductions start with code. This one sticks to the ideas, with no demo to follow and no setup to copy.
+
+Every diagram below is interactive, so click around and break things.
+
+## Table of contents
+
+## Monitoring tells you something broke
+
+Traditional monitoring works from a list of questions you thought of in advance. Is the CPU above 90%? Is the disk full? Is the site returning 200? You write the alerts, and when one fires, you know something is wrong.
+
+That works until the failure is one you didn't predict, like a checkout that fails only for users in one region, with a coupon applied, after a deploy three hours ago. Nobody wrote an alert for that.
+
+Observability is the ability to understand what is happening inside a system by looking at the data it produces. The word comes from control theory, where Rudolf Kalman used it in 1960 for systems whose internal state can be inferred from their outputs. Software borrowed it, and the practical meaning is simple. If your system emits enough good data, you can ask new questions without shipping new code.
+
+### Why distributed systems make this harder
+
+A distributed system is a group of independent computers working together as if they were one. One user request gets split across many services, often on many machines.
+
+It helps to look at three layers.
+
+- The workload. The operations the system performs, for example one checkout request split into smaller tasks across services.
+- The software abstractions. Containers, pods, load balancers. The structure the work runs on.
+- The physical machines. CPU, memory and disk.
+
+A slowdown can start in any of them, and the symptom often shows up in another. Understanding the system means collecting signals from all three and working out how they relate.
+
+## A short history
+
+OpenTelemetry comes from about a decade of competing tools and a merger that ended a standards fight.
+
+<OtelTimeline client:visible />
+
+Before 2019 you had to choose. OpenTracing gave you a neutral tracing API with no implementation. OpenCensus gave you an implementation for traces and metrics, tied to its own exporters. Libraries couldn't pick one without annoying half their users. Combining the two meant library authors could instrument once, and application owners could choose where the data goes.
+
+## Telemetry and its signals
+
+Telemetry is the automatic collection and transmission of data from a running system, so you can see how it behaves without being there. A system becomes observable when it produces that data in a form you can reason about.
+
+The data comes in types, called signals. The three that matter most are logs, metrics and traces. People call them the three pillars of observability, and each one answers a different question.
+
+### Logs
+
+A log is an append-only record of events. Each entry has a timestamp and a message describing what happened.
+
+The problem with logs was always format. Every team wrote them differently, and as volume grew, reading them by eye stopped working. The fix was structured logging. Instead of a sentence, each event is a set of key and value pairs that a machine can filter and group.
+
+### Metrics
+
+A metric is a number computed from many events. A count, a rate, an average, a percentile, recorded over time. Metrics are cheap to store because they summarize. They are good at showing direction and bad at explaining a single case.
+
+### Traces
+
+A trace records the journey of one request as it moves through a system. There are three terms to know.
+
+- A trace is the full journey of one request.
+- A span is one unit of work inside that journey, such as a database query or an outgoing HTTP call.
+- Context propagation is how the trace ID travels from one service to the next, so related work stays linked.
+
+Here is the same failed checkout seen through each signal. Switch between the tabs, then turn on the correlation switch.
+
+<ThreePillars client:visible />
+
+With the switch on, the log lines carry a trace ID, and the metric spike points at a specific trace. Each signal on its own gives you a clue. Linked together, they give you a path from "something is slow" to "this exact call timed out".
+
+The pillar metaphor has a limit. It suggests you need all three before you can claim observability and that each one stands alone, when the value is in how they connect.
+
+## How a trace holds together
+
+Tracing works because of a step you rarely see. When service A calls service B over the network, B has no idea it is part of a bigger request. A has to tell it.
+
+It does that by adding a header to the outgoing call. The header carries the trace ID and the ID of the calling span. B reads it and creates its own spans as children. Run that across every hop and you get one trace.
+
+Try the replay below, then switch off context propagation to see what a system without it looks like.
+
+<TraceExplorer client:visible />
+
+Without propagation, every service still produces data, but you can't tell which pieces belong to the same request.
+
+The header has a standard format, defined by the W3C Trace Context specification. This is why a service written in Go can pass a trace to one written in Java, using different tools.
+
+<TraceparentDecoder client:visible />
+
+## What OpenTelemetry is
+
+OpenTelemetry, usually shortened to OTel, is an open source project under the Cloud Native Computing Foundation. It defines a standard way to generate, collect and export telemetry. It has three goals.
+
+- Unified telemetry. Traces, metrics and logs share one model, so correlating them is possible.
+- Vendor neutrality. You can send data to many different backends without changing how you produce it.
+- Cross-platform support. There are implementations for Java, Python, Go, JavaScript, .NET and many other languages.
+
+It is just as important to know what OpenTelemetry is not.
+
+| OpenTelemetry is | OpenTelemetry is not |
+| --- | --- |
+| A specification, APIs, SDKs and a protocol | A place to store or query your data |
+| A way to produce telemetry in a standard shape | A dashboard or alerting tool |
+| The Collector, a pipeline for moving telemetry | A replacement for Jaeger, Prometheus or a vendor |
+
+OTel handles how telemetry is produced and moved. Something else handles where it is stored and looked at, and keeping the two apart is what lets you change either one.
+
+### Why teams adopt it
+
+- You instrument once and the same data works with any backend.
+- Generating telemetry is separate from analyzing it, so switching vendors doesn't mean touching every service.
+- Frameworks and libraries can include OTel calls themselves, so software is observable by default.
+- Correlated data lowers the mental load on the person holding the pager at 3am.
+
+## The specification and its parts
+
+At the centre of the project is a language-agnostic specification. It defines three things.
+
+- Terminology, so everyone uses the same words.
+- The API, which describes the operations available for creating telemetry.
+- The SDK, which describes how those operations should be implemented.
+
+Each language then has its own implementation that follows the spec, at varying levels of maturity. Because the API and SDK are separate, a library can depend on the small API package alone. If an application never installs the SDK, those calls do nothing. That design is what lets popular libraries ship with instrumentation built in.
+
+OpenTelemetry also defines semantic conventions, which are agreed names for common attributes. When every HTTP framework reports the method the same way, a dashboard written once works for all of them.
+
+Between your code and your backend there is a chain of pieces. Click through it.
+
+<ArchitectureMap client:visible />
+
+The protocol in the middle is OTLP, the OpenTelemetry Protocol. It carries all three signals over gRPC or HTTP. Many backends now accept OTLP directly, which is a large part of why swapping them is practical.
+
+## Instrumentation
+
+Instrumentation is what turns an application that says nothing into one that emits data about itself. There are three ways to get there.
+
+- Automatic instrumentation uses an agent that attaches to your application and instruments common libraries without code changes. It is the fastest way to start.
+- Instrumentation libraries are separate packages that add OTel calls to frameworks that don't support it natively.
+- Manual instrumentation means writing calls in your own code. It takes the most effort and gives you the most control, especially for business-specific details like an order ID.
+
+It usually pays to start with automatic instrumentation and add manual spans where the generic data isn't enough.
+
+### Metric instruments
+
+For metrics, OpenTelemetry splits the idea into steps. An instrument captures a measurement. The meter organizes the stream of measurements over time, and the result is a metric you can chart and alert on.
+
+The kind of instrument you pick decides which questions you can answer later.
+
+<InstrumentLab client:visible />
+
+The histogram deserves special attention. An average latency of 120 ms sounds fine until one request in twenty takes four seconds.
+
+### The four golden signals
+
+When you're not sure what to measure, the Google SRE book suggests four things for any service that handles requests.
+
+| Signal | The question it answers |
+| --- | --- |
+| Traffic | How much demand is the system handling? |
+| Errors | What share of requests fail? |
+| Latency | How long does a request take? |
+| Saturation | How full is the most constrained resource? |
+
+## The Collector
+
+The Collector is a standalone program, written in Go, that sits between your applications and your backend. It receives telemetry, processes it, and sends it on. Think of it as a broker.
+
+Why add another moving part? Because it takes work away from the application, and gives you one place to change behavior. Want to drop noisy data, redact an email address or send a copy to a second vendor? You change the Collector, not every service.
+
+A pipeline has three kinds of components.
+
+- Receivers get data in. They can listen for pushes, such as OTLP, or pull from a source, such as a Prometheus endpoint.
+- Processors change the data on its way through. Common reasons are improving quality by renaming or adding attributes, cutting cost by dropping what you don't need, removing sensitive fields, and controlling flow with batching and retries.
+- Exporters send data out, converting it to whatever format the destination wants.
+
+You describe all this in a YAML file, with receivers, processors, exporters and a section that wires them into pipelines. I won't show the file, since the idea fits in a sentence. If two exporters are listed, each gets a copy of the data. If two receivers feed one pipeline, their data merges.
+
+Build a pipeline below and watch what happens to each item.
+
+<CollectorPipeline client:visible />
+
+### Where to run it
+
+There are three common ways to deploy a Collector, and they aren't exclusive.
+
+<DeploymentPatterns client:visible />
+
+## Sampling
+
+Tracing every request in a busy system produces a lot of data. Storing all of it is expensive, and most of it is the same boring successful request repeated millions of times.
+
+You can cut cost by filtering or aggregating, but those methods lose the connection to the original traffic. Sampling keeps it. The idea is representativeness: a well-chosen smaller group can stand in for the larger one.
+
+The terms are simple. A trace is sampled if it is kept and exported, and not sampled if it is dropped.
+
+There are two main approaches.
+
+- Head sampling decides at the start of the trace. Keep 10% and drop 90%, before anything else is known.
+- Tail sampling waits until the trace is complete, then decides based on what happened.
+
+Set both modes to 10% and compare.
+
+<SamplingLab client:visible />
+
+With head sampling, the errors you care about get dropped at the same rate as everything else. With tail sampling you can write rules like keep every error, keep every trace over two seconds, and keep a tenth of the rest. You get the interesting traces and still cut most of the volume.
+
+Tail sampling isn't free. The system has to hold every span in memory until the trace finishes, and all spans of a trace must reach the same Collector. It is common to combine head sampling, for a hard upper bound, with tail sampling for smarter choices, depending on what you can afford to operate.
+
+## Habits that pay off
+
+- Instrument with OTel, and send everything through a Collector rather than straight from the application. Backends then become a config detail.
+- Put the trace ID on every log line. It is the cheapest correlation you can add.
+- Agree on attribute names early, and use the semantic conventions instead of inventing your own.
+- Start from the golden signals, then add detail where an incident taught you something was missing.
+- Watch cost from the first week. Volume and high-cardinality attributes are what make telemetry bills grow, and sampling and filtering are the main ways to control them.
+
+## Where to go from here
+
+If you want to try this on a real service, keep the first step small. Pick one service. Turn on automatic instrumentation. Send the data to a local Collector and a trace viewer such as Jaeger. Then trigger a request and read the trace.
+
+Once you've seen your own request laid out as spans, the vocabulary stops being abstract.
+
+The details are in the [OpenTelemetry documentation](https://opentelemetry.io/docs/), which covers each language and the Collector configuration.

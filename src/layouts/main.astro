@@ -15,6 +15,7 @@ import Analytics from "@vercel/analytics/astro";
 import Nav from "../components/Nav.astro";
 import SocialIconDock from "../components/SocialIconDock.astro";
 import { site } from "../config";
+import { defaultLang, langInfo, rssPath, type Lang } from "../i18n";
 
 interface Props {
   title?: string;
@@ -30,6 +31,12 @@ interface Props {
   /** Extra JSON-LD object to inject (e.g. BlogPosting). */
   schema?: Record<string, unknown>;
   noindex?: boolean;
+  /** Language of the page content. Pages that omit it are English, and the nav falls back to the default language. */
+  lang?: Lang;
+  /** Other-language versions of this page, used for hreflang and the nav language switch. */
+  alternates?: { lang: Lang; href: string }[];
+  /** Where the nav language switch points, when the page has a counterpart. */
+  switchHref?: string;
   content?: {
     title?: string;
     description?: string;
@@ -50,6 +57,9 @@ const {
   modDatetime,
   schema,
   noindex = false,
+  lang,
+  alternates = [],
+  switchHref,
   content,
 } = Astro.props;
 
@@ -90,7 +100,7 @@ const defaultSchema: Record<string, unknown> = {
 };
 ---
 
-<html lang={site.lang} class="overflow-y-scroll scroll-smooth">
+<html lang={lang ?? "en"} class="overflow-y-scroll scroll-smooth">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width" />
@@ -127,14 +137,17 @@ const defaultSchema: Record<string, unknown> = {
     {/* Filled at runtime by src/scripts/theme.ts to match the current background colour */}
     <meta name="theme-color" content="" />
     <link rel="canonical" href={canonicalHref} />
+    {alternates.map((alt) => (
+      <link rel="alternate" hreflang={alt.lang} href={new URL(alt.href, siteUrl).toString()} />
+    ))}
     <link rel="sitemap" href="/sitemap-index.xml" />
     <link
       rel="alternate"
       type="application/rss+xml"
       title={site.title}
-      href={new URL("rss.xml", siteUrl).toString()}
+      href={new URL(rssPath(lang ?? defaultLang), siteUrl).toString()}
     />
-    <meta property="og:locale" content="pt_AO" />
+    <meta property="og:locale" content={langInfo[lang ?? "en"].ogLocale} />
     <meta property="og:site_name" content={site.title} />
     <meta property="og:type" content={ogType} />
     <meta property="og:title" content={pageTitle} />
@@ -159,7 +172,7 @@ const defaultSchema: Record<string, unknown> = {
     <Analytics />
   </head>
   <body class="font-app flex min-h-svh flex-col">
-    <Nav currentPath={Astro.url.pathname} />
+    <Nav currentPath={Astro.url.pathname} lang={lang ?? defaultLang} switchHref={switchHref} />
     <main class="flex-1">
       <slot />
     </main>

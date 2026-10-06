@@ -1,0 +1,12 @@
+---
+import PostsIndex from "../../../views/PostsIndex.astro";
+import { postsListPaths } from "../../../utils/routes";
+
+export async function getStaticPaths({ paginate }: { paginate: any }) {
+  return postsListPaths("en", paginate);
+}
+
+const { page } = Astro.props;
+---
+
+<PostsIndex lang="en" page={page} />

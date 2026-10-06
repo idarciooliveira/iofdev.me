@@ -1,0 +1,36 @@
+---
+import MainLayout from "../layouts/main.astro";
+import Section from "../components/Section.astro";
+import Breadcrumb from "../components/Breadcrumb.astro";
+import { site } from "../config";
+import { postsPath, tagsPath, ui, type Lang } from "../i18n";
+import { getUniqueTags } from "../utils/posts";
+
+interface Props {
+  lang: Lang;
+}
+
+const { lang } = Astro.props;
+const t = ui[lang];
+const tags = await getUniqueTags(lang);
+---
+
+<MainLayout title={`${t.tags} — ${site.title}`} description={t.tagsDescription} lang={lang}>
+  <Section title={t.tagsSectionTitle} description={t.tagsSectionDescription}>
+    <h1 class="sr-only">{t.tagsH1}</h1>
+    <Breadcrumb lang={lang} trail={[{ href: postsPath(lang), label: t.posts }, { label: t.tags }]} />
+    {tags.length === 0 ? (
+      <p class="text-(--text-soft)">{t.noTags}</p>
+    ) : (
+      <ul class="flex flex-wrap gap-2">
+        {tags.map((tag) => (
+          <li>
+            <a href={`${tagsPath(lang)}/${tag.tag}/`} class="badge transition-colors hover:border-(--accent) hover:text-(--accent)">
+              #{tag.tagName} ({tag.count})
+            </a>
+          </li>
+        ))}
+      </ul>
+    )}
+  </Section>
+</MainLayout>

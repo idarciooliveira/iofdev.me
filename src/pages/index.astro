@@ -3,9 +3,10 @@ import MainLayout from "../layouts/main.astro";
 import Hero from "../components/Hero.astro";
 import Section from "../components/Section.astro";
 import PostCard from "../components/PostCard.astro";
-import { getReadingTime, getSlug, getSortedPosts } from "../utils/posts";
+import { defaultLang, postsPath } from "../i18n";
+import { getListedPosts, getReadingTime, getSlug } from "../utils/posts";
 
-const recentPosts = (await getSortedPosts()).slice(0, 3);
+const recentPosts = (await getListedPosts(defaultLang)).slice(0, 3);
 ---
 
 <MainLayout
@@ -24,7 +25,8 @@ const recentPosts = (await getSortedPosts()).slice(0, 3);
       <ul>
         {recentPosts.map((post) => {
           const slug = getSlug(post.id);
-          const { minutes } = getReadingTime(post.body ?? "");
+          const { lang } = post.data;
+          const { minutes } = getReadingTime(post.body ?? "", lang);
           return (
             <PostCard
               slug={slug}
@@ -33,11 +35,12 @@ const recentPosts = (await getSortedPosts()).slice(0, 3);
               pubDate={post.data.pubDate}
               minutes={minutes}
               heroImage={post.data.heroImage}
+              lang={lang}
             />
           );
         })}
       </ul>
-      <a href="/posts" class="content-footer__cta">All Posts →</a>
+      <a href={postsPath(defaultLang)} class="content-footer__cta">All Posts →</a>
     </Section>
   )}
 </MainLayout>

@@ -1,0 +1,60 @@
+---
+import MainLayout from "../layouts/main.astro";
+import Section from "../components/Section.astro";
+import Breadcrumb from "../components/Breadcrumb.astro";
+import PostCard from "../components/PostCard.astro";
+import Pagination from "../components/Pagination.astro";
+import { site } from "../config";
+import { postsPath, tagsPath, ui, type Lang } from "../i18n";
+import { getReadingTime, getSlug } from "../utils/posts";
+
+interface Props {
+  lang: Lang;
+  page: any;
+  tagName: string;
+}
+
+const { lang, page, tagName } = Astro.props;
+const t = ui[lang];
+---
+
+<MainLayout
+  title={`${t.tagPageTitle(tagName, page.currentPage)} — ${site.title}`}
+  description={t.tagDescription(tagName)}
+  lang={lang}
+>
+  <Section title={`#${tagName}`} description={t.tagCount(page.total)}>
+    <h1 class="sr-only">{t.tagH1(tagName)}</h1>
+    <Breadcrumb
+      lang={lang}
+      trail={[
+        { href: postsPath(lang), label: t.posts },
+        { href: tagsPath(lang), label: t.tags },
+        { label: `#${tagName}` },
+      ]}
+    />
+    <ul>
+      {page.data.map((post: any) => {
+        const { minutes } = getReadingTime(post.body ?? "", post.data.lang);
+        return (
+          <PostCard
+            slug={getSlug(post.id)}
+            title={post.data.title}
+            description={post.data.description}
+            pubDate={post.data.pubDate}
+            minutes={minutes}
+            heroImage={post.data.heroImage}
+            lang={post.data.lang}
+          />
+        );
+      })}
+    </ul>
+    <Pagination
+      prevUrl={page.url.prev}
+      nextUrl={page.url.next}
+      currentPage={page.currentPage}
+      lastPage={page.lastPage}
+      lang={lang}
+    />
+  </Section>
+</MainLayout>
