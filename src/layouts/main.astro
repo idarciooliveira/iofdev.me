@@ -15,6 +15,7 @@ import Analytics from "@vercel/analytics/astro";
 import Nav from "../components/Nav.astro";
 import SocialIconDock from "../components/SocialIconDock.astro";
 import { site } from "../config";
+import { personSchema, websiteSchema } from "../utils/schema";
 import { defaultLang, langInfo, rssPath, type Lang } from "../i18n";
 
 interface Props {
@@ -28,8 +29,8 @@ interface Props {
   ogType?: "website" | "article";
   pubDatetime?: string | Date;
   modDatetime?: string | Date;
-  /** Extra JSON-LD object to inject (e.g. BlogPosting). */
-  schema?: Record<string, unknown>;
+  /** Extra JSON-LD nodes for this page (e.g. BlogPosting), merged into the site graph. */
+  schema?: Record<string, unknown> | Record<string, unknown>[];
   noindex?: boolean;
   /** Language of the page content. Pages that omit it are English, and the nav falls back to the default language. */
   lang?: Lang;
@@ -63,7 +64,7 @@ const {
   content,
 } = Astro.props;
 
-const pageTitle = title ?? content?.title ?? `${site.author} — Portfólio`;
+const pageTitle = title ?? content?.title ?? `${site.author} — Software Engineer`;
 const pageDescription = description ?? content?.description ?? site.description;
 
 // Canonical: explicit override wins, otherwise current path on production site.
@@ -77,6 +78,11 @@ const canonicalHref = rawCanonical
 // Per-page ogImage > content ogImage > site default.
 const rawOgImage = ogImage ?? content?.ogImage ?? site.ogImage;
 const ogImageHref = new URL(rawOgImage, siteUrl).toString();
+const ogImageType = /\.png$/i.test(rawOgImage)
+  ? "image/png"
+  : /\.webp$/i.test(rawOgImage)
+    ? "image/webp"
+    : "image/jpeg";
 const isArticle = ogType === "article";
 const pubISO =
   pubDatetime instanceof Date
@@ -91,19 +97,21 @@ const modISO =
       ? new Date(modDatetime).toISOString()
       : undefined;
 
-const defaultSchema: Record<string, unknown> = {
+// Every page carries the WebSite and Person nodes, so search engines tie
+// the name, the domain and the social profiles together.
+const pageSchemas = (Array.isArray(schema) ? schema : schema ? [schema] : []).map(
+  ({ "@context": _ctx, ...node }) => node,
+);
+const jsonLd = {
   "@context": "https://schema.org",
-  "@type": "WebSite",
-  name: site.title,
-  url: siteUrl.toString(),
-  author: { "@type": "Person", name: site.author, url: site.profile },
+  "@graph": [websiteSchema(siteUrl), personSchema(siteUrl), ...pageSchemas],
 };
 ---
 
 <html lang={lang ?? "en"} class="overflow-y-scroll scroll-smooth">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
     <ClientRouter />
     <script is:inline>
       (() => {
@@ -140,6 +148,13 @@ const defaultSchema: Record<string, unknown> = {
     {alternates.map((alt) => (
       <link rel="alternate" hreflang={alt.lang} href={new URL(alt.href, siteUrl).toString()} />
     ))}
+    {alternates.length > 0 && (
+      <link
+        rel="alternate"
+        hreflang="x-default"
+        href={new URL((alternates.find((alt) => alt.lang === defaultLang) ?? alternates[0]).href, siteUrl).toString()}
+      />
+    )}
     <link rel="sitemap" href="/sitemap-index.xml" />
     <link
       rel="alternate"
@@ -155,9 +170,13 @@ const defaultSchema: Record<string, unknown> = {
     <meta property="og:url" content={canonicalHref} />
     <meta property="og:image" content={ogImageHref} />
     <meta property="og:image:alt" content={pageTitle} />
-    <meta property="og:image:width" content="1200" />
-    <meta property="og:image:height" content="630" />
-    <meta property="og:image:type" content="image/jpeg" />
+    {rawOgImage === site.ogImage && (
+      <>
+        <meta property="og:image:width" content="1200" />
+        <meta property="og:image:height" content="630" />
+      </>
+    )}
+    <meta property="og:image:type" content={ogImageType} />
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content={pageTitle} />
     <meta name="twitter:description" content={pageDescription} />
@@ -166,7 +185,7 @@ const defaultSchema: Record<string, unknown> = {
     {isArticle && modISO && <meta property="article:modified_time" content={modISO} />}
     <script
       type="application/ld+json"
-      set:html={JSON.stringify(schema ?? defaultSchema)}
+      set:html={JSON.stringify(jsonLd)}
     />
     <slot name="head" />
     <Analytics />
