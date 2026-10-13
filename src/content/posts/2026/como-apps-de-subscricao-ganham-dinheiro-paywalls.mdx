@@ -1,0 +1,138 @@
+---
+title: "Como as apps de subscrição ganham dinheiro: paywalls explicados"
+description: "Hard paywalls, free trials, freemium e limites de uso, mais os truques de onboarding e de preço por trás deles. Wireframes interativos, sem código."
+pubDate: 2026-10-13
+lang: "pt"
+translationKey: "app-monetization-paywalls"
+tags: ["mobile", "produto"]
+---
+
+import PaywallModels from "../../../components/monetization/PaywallModels.tsx";
+import OnboardingPitch from "../../../components/monetization/OnboardingPitch.tsx";
+import PriceFraming from "../../../components/monetization/PriceFraming.tsx";
+import PaywallAnatomy from "../../../components/monetization/PaywallAnatomy.tsx";
+import FunnelCalculator from "../../../components/monetization/FunnelCalculator.tsx";
+import LockFeedFlow from "../../../components/monetization/LockFeedFlow.tsx";
+
+Tenho acompanhado a série "10K or bust" do JMA no YouTube. É um engenheiro com experiência em big tech a tentar construir algo que faça $10.000 por mês, e filma tudo. A primeira tentativa, uma app de IA que transforma fotos em retratos de beleza ao estilo coreano, teve 10.000 visualizações de criadores pagos e zero vendas.
+
+Então mudou de rumo para o LockFeed. A app bloqueia as apps que escolheres, como o Instagram ou o X, até responderes a um quiz. Ele construiu-a para si próprio, para decorar o braço da guitarra antes de fazer scroll. Depois os amigos pediram puzzles de xadrez, história da arte e perguntas do teste de cidadania americana, e aquilo virou produto.
+
+A maior parte desse episódio é sobre marketing. A parte que achei mais útil foi mais curta: como ele decidiu cobrar. Antes de construir o paywall, estudou o onboarding do Brain Rot, uma app viral do mesmo espaço, e encontrou a receita que todas as contas de crescimento de apps no X repetem. Depois decidiu não a seguir.
+
+Este post fica só por essa parte. Quais são os modelos de monetização mais comuns, como funciona a receita popular ecrã a ecrã, e porque é que os números por trás dela são o que são. Todos os diagramas são interativos.
+
+## Índice
+
+## O vocabulário
+
+Há umas quantas palavras que aparecem em todo o lado neste tema, por isso ficam aqui de uma vez.
+
+- Um paywall é o ecrã que pede dinheiro antes de poderes usar alguma coisa.
+- Uma subscrição renova sozinha todas as semanas, meses ou anos até o utilizador cancelar. Quase todas as apps deste post vendem uma.
+- Conversão é a percentagem de pessoas que passam de um passo para o seguinte. "De instalação a pagante" é a percentagem de todas as instalações que acabam a pagar.
+- MRR, monthly recurring revenue, é o que as tuas subscrições rendem por mês. Um plano anual de $29.99 conta como cerca de $2.50 de MRR.
+- Churn é a percentagem de utilizadores pagantes que perdes num período.
+- A Apple e a Google ficam com uma parte de cada compra feita dentro da app. Para quem fatura menos de $1M por ano, são 15%.
+
+As apps deste post são grátis para descarregar. O dinheiro vem do que acontece depois da instalação.
+
+## Quatro formas de pôr um paywall
+
+Há quatro modelos comuns. Diferem numa coisa: quanto do produto a pessoa pode usar antes de lhe pedires dinheiro.
+
+<PaywallModels client:visible lang="pt" />
+
+O hard paywall pede primeiro e mostra o produto depois. O freemium faz o contrário e pode nunca chegar a pedir. Os free trials e os limites de uso ficam no meio. Um trial dá tudo durante um tempo fixo. Um limite dá uma quantidade fixa de uso.
+
+Nenhum deles é o correto. Cada um passa o risco para uma pessoa diferente. Com um hard paywall, é o utilizador que arrisca que o produto seja mau. Com freemium, és tu que arriscas servir milhões de pessoas que nunca pagam.
+
+## A receita que o JMA encontrou
+
+Quando o JMA olhou para o onboarding do Brain Rot, reconheceu quatro táticas que já tinha visto fundadores recomendarem vezes sem conta. Juntas formam um único sistema, por isso vou por ordem.
+
+### Download grátis, depois um hard paywall
+
+A app não custa nada a instalar, por isso a instalação é fácil de conseguir. O paywall aparece logo a seguir ao onboarding e não há forma de passar sem pagar. Não dá para experimentar o produto primeiro, então compras por impulso ou curiosidade.
+
+Quem vende esta receita diz que os free trials prejudicam a receita. A desconfiança do JMA foi mais direta. Talvez os trials lhes prejudiquem a receita porque o produto é mau, e um trial deixa o utilizador descobrir isso antes de pagar.
+
+Acho que as duas coisas podem ser verdade. O relatório anual State of Subscription Apps da RevenueCat tem mostrado que os hard paywalls convertem mais downloads em pagamentos do que o freemium, em parte porque não há trial para cancelar. Também quer dizer que muita gente que paga nunca escolheu o produto. Escolheu a promessa do ecrã anterior.
+
+### O onboarding é o discurso de venda
+
+Nestas apps, o onboarding não é um tutorial. É um funil de vendas disfarçado de quiz. Cada ecrã aumenta um pouco a vontade do utilizador, muitas vezes a mexer em algo de que ele já não gosta em si. O paywall aparece quando essa vontade está no máximo.
+
+Avança passo a passo aqui em baixo. O medidor à direita é a ideia toda.
+
+<OnboardingPitch client:visible lang="pt" />
+
+Alguns destes passos são bom design de produto. Perguntar pelo objetivo do utilizador é uma forma real de personalizar conteúdo. Outros são pura persuasão. Uma barra de loading que "cria o teu plano" sem calcular nada só existe para o resultado parecer valioso.
+
+O teste que uso é simples. Se tirar o ecrã piora o produto para o utilizador, é onboarding. Se só torna a venda menos provável, é o discurso de venda.
+
+### Cobrar caro
+
+Estas apps cobram caro para o que são, e muitas empurram um plano semanal que custa mais por ano do que a maioria das pessoas gasta em streaming. O JMA descreveu isto como mais próximo de fechar uma venda high-ticket do que de vender uma app que as pessoas recomendariam de bom grado.
+
+A lógica vem das duas primeiras táticas. Se quase todos os compradores pagam por impulso no topo do funil, a sensibilidade ao preço nesse momento é baixa. E com anúncios a pagar cada instalação, o preço tem de ser alto para as contas fecharem.
+
+O custo aparece mais tarde. Um preço que só funciona por impulso traz reembolsos, cancelamentos e reviews de uma estrela a dizer "não sabia que ia ser cobrado". Também mata o boca a boca. Ninguém recomenda uma app pela qual se sentiu enganado a pagar.
+
+### Mostrar o preço real como 50% de desconto
+
+A última tática é mostrar primeiro um preço mais alto, riscá-lo e apresentar o preço real como uma pechincha. O preço nunca muda. Muda a comparação.
+
+<PriceFraming client:visible lang="pt" />
+
+Os quatro enquadramentos são legais quando os números são reais. O problema é que nestas apps o "50% de desconto" quase nunca é real. O preço riscado nunca foi cobrado, e o desconto está lá em todas as visitas.
+
+## Anatomia de um ecrã de paywall
+
+Junta as quatro táticas e tens o ecrã de paywall que a maioria destas apps partilha. Cada elemento tem uma função. Alguns são exigidos pela Apple e pela Google, outros são prática normal, e um ou dois passam a linha.
+
+<PaywallAnatomy client:visible lang="pt" />
+
+Se estás a construir um, começa pelas partes obrigatórias (preço, duração, condições de renovação, restaurar compras) e só acrescenta persuasão onde estarias à vontade para a explicar ao utilizador.
+
+## Fazer as contas
+
+O objetivo do JMA são $10.000 por mês. A calculadora em baixo mostra quantas instalações isso exige em cada modelo. Todas as taxas iniciais são pontos de partida inventados, não benchmarks. Troca-as pelos teus números de analytics assim que os tiveres.
+
+<FunnelCalculator client:visible lang="pt" />
+
+Há duas coisas que saltam à vista quando brincas com ela.
+
+A primeira é o churn. Com 8% de churn mensal, o MRR para de crescer quando chega a cerca de 12 vezes o que adicionas por mês. Baixar o churn mexe nesse teto mais do que quase qualquer outro slider. É o custo escondido da compra por impulso. Os utilizadores que não escolheram mesmo o produto saem depressa.
+
+A segunda é a diferença entre modelos. Pequenas diferenças de conversão parecem mínimas em percentagem e enormes em instalações. Passar de 2% para 4% de instalação a pagante corta para metade as instalações necessárias, e por isso mais ou menos metade do orçamento em anúncios, para chegar à mesma receita.
+
+Esse segundo ponto explica porque é que o hard paywall é tão popular. Quando cada instalação custa dinheiro em anúncios, o modelo que converte mais instalações mais depressa ganha na folha de cálculo, mesmo que perca a boa vontade das pessoas.
+
+## O que o JMA fez em vez disso
+
+O JMA não queria um paywall imediato. Na versão dele, o utilizador resolvia uns quantos quizzes de graça e o paywall aparecia no seguinte. É o modelo por limite do primeiro diagrama. O utilizador tira valor primeiro, e o pedido vem logo a seguir a uma pequena vitória.
+
+Depois acrescentou uma reviravolta. Se o utilizador não pagasse, as apps bloqueadas ficavam bloqueadas para sempre.
+
+A Apple rejeitou a app por uso indevido da API Screen Time.
+
+<LockFeedFlow client:visible lang="pt" />
+
+Ele chamou à rejeição um disparate, em frente à câmara. Acho que aqui a Apple tem razão. O acesso ao Screen Time existe para os utilizadores controlarem o próprio telemóvel. Usá-lo para bloquear as outras apps de alguém até pagar vira esse propósito do avesso. O limite estava bem. O problema foi usar o telemóvel do próprio utilizador como moeda de troca.
+
+A correção não precisa de outro modelo. Mantém o limite e o paywall, e garante que não pagar só custa ao utilizador as funcionalidades do teu produto, nunca o acesso ao resto do telemóvel.
+
+## O que eu tirava daqui
+
+- Escolhe o modelo de paywall pela rapidez com que o teu produto se prova. Se o utilizador vê o valor numa sessão, usa um limite. Se demora uma semana, oferece um trial. Se o valor é difícil de mostrar antes da compra, um hard paywall pode ser a única coisa que funciona, mas isso também é um aviso sobre o produto.
+- Trata o onboarding primeiro como produto. Personalização que muda o que o utilizador vê vale os ecrãs a mais. Barras de loading falsas não.
+- Define o preço a pensar no segundo mês, não na primeira compra. Um preço que só sobrevive por impulso aparece mais tarde como churn.
+- Usa ancoragem com números reais. Um plano anual ao lado de um mensal é ancoragem honesta. Um desconto sobre um preço que nunca cobraste não é.
+- Lê as regras da loja antes de desenhar o castigo para quem não paga. Bloquear conteúdo que tu criaste está bem. Bloquear coisas que já são do utilizador não está.
+
+A aposta do JMA é que um produto que ele usa todos os dias, com um paywall que vem depois do valor, consegue crescer sem a receita completa. Acho que é a melhor aposta. Um produto que as pessoas pagam depois de o experimentar é um produto que recomendam, e recomendações são instalações que não pagas.
+
+## Referência
+
+Este post parte [deste episódio da série "10K or bust" do JMA](https://youtu.be/JezLDq3Lve8). A história do LockFeed, a análise do Brain Rot e as quatro táticas vêm de lá. Os diagramas e as opiniões são meus.

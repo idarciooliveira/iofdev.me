@@ -41,7 +41,7 @@ The apps in this post are free to download. The money comes from what happens af
 
 There are four common models. They differ in one thing: how much of the product someone gets to use before you ask for money.
 
-<PaywallModels client:visible />
+<PaywallModels client:visible lang="en" />
 
 The hard paywall asks first and shows the product later. Freemium does the opposite and may never ask at all. Free trials and metered limits sit in between. A trial gives everything for a fixed time. A meter gives a fixed amount of use.
 
@@ -65,7 +65,7 @@ In these apps, onboarding isn't a tutorial. It's a sales funnel dressed as a qui
 
 Step through it below. The meter on the right is the whole idea.
 
-<OnboardingPitch client:visible />
+<OnboardingPitch client:visible lang="en" />
 
 Some of these steps are good product design. Asking about the user's goal is a real way to personalise content. Others are pure persuasion. A loading bar that "builds your plan" while computing nothing exists only to make the result feel valuable.
 
@@ -83,7 +83,7 @@ The cost shows up later. A price that only works on impulse produces refunds, ca
 
 The last tactic is to show a higher price first, cross it out, and present the real price as a deal. The price never changes. The comparison does.
 
-<PriceFraming client:visible />
+<PriceFraming client:visible lang="en" />
 
 All four framings are legal when the numbers are real. The trouble is that the "50% off" version is almost never real in these apps. The struck-through price was never charged, and the discount is there on every visit.
 
@@ -91,7 +91,7 @@ All four framings are legal when the numbers are real. The trouble is that the "
 
 Put the four tactics together and you get the paywall screen most of these apps share. Each element on it has a job. Some are required by Apple and Google, some are normal practice, and one or two cross a line.
 
-<PaywallAnatomy client:visible />
+<PaywallAnatomy client:visible lang="en" />
 
 If you're building one, start from the required parts (price, length, renewal terms, restore purchases) and add persuasion only where you'd be comfortable explaining it to the user.
 
@@ -99,7 +99,7 @@ If you're building one, start from the required parts (price, length, renewal te
 
 JMA's goal is $10,000 a month. The calculator below shows how many installs that takes under each model. Every preset rate is a made-up starting point, not a benchmark. Swap in your own numbers from analytics as soon as you have them.
 
-<FunnelCalculator client:visible />
+<FunnelCalculator client:visible lang="en" />
 
 Two things stand out when you play with it.
 
@@ -117,7 +117,7 @@ Then he added a twist. If the user didn't pay, their locked apps would stay lock
 
 Apple rejected the app for improper use of the Screen Time API.
 
-<LockFeedFlow client:visible />
+<LockFeedFlow client:visible lang="en" />
 
 He called the rejection nonsense on camera. I think Apple got this one right. Screen Time access exists so users can control their own phone. Using it to block someone's other apps until they pay flips that purpose. The meter was fine. Using the user's own phone as leverage was the problem.
 
@@ -132,3 +132,7 @@ The fix doesn't need a different model. Keep the meter and the paywall, and make
 - Read the store guidelines before designing the punishment for not paying. Locking content you made is fine. Locking things the user already owns isn't.
 
 JMA's bet is that a product he uses every day, with a paywall that comes after value, can grow without the full playbook. I think it's the better bet. A product people pay for after trying it is one they'll recommend, and recommendations are installs you don't pay for.
+
+## Reference
+
+This post is based on [this episode of JMA's "10K or bust" series](https://youtu.be/JezLDq3Lve8). The LockFeed story, the Brain Rot breakdown and the four tactics come from there. The diagrams and opinions are mine.
