@@ -1,5 +1,7 @@
 @import "tailwindcss";
 @import "./typography.css";
+/* Post bodies hold code samples like INI [all:vars] that Tailwind would read as class names. */
+@source not "../content";
 
 /* Same typographic setup as AstroPaper: single app font (Google Sans Code) */
 @theme inline {
