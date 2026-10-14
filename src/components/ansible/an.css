@@ -1,0 +1,210 @@
+.an {
+	--an-ok: #15803d;
+	--an-changed: #b45309;
+	--an-hl: color-mix(in srgb, var(--text) 10%, transparent);
+	margin: 2rem 0;
+	padding: 1rem;
+	border: 1px solid var(--border-soft);
+	border-radius: 0.75rem;
+	background: var(--surface);
+	color: var(--text);
+	font-size: 0.8125rem;
+	line-height: 1.5;
+}
+html[data-theme="dark"] .an {
+	--an-ok: #4ade80;
+	--an-changed: #fbbf24;
+}
+.an *,
+.an *::before,
+.an *::after {
+	box-sizing: border-box;
+}
+.an p {
+	margin: 0;
+}
+.an-head {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: baseline;
+	justify-content: space-between;
+	gap: 0.25rem 1rem;
+	margin-bottom: 0.75rem;
+}
+.an-title {
+	font-weight: 700;
+	font-size: 0.875rem;
+}
+.an-hint {
+	color: var(--text-soft);
+	font-size: 0.75rem;
+}
+.an-row {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 0.5rem;
+	align-items: center;
+}
+.an-btn {
+	font: inherit;
+	color: var(--text);
+	background: var(--surface-soft);
+	border: 1px solid var(--border-soft);
+	border-radius: 0.5rem;
+	padding: 0.35rem 0.7rem;
+	cursor: pointer;
+	transition: background 0.15s, border-color 0.15s, transform 0.1s;
+}
+.an-btn:hover {
+	border-color: var(--text-soft);
+}
+.an-btn:active {
+	transform: translateY(1px);
+}
+.an-btn:focus-visible {
+	outline: 2px dashed var(--text);
+	outline-offset: 2px;
+}
+.an-btn[aria-pressed="true"] {
+	border-color: var(--text);
+	background: var(--bg);
+	font-weight: 700;
+}
+.an-btn[data-primary="true"] {
+	background: var(--text);
+	color: var(--surface);
+	border-color: var(--text);
+	font-weight: 700;
+}
+.an-panel {
+	border: 1px solid var(--border-soft);
+	border-radius: 0.5rem;
+	background: var(--bg);
+	padding: 0.8rem;
+}
+.an-note {
+	margin-top: 1rem;
+	min-height: 2.6em;
+	color: var(--text-soft);
+}
+.an-note strong {
+	color: var(--text);
+}
+.an-code {
+	margin: 0;
+	padding: 0.8rem 0;
+	overflow-x: auto;
+	font-family: var(--font-mono);
+	font-size: 0.75rem;
+	line-height: 1.65;
+	border: 1px solid var(--border-soft);
+	border-radius: 0.5rem;
+	background: var(--bg);
+	color: var(--text);
+	white-space: pre;
+}
+.an-line {
+	display: block;
+	padding: 0 0.8rem;
+	min-height: 1.65em;
+	transition: opacity 0.15s, background 0.15s;
+}
+.an-code[data-active="true"] .an-line {
+	opacity: 0.32;
+}
+.an-code[data-active="true"] .an-line[data-on="true"] {
+	opacity: 1;
+	background: var(--an-hl);
+	box-shadow: inset 2px 0 0 var(--text);
+}
+
+/* run simulator */
+.an-split {
+	display: grid;
+	gap: 1rem;
+	grid-template-columns: minmax(0, 1fr);
+	align-items: start;
+}
+.an-split > div {
+	min-width: 0;
+}
+@media (min-width: 720px) {
+	.an-split {
+		grid-template-columns: 15rem minmax(0, 1fr);
+	}
+}
+.an-stack {
+	display: grid;
+	gap: 0.5rem;
+}
+.an-stack .an-btn {
+	text-align: left;
+}
+.an-label {
+	margin: 0.5rem 0 0;
+	color: var(--text-soft);
+	font-size: 0.6875rem;
+	text-transform: uppercase;
+	letter-spacing: 0.04em;
+}
+.an-state {
+	display: grid;
+	gap: 0.2rem;
+	margin-top: 0.75rem;
+	font-family: var(--font-mono);
+	font-size: 0.75rem;
+}
+.an-state div {
+	display: flex;
+	justify-content: space-between;
+	gap: 0.75rem;
+	border-bottom: 1px dashed var(--border-soft);
+	padding-bottom: 0.2rem;
+}
+.an-state span:last-child {
+	font-weight: 700;
+}
+.an-term {
+	margin: 0;
+	min-height: 17rem;
+	max-height: 22rem;
+	overflow: auto;
+	padding: 0.8rem;
+	font-family: var(--font-mono);
+	font-size: 0.6875rem;
+	line-height: 1.55;
+	border: 1px solid var(--border-soft);
+	border-radius: 0.5rem;
+	background: var(--bg);
+	color: var(--text);
+	white-space: pre;
+}
+.an-term .ok {
+	color: var(--an-ok);
+}
+.an-term .changed {
+	color: var(--an-changed);
+}
+.an-term .dim {
+	color: var(--text-soft);
+}
+.an-history {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 0.4rem;
+	margin-top: 0.6rem;
+	font-family: var(--font-mono);
+	font-size: 0.6875rem;
+	color: var(--text-soft);
+}
+.an-history span {
+	border: 1px solid var(--border-soft);
+	border-radius: 999px;
+	padding: 0.1rem 0.55rem;
+}
+.an-history span[data-zero="true"] {
+	color: var(--an-ok);
+}
+.an-history span[data-zero="false"] {
+	color: var(--an-changed);
+}

@@ -63,6 +63,13 @@
     }
 
     table {
+      /* Wide tables scroll sideways on phones instead of widening the page. */
+      @media (max-width: 40rem) {
+        display: block;
+        max-width: 100%;
+        overflow-x: auto;
+      }
+
       th,
       td {
         @apply border-border border p-2;
@@ -93,7 +100,15 @@
     }
 
     .astro-code code {
-      @apply flex-[1_0_100%] bg-inherit p-0;
+      @apply flex-[1_0_100%] bg-inherit p-0 text-inherit;
+    }
+
+    .callout {
+      @apply border-border bg-muted/60 border-s-accent my-6 rounded-sm border border-s-4 px-4 py-2;
+
+      p {
+        @apply my-1;
+      }
     }
 
     blockquote {

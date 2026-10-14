@@ -1,0 +1,817 @@
+---
+title: "Ansible: guia de consulta e mini lab"
+description: "Os conceitos centrais do Ansible numa página só, de inventory a collections, mais um lab local com Docker para praticar em 20 minutos."
+pubDate: 2026-10-14
+lang: "pt"
+translationKey: "ansible-guide"
+tags: ["devops", "ansible"]
+heroImage: "/posts/2026/ansible-guide/cover.jpg"
+---
+
+import PlaybookAnatomy from "../../../components/ansible/PlaybookAnatomy.tsx";
+import RunSimulator from "../../../components/ansible/RunSimulator.tsx";
+
+Fiz o treino de Ansible da Red Hat e saí dele com 27 screenshots no Notion e nenhum sítio óbvio para onde voltar quando tivesse uma dúvida. Este post é esse sítio.
+
+Não é para ler de ponta a ponta. Olha para o mapa, salta para o conceito de que precisas e, quando quiseres praticar, vai ao lab no fim. O lab corre em qualquer computador com Docker e demora uns 20 minutos.
+
+Saltos rápidos para [o mapa](#o-mapa), [os conceitos](#os-conceitos), [a plataforma](#da-linha-de-comandos-à-plataforma), [o lab](#mini-lab), [quando algo falha](#quando-algo-falha) e [os comandos](#comandos-que-uso-mais).
+
+## O essencial
+
+- O Ansible liga-se às máquinas por SSH e corre lá módulos pequenos. Não há agente para instalar. Nas máquinas Linux basta SSH e Python.
+- Descreves o estado que queres, não os passos. "O Apache está instalado" em vez de "corre apt install".
+- Podes correr o mesmo playbook dez vezes. Se a máquina já está certa, nada muda. Chama-se idempotência.
+- Tudo é YAML.
+- Serve para mais do que servidores. Nos slides do curso a lista era firewalls, balanceadores de carga, equipamento de rede, clouds, containers, armazenamento e plataformas de virtualização. Os verbos eram orquestrar, gerir configurações, fazer deploy de aplicações, provisionar e desprovisionar, entregar continuamente, e manter segurança e conformidade.
+
+O fluxo inteiro cabe em três linhas.
+
+```text
+inventory ─┐                          ┌─▶ web1
+           ├─▶ ansible-playbook ─SSH──┼─▶ web2
+playbook ──┘   (nó de controlo)       └─▶ db1
+```
+
+O nó de controlo é a máquina onde corres o `ansible-playbook`. Os outros são os nós geridos.
+
+## O mapa
+
+Estas palavras cobrem quase tudo. Cada linha responde a uma pergunta, e é por aí que costumo procurar.
+
+| Conceito | Responde a | Onde aparece |
+| --- | --- | --- |
+| [Inventory](#inventory) | Em que máquinas? | `inventory.ini` |
+| [Play](#playbook-play-e-task) | O que automatizo e onde? | `hosts: web` |
+| [Task](#playbook-play-e-task) | Que passo dou? | `- name: ...` |
+| [Módulo](#módulos) | Como faço o passo? | `ansible.builtin.package` |
+| [Plugin](#plugins) | Como estendo o Ansible? | `connection`, `lookup`, `filter` |
+| [Fact](#facts) | O que sei da máquina? | `ansible_facts` |
+| [Variável](#variáveis-e-loops) | O que muda entre execuções? | `vars`, `-e` |
+| [Condicional](#condicionais) | Só quando? | `when` |
+| [Loop](#variáveis-e-loops) | Quantas vezes? | `loop` |
+| [Template](#templates) | E se o ficheiro for dinâmico? | `.j2` |
+| [Handler](#handlers) | Como reajo a uma mudança? | `notify` |
+| [Role](#roles) | Como reutilizo? | `roles/` |
+| [Collection](#collections-e-galaxy) | Como distribuo? | `ansible-galaxy` |
+
+## Idempotência, a ideia que segura o resto
+
+Uma task não diz "instala". Diz "tem de estar instalado". Se já está, o Ansible não faz nada e marca `ok`. Se não está, instala e marca `changed`.
+
+É por isso que o `PLAY RECAP` no fim de cada execução funciona como um relatório. `changed=0` quer dizer que a máquina já estava certa. Qualquer outro número diz quantas coisas tiveram de mudar.
+
+Experimenta abaixo. Corre duas vezes, muda a variável, mexe na máquina à mão e corre outra vez.
+
+<RunSimulator client:visible lang="pt" />
+
+<aside class="callout">
+
+**Armadilha.** Os módulos `command` e `shell` não são idempotentes. O Ansible não sabe o que o teu comando faz, por isso marca sempre `changed`. Diz-lhe quando é que o comando já não é preciso com `creates`, ou decide tu o resultado com `changed_when`.
+
+</aside>
+
+## Os conceitos
+
+Antes de cada um em detalhe, um playbook inteiro. Escolhe um conceito e vê onde ele vive.
+
+<PlaybookAnatomy client:visible lang="pt" />
+
+### Inventory
+
+A lista de máquinas. Agrupa-as por função para poderes apontar um play a `web` em vez de a cada servidor.
+
+```ini
+[web]
+web1.example.com
+web2.example.com
+
+[db]
+db1.example.com
+
+[switches]
+leaf01.internal.com
+leaf02.internal.com
+```
+
+Também há inventários em YAML e dinâmicos, que perguntam à cloud que máquinas existem agora. `ansible-inventory --graph` mostra como o Ansible leu o teu.
+
+### Playbook, play e task
+
+Um playbook é um ficheiro YAML com um ou mais plays. Um play diz em que hosts corre, com que privilégios e que tasks executa. Cada task chama um módulo. Podes ter vários plays no mesmo ficheiro, por exemplo um para `web` e outro para `db`.
+
+```yaml
+---
+- name: Servidores web
+  hosts: web
+  become: true
+  tasks:
+    - name: Instalar o Apache
+      ansible.builtin.package:
+        name: apache2
+        state: present
+```
+
+`become: true` sobe de privilégios, o equivalente a `sudo`. As tasks correm por ordem, e cada uma acaba em todos os hosts antes de a seguinte começar.
+
+<aside class="callout">
+
+**Armadilha.** YAML usa espaços, nunca tabs. Um nível de indentação errado vira um erro de sintaxe ou, pior, uma task no sítio errado. `ansible-playbook --syntax-check` apanha a maioria.
+
+</aside>
+
+### Módulos
+
+As ferramentas da caixa. Cada módulo faz uma coisa, como instalar um pacote, criar um utilizador ou copiar um ficheiro, e recebe parâmetros. Costumam ser escritos em Python, ou em PowerShell para Windows, mas podem ser escritos em qualquer linguagem.
+
+```yaml
+- name: Criar um utilizador
+  ansible.builtin.user:
+    name: roger
+    state: present
+    create_home: true
+```
+
+O nome completo, `ansible.builtin.user`, tem três partes. Namespace, collection e módulo. Os de `ansible.builtin` vêm com o `ansible-core`. Todos os outros vêm de collections.
+
+O parâmetro `state` aparece em quase todos. Os valores mais comuns são `present`, `absent`, `latest`, `started`, `stopped` e `reloaded`.
+
+Para ver os parâmetros e exemplos sem sair do terminal, usa `ansible-doc ansible.builtin.user`.
+
+### Plugins
+
+Código que estende o núcleo do Ansible. Os módulos correm na máquina de destino. Os plugins correm no nó de controlo.
+
+Os tipos que mais aparecem são `connection`, que decide como falar com a máquina e por defeito é SSH, `lookup`, que lê dados de fora, e `filter`, que transforma valores.
+
+```yaml
+- name: Mostrar os admins
+  ansible.builtin.debug:
+    msg: "{{ admins | join(', ') }}"        # filter
+```
+
+Raramente escreves um plugin. Usas muitos sem dar por isso.
+
+### Facts
+
+Variáveis que o Ansible recolhe da própria máquina no início de cada play. Sistema operativo, memória, interfaces de rede. Usam-se como qualquer variável.
+
+```bash
+ansible web -m ansible.builtin.setup -a "filter=ansible_distribution*"
+```
+
+```text
+web1 | SUCCESS => {
+    "ansible_facts": {
+        "ansible_distribution": "Ubuntu",
+        "ansible_distribution_major_version": "24",
+        "ansible_distribution_release": "noble",
+        "ansible_distribution_version": "24.04"
+    }
+}
+```
+
+A recolha é o passo `Gathering Facts` que aparece no início de cada execução. Se o play não usa facts, `gather_facts: false` poupa esse tempo.
+
+### Variáveis e loops
+
+Quando três tasks só diferem num valor, é um loop.
+
+```yaml
+- name: Garantir que os utilizadores existem
+  ansible.builtin.user:
+    name: "{{ item }}"
+    state: present
+  loop:
+    - dev_user
+    - qa_user
+    - prod_user
+```
+
+A lista pode vir de uma variável, com `loop: "{{ admins }}"`, e é aí que ganha valor. Muda-se a lista, não as tasks.
+
+Podes definir a mesma variável em vários sítios. Ganha o mais específico, e o `-e` na linha de comandos ganha sempre.
+
+<aside class="callout">
+
+**Armadilha.** Um valor que começa com `{{` tem de ir entre aspas. Sem elas, o YAML lê as chavetas como outra coisa e falha.
+
+</aside>
+
+### Condicionais
+
+Uma task com `when` só corre se a condição for verdadeira. Combina bem com facts.
+
+```yaml
+- name: Atualizar o índice de pacotes
+  ansible.builtin.apt:
+    update_cache: true
+  when: ansible_facts['os_family'] == "Debian"
+```
+
+Nas máquinas onde a condição é falsa, o Ansible escreve `skipping`. Podes juntar condições com `and` e `or`.
+
+<aside class="callout">
+
+**Armadilha.** O `when` leva uma expressão simples. Não leva `{{ }}`.
+
+</aside>
+
+### Templates
+
+Ficheiros com variáveis, condições e loops, escritos em Jinja2. O Ansible lê o ficheiro `.j2`, preenche os valores com variáveis e facts, e copia o resultado para a máquina.
+
+`templates/lab.conf.j2`
+
+```jinja
+ServerTokens {{ server_tokens }}
+ServerSignature Off
+```
+
+```yaml
+- name: Configurar o Apache
+  ansible.builtin.template:
+    src: lab.conf.j2
+    dest: /etc/apache2/conf-enabled/zz-lab.conf
+```
+
+A diferença para o `copy` é uma. O `copy` envia o ficheiro como está. O `template` processa o Jinja2 antes. A pasta `templates/` ao lado do playbook, ou dentro de um role, é procurada automaticamente.
+
+### Handlers
+
+Uma task que só corre quando outra a notifica, e só se essa outra tiver mudado alguma coisa. Serve para reagir a mudanças, como recarregar um serviço depois de mexer na configuração.
+
+```yaml
+tasks:
+  - name: Configurar o Apache
+    ansible.builtin.template:
+      src: lab.conf.j2
+      dest: /etc/apache2/conf-enabled/zz-lab.conf
+    notify: Recarregar o Apache
+
+handlers:
+  - name: Recarregar o Apache
+    ansible.builtin.service:
+      name: apache2
+      state: reloaded
+```
+
+Se cinco tasks notificarem o mesmo handler, ele corre uma vez. Corre no fim do play. Para o correr mais cedo, usa `ansible.builtin.meta: flush_handlers`.
+
+<aside class="callout">
+
+**Armadilha.** O nome em `notify` tem de bater com o do handler, letra a letra. Se não bater, o Ansible para com `The requested handler was not found`.
+
+</aside>
+
+### Roles
+
+Um role empacota tasks, variáveis, ficheiros, templates e handlers numa pasta reutilizável. Escreves uma vez e usas em vários playbooks e equipas.
+
+```text
+roles/webserver/
+├── tasks/main.yml       # as tasks
+├── handlers/main.yml    # os handlers
+├── templates/           # ficheiros .j2
+├── files/               # ficheiros estáticos
+├── defaults/main.yml    # variáveis de baixa prioridade
+├── vars/main.yml        # variáveis de alta prioridade
+├── meta/main.yml        # metadados e dependências
+└── README.md
+```
+
+O playbook que sobra fica pequeno.
+
+```yaml
+- name: Servidores web
+  hosts: web
+  become: true
+  roles:
+    - webserver
+```
+
+Põe em `defaults/` o que quem usa o role deve poder mudar. Põe em `vars/` o que o role precisa de manter fixo. `ansible-galaxy role init webserver` cria o esqueleto.
+
+### Collections e Galaxy
+
+Uma collection é a forma de organizar, distribuir e reutilizar conteúdo de automação. Agrupa roles, módulos, plugins e playbooks.
+
+```text
+├── README.md
+├── docs
+├── galaxy.yml
+├── meta
+│   └── runtime.yml
+├── plugins
+│   └── README.md
+└── roles
+```
+
+O Ansible Galaxy é a plataforma da comunidade para descobrir, partilhar e descarregar roles e collections. O Automation Hub, que vês na secção seguinte, cumpre o papel de Galaxy privado e curado.
+
+```bash
+ansible-galaxy collection install community.general
+ansible-galaxy collection list
+```
+
+Num projeto, lista as collections num `requirements.yml` e instala tudo de uma vez com `ansible-galaxy collection install -r requirements.yml`.
+
+<aside class="callout">
+
+**Armadilha.** Usar `community.general.ini_file` sem instalar a collection dá `couldn't resolve module/action`. O erro parece um typo, mas é quase sempre uma collection em falta.
+
+</aside>
+
+## Da linha de comandos à plataforma
+
+Tudo o que viste acima corre só com o `ansible-core`, que é gratuito. A Red Hat Ansible Automation Platform junta peças para quando uma equipa inteira usa a mesma automação. O projeto open source por trás do controller chama-se AWX.
+
+| Peça | Para que serve |
+| --- | --- |
+| Automation controller | Criar, gerir e agendar automação, com interface web, API, RBAC e auditoria |
+| Automation hub | Repositório privado de conteúdo, com collections da Red Hat, validadas e de parceiros certificados |
+| Event-Driven Ansible | Automação disparada por eventos em tempo real |
+| Ansible Lightspeed | IA para gerar e refinar playbooks |
+
+Nos slides do curso, o conteúdo certificado somava mais de 170 collections validadas e mais de 70 parceiros de tecnologia. É esse conteúdo que o Automation Hub distribui.
+
+### RBAC
+
+A pergunta é quem pode usar a minha automação. O controller agrupa os objetos e dá a utilizadores e equipas permissões de leitura, execução ou edição. Há roles pré-definidos e integra com a autenticação que a empresa já tem. Aqui role quer dizer permissão, não tem nada a ver com os roles de automação.
+
+### Workflows
+
+Encadeiam job templates e decidem o passo seguinte conforme o anterior teve sucesso ou falhou. Um job template é um playbook mais o inventário e as credenciais com que corre. Os workflows aceitam aprovações e integram com sistemas de tickets, os ITSM. Foram reformulados na versão 2.5 da plataforma.
+
+```text
+Start ─always─▶ Backup da config ─fail────▶ Abrir ticket no ITSM
+                      │
+                      └─success─▶ Atualizar a aplicação ─success─▶ Política de config
+```
+
+### Event-Driven Ansible
+
+Corre automação sem ninguém carregar no botão, quando recebe a notificação de um evento do ambiente. Um alerta de CPU, um serviço que caiu, um ticket novo.
+
+```text
+fonte de eventos ─▶ rule engine ─match────▶ run_playbook, run_module ─▶ ansible-runner
+                         │                 run_job_template ─────────▶ automation controller
+                         └─sem match─▶ nenhuma ação
+```
+
+Um rulebook liga fontes de eventos a condições e ações. Este escuta um webhook e corre um playbook quando chega um alerta de CPU alta.
+
+```yaml
+---
+- name: Reagir a alertas
+  hosts: all
+  sources:
+    - ansible.eda.webhook:
+        host: 0.0.0.0
+        port: 5000
+  rules:
+    - name: CPU alta
+      condition: event.payload.alert == "high_cpu"
+      action:
+        run_playbook:
+          name: scale_up.yml
+```
+
+Sem event streams, cada configuração de alerta precisava do seu próprio webhook e da sua própria porta. Com event streams, a plataforma de observabilidade manda tudo para um único URL e cada rulebook activation liga-se ao stream que lhe interessa.
+
+## Mini lab
+
+Dois servidores Ubuntu e uma máquina de controlo, tudo em containers. Não instalas Ansible no teu computador. Precisas de Docker com Compose, que no Mac e no Windows vem com o Docker Desktop.
+
+No fim, tens um playbook a configurar dois servidores Apache, e passaste por quase todos os conceitos acima.
+
+<aside class="callout">
+
+**Atenção.** O utilizador `ansible` tem a password `ansible`. É só para o lab. Fora dele, usa chaves SSH e o Ansible Vault para segredos.
+
+</aside>
+
+### 0. Montar o ambiente
+
+Cria uma pasta `ansible-lab` com estes quatro ficheiros.
+
+`Dockerfile`
+
+```dockerfile
+# Nó gerido: só SSH e Python. Não tem Ansible instalado.
+FROM ubuntu:24.04 AS node
+RUN apt-get update \
+ && apt-get install -y --no-install-recommends openssh-server python3 sudo \
+ && rm -rf /var/lib/apt/lists/* \
+ && mkdir -p /run/sshd \
+ && useradd -m -s /bin/bash ansible \
+ && echo "ansible:ansible" | chpasswd \
+ && echo "ansible ALL=(ALL) NOPASSWD:ALL" > /etc/sudoers.d/ansible
+EXPOSE 22
+CMD ["/usr/sbin/sshd", "-D"]
+
+# Nó de controlo: Ansible e cliente SSH.
+FROM ubuntu:24.04 AS control
+RUN apt-get update \
+ && apt-get install -y --no-install-recommends python3-pip openssh-client sshpass \
+ && rm -rf /var/lib/apt/lists/* \
+ && pip install --no-cache-dir --break-system-packages ansible-core
+ENV ANSIBLE_CONFIG=/lab/ansible.cfg
+WORKDIR /lab
+CMD ["sleep", "infinity"]
+```
+
+`docker-compose.yml`
+
+```yaml
+x-node: &node
+  build:
+    context: .
+    target: node
+  image: ansible-lab-node
+
+services:
+  control:
+    build:
+      context: .
+      target: control
+    volumes:
+      - .:/lab
+  web1:
+    <<: *node
+    hostname: web1
+    ports: ["8081:80"]
+  web2:
+    <<: *node
+    hostname: web2
+    ports: ["8082:80"]
+```
+
+`ansible.cfg`
+
+```ini
+[defaults]
+inventory = inventory.ini
+host_key_checking = False
+interpreter_python = auto_silent
+```
+
+`inventory.ini`
+
+```ini
+[web]
+web1
+web2
+
+[all:vars]
+ansible_user=ansible
+ansible_password=ansible
+```
+
+Sobe tudo e entra na máquina de controlo.
+
+```bash
+docker compose up -d --build
+docker compose exec control bash
+```
+
+Os comandos dos passos seguintes correm dentro desse shell, a não ser que diga o contrário. Os ficheiros editas no teu computador, porque a pasta está partilhada com o container em `/lab`.
+
+### 1. Falar com as máquinas
+
+Um comando ad-hoc é um módulo, uma vez, sem playbook.
+
+```bash
+ansible all -m ping
+ansible web -m ansible.builtin.setup -a "filter=ansible_distribution*"
+ansible all -a "uname -sr"
+```
+
+O `ping` não é ICMP. Prova que o Ansible chegou à máquina por SSH e encontrou Python. Deves ver `"ping": "pong"` para `web1` e `web2`. O segundo comando mostra os facts de que falámos acima.
+
+O terceiro aparece como `CHANGED`, apesar de só ler uma versão. É o `command` a marcar tudo como mudança.
+
+### 2. O primeiro playbook
+
+`site.yml`
+
+```yaml
+---
+- name: Servidores web
+  hosts: web
+  become: true
+  tasks:
+    - name: Atualizar o índice de pacotes
+      ansible.builtin.apt:
+        update_cache: true
+        cache_valid_time: 3600
+
+    - name: Instalar o Apache
+      ansible.builtin.package:
+        name: apache2
+        state: present
+
+    - name: Escrever a página inicial
+      ansible.builtin.copy:
+        content: "Olá de {{ inventory_hostname }}\n"
+        dest: /var/www/html/index.html
+        mode: "0644"
+
+    - name: Arrancar o Apache
+      ansible.builtin.service:
+        name: apache2
+        state: started
+        enabled: true
+```
+
+Corre-o duas vezes.
+
+```bash
+ansible-playbook site.yml
+ansible-playbook site.yml
+```
+
+Na primeira, o resumo final é parecido com isto.
+
+```text
+PLAY RECAP *********************************************************
+web1  : ok=5  changed=3  unreachable=0  failed=0  skipped=0  rescued=0  ignored=0
+web2  : ok=5  changed=3  unreachable=0  failed=0  skipped=0  rescued=0  ignored=0
+```
+
+Na segunda, `changed=0`. Abre `http://localhost:8081` e `http://localhost:8082` no browser. Cada servidor responde com o próprio nome.
+
+A ordem das linhas entre `web1` e `web2` muda de execução para execução, porque o Ansible fala com os dois ao mesmo tempo.
+
+### 3. Variáveis, loop, condicional, template e handler
+
+Substitui o `site.yml` por esta versão.
+
+`site.yml`
+
+```yaml
+---
+- name: Servidores web
+  hosts: web
+  become: true
+  vars:
+    server_tokens: Prod
+    admins:
+      - ana
+      - bruno
+  tasks:
+    - name: Atualizar o índice de pacotes (só Debian e Ubuntu)
+      ansible.builtin.apt:
+        update_cache: true
+        cache_valid_time: 3600
+      when: ansible_facts['os_family'] == "Debian"
+
+    - name: Instalar o Apache
+      ansible.builtin.package:
+        name: apache2
+        state: present
+
+    - name: Criar os utilizadores admin
+      ansible.builtin.user:
+        name: "{{ item }}"
+        state: present
+      loop: "{{ admins }}"
+
+    - name: Publicar a página inicial
+      ansible.builtin.template:
+        src: index.html.j2
+        dest: /var/www/html/index.html
+        mode: "0644"
+
+    - name: Configurar o Apache
+      ansible.builtin.template:
+        src: lab.conf.j2
+        dest: /etc/apache2/conf-enabled/zz-lab.conf
+        mode: "0644"
+      notify: Recarregar o Apache
+
+    - name: Arrancar o Apache
+      ansible.builtin.service:
+        name: apache2
+        state: started
+        enabled: true
+
+  handlers:
+    - name: Recarregar o Apache
+      ansible.builtin.service:
+        name: apache2
+        state: reloaded
+```
+
+Cria a pasta `templates/` com dois ficheiros.
+
+`templates/index.html.j2`
+
+```jinja
+<h1>Olá de {{ inventory_hostname }}</h1>
+<p>Sistema: {{ ansible_facts['distribution'] }} {{ ansible_facts['distribution_version'] }}</p>
+<p>Admins:</p>
+<ul>
+{% for admin in admins %}
+  <li>{{ admin }}</li>
+{% endfor %}
+</ul>
+```
+
+`templates/lab.conf.j2`
+
+```jinja
+# Gerido pelo Ansible. Não edites à mão.
+ServerTokens {{ server_tokens }}
+ServerSignature Off
+```
+
+O prefixo `zz-` no destino faz o ficheiro carregar depois do `security.conf` do Ubuntu, que também define o `ServerTokens`. Sem ele, o valor do Ubuntu ganhava.
+
+Agora a experiência do handler.
+
+```bash
+ansible-playbook site.yml                          # o handler corre, a config é nova
+ansible-playbook site.yml                          # changed=0, o handler não aparece
+ansible-playbook site.yml -e server_tokens=OS      # a config muda, o handler corre
+```
+
+Corre este comando no teu computador depois da segunda execução, e outra vez depois da terceira.
+
+```bash
+curl -sI http://localhost:8081 | grep -i ^server
+```
+
+Com `Prod` a resposta é `Server: Apache`. Com `OS` passa a `Server: Apache/2.4.58 (Ubuntu)`. O handler só correu quando houve mudança.
+
+Acaba este passo com `ansible-playbook site.yml`, sem o `-e`, para a máquina voltar ao estado base.
+
+### 4. Role e collection
+
+Passa tudo para um role. Estes dois comandos correm no teu computador, na pasta `ansible-lab`, e não dentro do container. No Windows, cria as pastas e move os templates à mão.
+
+```bash
+mkdir -p roles/webserver/{tasks,handlers,templates,defaults}
+mv templates/* roles/webserver/templates/ && rmdir templates
+```
+
+`roles/webserver/defaults/main.yml`
+
+```yaml
+---
+server_tokens: Prod
+admins: []
+```
+
+`roles/webserver/handlers/main.yml`
+
+```yaml
+---
+- name: Recarregar o Apache
+  ansible.builtin.service:
+    name: apache2
+    state: reloaded
+```
+
+`roles/webserver/tasks/main.yml`
+
+```yaml
+---
+- name: Atualizar o índice de pacotes (só Debian e Ubuntu)
+  ansible.builtin.apt:
+    update_cache: true
+    cache_valid_time: 3600
+  when: ansible_facts['os_family'] == "Debian"
+
+- name: Instalar o Apache
+  ansible.builtin.package:
+    name: apache2
+    state: present
+
+- name: Criar os utilizadores admin
+  ansible.builtin.user:
+    name: "{{ item }}"
+    state: present
+  loop: "{{ admins }}"
+
+- name: Publicar a página inicial
+  ansible.builtin.template:
+    src: index.html.j2
+    dest: /var/www/html/index.html
+    mode: "0644"
+
+- name: Configurar o Apache
+  ansible.builtin.template:
+    src: lab.conf.j2
+    dest: /etc/apache2/conf-enabled/zz-lab.conf
+    mode: "0644"
+  notify: Recarregar o Apache
+
+- name: Registar o ambiente em /etc/lab.ini
+  community.general.ini_file:
+    path: /etc/lab.ini
+    section: lab
+    option: environment
+    value: dev
+    mode: "0644"
+
+- name: Arrancar o Apache
+  ansible.builtin.service:
+    name: apache2
+    state: started
+    enabled: true
+```
+
+O `site.yml` encolhe.
+
+`site.yml`
+
+```yaml
+---
+- name: Servidores web
+  hosts: web
+  become: true
+  vars:
+    admins:
+      - ana
+      - bruno
+  roles:
+    - webserver
+```
+
+A task do `ini_file` vem de uma collection que ainda não tens. Corre primeiro sem ela, para veres o erro.
+
+```bash
+ansible-playbook site.yml
+```
+
+Falha com `couldn't resolve module/action 'community.general.ini_file'`. Agora instala a collection.
+
+`requirements.yml`
+
+```yaml
+---
+collections:
+  - name: community.general
+```
+
+```bash
+ansible-galaxy collection install -r requirements.yml
+ansible-playbook site.yml
+```
+
+Desta vez só a task do `ini_file` aparece como `changed`. O resto já estava como pedido, porque o role produz os mesmos ficheiros que o playbook do passo 3.
+
+### Desafios
+
+- Adiciona um `web3` ao `docker-compose.yml` e ao `inventory.ini`, e corre o playbook. O playbook precisa de alguma alteração?
+- Muda uma linha do template e corre com `--check --diff` antes de aplicar. Vê o que o Ansible diz que vai mudar.
+- Cria um role `common` que instala `curl` e `vim` com um loop, e chama-o no mesmo playbook.
+
+### Limpar
+
+```bash
+exit
+docker compose down -v --rmi all
+```
+
+## Quando algo falha
+
+| Sintoma | Causa mais provável |
+| --- | --- |
+| `couldn't resolve module/action` | A collection não está instalada, ou o nome completo do módulo tem um erro |
+| `The requested handler was not found` | O nome em `notify` é diferente do nome do handler |
+| `UNREACHABLE` | Inventário, utilizador, password ou chave SSH errados, ou a porta fechada |
+| `Missing sudo password` | Falta `become: true`, ou o utilizador não tem sudo sem password |
+| Tudo aparece como `changed` | Estás a usar `command` ou `shell` sem `creates` nem `changed_when` |
+| Erro de YAML perto de `{{` | Um valor que começa com `{{` está sem aspas |
+| O `ansible.cfg` é ignorado | A pasta é world-writable. Define `ANSIBLE_CONFIG` com o caminho do ficheiro |
+
+## Comandos que uso mais
+
+| Comando | Para quê |
+| --- | --- |
+| `ansible all -m ping` | Testar SSH e Python em todas as máquinas |
+| `ansible web -m MÓDULO -a "args"` | Correr um módulo uma vez, sem playbook |
+| `ansible-playbook site.yml` | Correr o playbook |
+| `ansible-playbook site.yml --syntax-check` | Validar a estrutura sem tocar em nada |
+| `ansible-playbook site.yml --check --diff` | Simular e mostrar o que mudaria |
+| `ansible-playbook site.yml --limit web1` | Correr só num host ou grupo |
+| `ansible-playbook site.yml -e var=valor` | Sobrepor uma variável |
+| `ansible-playbook site.yml --list-tasks` | Listar as tasks sem as correr |
+| `ansible-playbook site.yml -vvv` | Mais detalhe, para depurar ligações |
+| `ansible-inventory --graph` | Ver o inventário agrupado |
+| `ansible-doc ansible.builtin.copy` | Documentação do módulo no terminal |
+| `ansible-galaxy role init NOME` | Criar o esqueleto de um role |
+| `ansible-galaxy collection install -r requirements.yml` | Instalar as collections do projeto |
+
+O `--check` não é perfeito. Módulos como `command` e `shell` são saltados nesse modo, porque o Ansible não sabe o que eles fariam.
+
+## Para continuar
+
+- Ansible Vault, para guardar passwords e tokens cifrados dentro do repositório.
+- Inventários dinâmicos, para deixar a cloud dizer que máquinas existem.
+- `ansible-lint`, que apanha más práticas antes de correres o playbook.
+- Molecule, para testar roles em containers.
+
+A documentação oficial fica em [docs.ansible.com](https://docs.ansible.com/) e o catálogo de collections em [galaxy.ansible.com](https://galaxy.ansible.com/).
